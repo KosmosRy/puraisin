@@ -1,16 +1,20 @@
 var express = require('express');
-var square = require('./square');
-var wiki = require('./wiki.js');
 var app = express();
-app.use('/wiki', wiki);
 
+var bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', function(req, res) {
-  res.send('Hello World!');
+  res.sendFile('index.html');
 });
 
-app.listen(3000, function() {
-  console.log('Example app listening on port 3000!');
-  console.log('The area of a square with a width of 4 is ' + square.area(4));
+app.post('/submit-puraisu', function (req, res) {
+    var name = req.body.id + ' ' + req.body.freetext;
+    res.send(name + ' Submitted Successfully!');
+});
+
+
+var.server = app.listen(3000, function() {
+  console.log('app.js listening on port 3000...');
 });
 
