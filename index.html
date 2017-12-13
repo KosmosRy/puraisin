@@ -4,15 +4,6 @@
 <head>
     <meta charset="utf-8" />
     <title>Pikapuraisin</title>
-	<script type="text/javascript">
-	function getDate()
-	{
-		document.getElementById("todayDate").value = "2012-12-12 12:12:12";
-		// Date.toUTCString();
-	}
-getDate();
-</script>
-
 </head>
 <body>
     <form action="/submit-data" method="post">
@@ -2306,7 +2297,7 @@ getDate();
 	</select>
 	<br />
 	<input type="hidden" name="psource" value="ppapp"/>
-	<input type="hidden" name="timestamp" id="todayDate"/>
+	<input type="hidden" name="timestamp" value="2012-12-12 12:00:00"/>
     <input type="submit" value="Puraise" />
     </form>
 </body>
