@@ -25,6 +25,7 @@ app.post('/submit-data', function (request, response){
 	response.send('you sent: ' + xid + ':' + xfreetext);
 
 	var q1 = "INSERT INTO test (id, freetext) VALUES (" +  xid + ",'" + xfreetext + "')";
+	console.log(q1);
 
 pool.connect(function(err, client, done) {
     client.query(q1, (err, res) => {
