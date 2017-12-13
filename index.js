@@ -33,13 +33,6 @@ app.post('/submit-data', function (request, response){
 	console.log(query1)
 	const client = new Client({
 	  connectionString: connectionString,
-	  /*
-	  host:'ec2-107-20-176-7.compute-1.amazonaws.com',
-	  port:5432,
-	  user:'pnauocceetyrto',
-	  password:'52883e8680d07c58469cc9f2c2b5dfe6fc870aae9d85b92b05160fa77619660c',
-	  database:'d1d6v3castj3lj'
-	  */
 	})
 	
 	client.connect()
@@ -47,10 +40,10 @@ app.post('/submit-data', function (request, response){
     client.query(query1, (err, res, done) => {
 	  if (err) throw err;
 	  console.log(err)
-	  // for (let row of res.rows) {
-	  // console.log(JSON.stringify(row));
+	  for (let row of res.rows) {
+	  console.log(JSON.stringify(row));
 	  client.end()
-	  res.done()
+	  }
 	  })
 
 });
