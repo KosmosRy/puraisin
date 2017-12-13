@@ -11,11 +11,11 @@ app.get('/', function (req, res) {
 
 app.set('port', (process.env.PORT || 5000));
 
-/*
+
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port: ', app.get('port'));
 });
-*/
+
 
 app.post('/submit-data', function (request, response){
 	
@@ -38,7 +38,9 @@ pool.end()
 
 });
 
+/*
 var server = app.listen(5000, function () {
     console.log('Node server is running..');
 });
+*/
    
