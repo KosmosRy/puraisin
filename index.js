@@ -42,8 +42,14 @@ app.post('/submit-data', function (request, response){
 	  console.log(err)
 	  for (let row of res.rows) {
 	  console.log(JSON.stringify(row));
-	  client.end()
-	  done()
+	  client.end((err) => {
+	  console.log('client has disconnected')
+      if (err) {
+      console.log('error during disconnection', err.stack)
+  }
+})
+	  //client.end()
+	  // done()
 	  }
 	  })
 
