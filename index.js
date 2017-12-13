@@ -30,7 +30,7 @@ app.post('/submit-data', function (request, response){
 	// response.send('you sent: ' + xid + ':' + xfreetext);
 	// var query1 = "INSERT INTO test (id, freetext) VALUES (" +  xid + ",'" + xfreetext + "')";
 	var query1 = "INSERT INTO puraisut (ptype, pcontent, plocation, psource, timestamp) VALUES ('" + ptype + "','" + pcontent + "','" + plocation + "','" + psource + "','" + timestamp + "')";
-	
+	console.log(query1)
 	const client = new Client({
 	  connectionString: connectionString,
 	  /*
