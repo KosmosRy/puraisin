@@ -21,7 +21,21 @@ app.post('/submit-data', function (request, response) {
 	var xfreetext = request.body.freetext
 	var pool = new pg.Pool();
 	response.send('you sent: ' + xid + 'foo' + xfreetext)
+
 	
+    function(request, response){
+        // var pg = require('pg');          
+        var conString = process.env.DATABASE_URL || "postgres://pnauocceetyrto:52883e8680d07c58469cc9f2c2b5dfe6fc870aae9d85b92b05160fa77619660c@ec2-107-20-176-7.compute-1.amazonaws.com:5432/d1d6v3castj3lj";
+        var client = new pg.Client(conString);
+        client.connect();
+        var query = client.query("INSERT INTO test (id, freetext) VALUES (" + xid + ", '" + xfreetext + "')");    
+        query.on("end", function (result) {          
+            client.end(); 
+            res.write('Success');
+            res.end();  
+        });	
+	
+/*
 pool.connect(function(err, client, done) {
     client.query('INSERT INTO test (id, freetext) VALUES ($1, $2)', [xid, xfreetext], (err, res) => {
 	  if (err) throw err;
@@ -31,7 +45,8 @@ pool.connect(function(err, client, done) {
     });
   done()
 pool.end()
-})
+})*/
+
 });
 
 var server = app.listen(5000, function () {
