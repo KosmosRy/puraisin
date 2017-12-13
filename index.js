@@ -47,12 +47,11 @@ app.post('/submit-data', function (request, response){
     client.query(query1, (err, res) => {
 	  if (err) throw err;
 	  console.log(err);
-	  for (let row of res.rows) {
-	  console.log(JSON.stringify(row));
+	  // for (let row of res.rows) {
+	  // console.log(JSON.stringify(row));
 	  client.end();
 	  return res.end();
-	  }
-	})
+	  })
 
 });
 
