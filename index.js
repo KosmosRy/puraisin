@@ -17,8 +17,8 @@ app.listen(app.get('port'), function() {
 
 app.post('/submit-data', function (request, response) {
 	
-	var xid = req.body.id
-	var xfreetext = req.body.freetext
+	var xid = request.body.id
+	var xfreetext = request.body.freetext
 	var pool = new pg.Pool();
 	res.send('you sent: ' + xid + 'foo' + xfreetext)
 	
