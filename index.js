@@ -37,17 +37,17 @@ app.post('/submit-data', function (request, response){
 	
 	client.connect()
 	// var query = con.query(query1, (err, res) => {
-    client.query(query1, (err, res, done) => {
+    client.query(query1, (err, res) => {
 	  if (err) throw err;
-	  console.log(err)
+	  console.log('error:' + err)
 	  for (let row of res.rows) {
 	  console.log(JSON.stringify(row));
 	  client.end((err) => {
-	  console.log('client has disconnected')
-      if (err) {
-      console.log('error during disconnection', err.stack)
-  }
-})
+	    console.log('client has disconnected')
+        if (err) {
+        console.log('error during disconnection', err.stack)
+	    }
+	  })
 	  //client.end()
 	  // done()
 	  }
