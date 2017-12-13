@@ -19,11 +19,17 @@ app.listen(app.get('port'), function() {
 
 app.post('/submit-data', function (request, response){
 	
-	var xid = request.body.id
-	var xfreetext = request.body.freetext
+	// var xid = request.body.id
+	// var xfreetext = request.body.freetext
+	var ptype = request.body.ptype
+	var pcontent = request.body.pcontent
+	var plocation = request.body.plocation
+	var psource = request.body.psource
+	var timestamp = request.body.timestamp
 	// var pool = new pg.Pool();
-	response.send('you sent: ' + xid + ':' + xfreetext);
-	var query1 = "INSERT INTO test (id, freetext) VALUES (" +  xid + ",'" + xfreetext + "')";
+	// response.send('you sent: ' + xid + ':' + xfreetext);
+	// var query1 = "INSERT INTO test (id, freetext) VALUES (" +  xid + ",'" + xfreetext + "')";
+	var query1 = "INSERT INTO puraisut (ptype, pcontent, plocation, psource, timestamp) VALUES ('" + ptype + "','" + pcontent + "','" + plocation + "','" + psource + "','" + timestamp + "')";
 	
 	const client = new Client({
 	  connectionString: connectionString,
