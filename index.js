@@ -1,45 +1,54 @@
-var cool = require('cool-ascii-faces');
 var express = require('express');
 var app = express();
-var pg = require('pg');
+const { Pool, Client } = require('pg');
+const connectionString = 'postgres://pnauocceetyrto:52883e8680d07c58469cc9f2c2b5dfe6fc870aae9d85b92b05160fa77619660c@ec2-107-20-176-7.compute-1.amazonaws.com:5432/d1d6v3castj3lj'
+
+var bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.get('/', function (req, res) {
+    res.sendFile('index.html', { root: __dirname });
+});
 
 app.set('port', (process.env.PORT || 5000));
 
-app.use(express.static(__dirname + '/public'));
-
-// views is directory for all template files
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-
-app.get('/', function(request, response) {
-  response.render('pages/index')
-});
-
-app.get('/cool', function(request, response) {
-  response.send(cool());
-});
-
-app.get('/times', function(request, response) {
-    var result = ''
-    var times = process.env.TIMES || 5
-    for (i=0; i < times; i++)
-      result += i + ' ';
-  response.send(result);
-});
-
 app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
+  console.log('Node app is running on port: ', app.get('port'));
 });
 
 
-app.get('/db', function (request, response) {
-  pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-    client.query('SELECT * FROM test_table', function(err, result) {
-      done();
-      if (err)
-       { console.error(err); response.send("Error " + err); }
-      else
-       { response.render('pages/db', {results: result.rows} ); }
-    });
-  });
+app.post('/submit-data', function (request, response){
+	
+	// var xid = request.body.id
+	// var xfreetext = request.body.freetext
+	var ptype = request.body.ptype
+	var pcontent = request.body.pcontent
+	var plocation = request.body.plocation
+	var psource = request.body.psource
+	var timestamp = request.body.timestamp
+	// var pool = new pg.Pool();
+	// response.send('you sent: ' + xid + ':' + xfreetext);
+	// var query1 = "INSERT INTO test (id, freetext) VALUES (" +  xid + ",'" + xfreetext + "')";
+	var query1 = "INSERT INTO puraisut (ptype, pcontent, plocation, psource, timestamp) VALUES ('" + ptype + "','" + pcontent + "','" + plocation + "','" + psource + "','" + timestamp + "');";
+	console.log(query1)
+	const client = new Client({
+	  connectionString: connectionString,
+	})
+	
+	client.connect()
+	// var query = con.query(query1, (err, res) => {
+    client.query(query1, (err, res) => {
+	  if (err) throw err;
+	  console.log('error:' + err)
+	  for (let row of res.rows) {
+	  console.log(JSON.stringify(row));
+	  client.end()
+	  res.send("hello there world data is " + res);
+	  // done()
+	  }
+	  })
+
 });
+
+
+   
