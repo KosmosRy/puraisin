@@ -46,7 +46,7 @@ app.post('/submit-data', function (request, response){
 	// var query = con.query(query1, (err, res) => {
     client.query(query1, (err, res) => {
 	  if (err) throw err;
-	  // console.log(err);
+	  console.log(err);
 	  for (let row of res.rows) {
 	  console.log(JSON.stringify(row));
 	  client.end()
