@@ -20,7 +20,7 @@ app.post('/submit-data', function (request, response) {
 	var xid = request.body.id
 	var xfreetext = request.body.freetext
 	var pool = new pg.Pool();
-	res.send('you sent: ' + xid + 'foo' + xfreetext)
+	response.send('you sent: ' + xid + 'foo' + xfreetext)
 	
 pool.connect(function(err, client, done) {
     client.query('INSERT INTO test (id, freetext) VALUES ($1, $2)', [xid, xfreetext], (err, res) => {
