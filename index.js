@@ -43,6 +43,7 @@ app.post('/submit-data', function (request, response){
 	  for (let row of res.rows) {
 	  console.log(JSON.stringify(row));
 	  client.end()
+	  done()
 	  }
 	  })
 
