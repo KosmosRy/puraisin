@@ -15,29 +15,23 @@ app.listen(app.get('port'), function() {
   console.log('Node app is running on port: ', app.get('port'));
 });
 
-/*
-app.get('/db', function (request, response) {
-  pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-    client.query('SELECT * FROM test', function(err, result) {
-      done();
-      if (err)
-       { console.error(err); response.send("Error " + err); }
-      else
-       { response.render('pages/db', {results: result.rows} ); }
-    });
-  });
-});
-*/
-
 app.post('/submit-data', function (request, response) {
-  pg.connect(process.env.DATABASE_URL, function(err, client, done){
+	
+	var xid = req.body.id
+	var xfreetext = req.body.freetext
+	var pool = new pg.Pool();
+	res.send('you sent: ' + xid + 'foo' + xfreetext)
+	
+pool.connect(function(err, client, done) {
     client.query('INSERT INTO test (id, freetext) VALUES ($1, $2)', [xid, xfreetext], (err, res) => {
 	  if (err) throw err;
 		for (let row of res.rows) {
 		console.log(JSON.stringify(row));
 		}
     });
-  });
+  done()
+pool.end()
+})
 });
 
 var server = app.listen(5000, function () {
