@@ -1,24 +1,40 @@
-<!DOCTYPE html>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8" />
-    <title>Pikapuraisin</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Pikapuraisin</title>
+<link rel="stylesheet" type="text/css" href="view.css" media="all">
+<script type="text/javascript" src="view.js"></script>
+
 </head>
-<body>
-    <form action="/submit-data" method="post">
-    
-	Mimmonen puraisu? 
-	<select name="type">
+<body id="main_body" >
+	
+	<img id="top" src="top.png" alt="">
+	<div id="form_container">
+	
+		<h1><a>Pikapuraisin App (BETA)</a></h1>
+		<form id="form_63453" class="appnitro"  method="post" action="/submit-data">
+					<div class="form_description">
+			<h2>Pikapuraisin</h2>
+			<p>Tälläpä puraiset ketterästi ilman pelkoa syntaksisista keljuiluista!</p>
+		</div>						
+			<ul >
+			
+					<li id="li_1" >
+		<label class="description" for="element_1">Millanen puraisu? </label>
+		<div>
+		<select class="element select medium" id="element_1" name="type"> 
 	<option value="ep">Ensipuraisu</option>
 	<option value="vp">Välipuraisu</option>
 	<option value="lp">Loppupuraisu</option>
 	<option value="mp">Muu puraisu</option>	
-	</select>
-	<br />
-	
-	Millaista puraisee? 
-	<select name="content">
+
+		</select>
+		</div> 
+		</li>		<li id="li_2" >
+		<label class="description" for="element_2">Mitäs puraisit? </label>
+		<div>
+		<select class="element select large" id="element_2" name="content"> 
 	<option value="kirjoitan itse">kirjoitan itse</option>
 	<option value="olut, 3. veroluokka">olut, 3. veroluokka</option>
 	<option value="olut, 4, veroluokka">olut, 4, veroluokka</option>
@@ -2286,19 +2302,28 @@
 	<option value="äitelä skumppa">äitelä skumppa</option>
 	<option value="öl">öl</option>
 	<option value="öllenaut suitsu porter">öllenaut suitsu porter</option>
-	</select>
-	<br />
-	
-	Missä puraisee?
-	<select name="location">
+
+		</select>
+		</div> 
+		</li>		<li id="li_3" >
+		<label class="description" for="element_3">Missä puraisee? </label>
+		<div>
+		<select class="element select medium" id="element_3" name="location"> 
 	<option value="koti">Kotona</option>
 	<option value="tyo">Röissä</option>
 	<option value="muu">Muualla</option>
-	</select>
-	<br />
-	<input type="hidden" name="source" value="ppapp"/>
-	<!-- <input type="hidden" name="timestamp" value="2012-12-12 12:00:00"/> -->
-    <input type="submit" value="Puraise" />
-    </form>
-</body>
+		</select>
+		</div> 
+		</li>
+			
+					<li class="buttons">
+			    <input type="hidden" name="form_id" value="63453" />
+			    
+				<input id="saveForm" class="button_text" type="submit" name="submit" value="Puraise" />
+		</li>
+			</ul>
+		</form>	
+	</div>
+	<img id="bottom" src="bottom.png" alt="">
+	</body>
 </html>
