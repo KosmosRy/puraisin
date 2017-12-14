@@ -8,8 +8,8 @@ index.js by secretario
 const express = require('express');
 const app = express();
 const { Pool, Client } = require('pg');
-// const connectionString = 'postgres://pnauocceetyrto:52883e8680d07c58469cc9f2c2b5dfe6fc870aae9d85b92b05160fa77619660c@ec2-107-20-176-7.compute-1.amazonaws.com:5432/d1d6v3castj3lj'
-const connectionString = 'postgres://samih:erkki12Esimerkki@localhost:5432/node';
+const connectionString = 'postgres://pnauocceetyrto:52883e8680d07c58469cc9f2c2b5dfe6fc870aae9d85b92b05160fa77619660c@ec2-107-20-176-7.compute-1.amazonaws.com:5432/d1d6v3castj3lj'
+// const connectionString = 'postgres://samih:erkki12Esimerkki@localhost:5432/node';
 const bodyParser = require("body-parser");
 
 app.set('port', (process.env.PORT || 5000));
