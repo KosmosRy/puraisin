@@ -16,8 +16,6 @@ app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/', function (req, res) {
     res.sendFile('index.html', { root: __dirname });
-	res.sendFile('view.css', { root: __dirname });
-    res.sendFile('view.js', { root: __dirname });	
 });
 
 app.listen(app.get('port'), function() {
