@@ -5,6 +5,14 @@
 <title>Pikapuraisin</title>
 
 <style>
+
+select option {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 24px;
+}
+
 body
 {
 	/*background:#336699; */
@@ -880,11 +888,9 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 <body id="main_body" >
 	
 	<div id="form_container">
-		<h1>Pikapuraisin App (BETA)</h1>
 		<form id="form_63453" class="appnitro" method="post" action="/submit-data">
-
 		<div class="form_description">
-		<h2>Pikapuraisin</h2>
+		<h2>Pikapuraisin App (BETA)</h2>
 		<p>Tälläpä puraiset ketterästi ilman pelkoa syntaksisista keljuiluista!</p>
 		</div>						
 
@@ -894,7 +900,7 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 		<div>
 		<input type="radio" name="type"  value="Ep" checked>Ensi
 		<input type="radio" name="type"  value="Vp">Väli
-		<input type="radio" name="type"  value="Mp">Muu<br />
+		<input type="radio" name="type"  value="Mp">Muu
 		<input type="radio" name="type"  value="Lp">Loppu
 		<!-- 
 		<select class="element select medium" id="element_1" name="type"> 
@@ -908,10 +914,10 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 		</li>
 		
 		<li id="li_2" >
-		<label class="description" for="element_2">Mitäs puraisit? </label>
+		<label class="description" for="element_2">Mitäs puraisit? (oletus: 3. veroluokan olut)</label>
 		<div>
 		<select class="element select large" id="element_2" name="content"> 
-			<option value="kirjoitan itse">kirjoitan itse</option>
+			<!-- <option value="kirjoitan itse">kirjoitan itse</option> -->
 			<option value="olut, 3. veroluokka">olut, 3. veroluokka</option>
 			<option value="olut, 4, veroluokka">olut, 4, veroluokka</option>
 			<option value="olut, vielä väkevämpää">olut, vielä väkevämpää</option>
