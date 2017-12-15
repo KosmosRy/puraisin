@@ -31,9 +31,6 @@ app.post('/submit-data', function (request, response) {
 		values: [type,content,location,source]
 	}
 
-	// debug :: parsed query
-	// console.log(query1);
-	
 	const client = new Client(
 	    {connectionString: process.env.DATABASE_URL,}
 	);
