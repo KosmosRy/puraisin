@@ -25,10 +25,11 @@ app.post('/submit-data', function (request, response) {
 	const content = request.body.content;
 	const location = request.body.location;
 	const source = request.body.source;
+	const biter = request.body.biter;
 	const query1 = {
 		name: 'create-puraisu',
-		text: 'INSERT INTO puraisu (type, content, location, source) VALUES($1, $2, $3, $4) RETURNING type',
-		values: [type,content,location,source]
+		text: 'INSERT INTO puraisu (type, content, location, source, biter) VALUES($1, $2, $3, $4, $5) RETURNING type',
+		values: [type,content,location,source,biter]
 	}
 
 	const client = new Client(
