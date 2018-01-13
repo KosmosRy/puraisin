@@ -7,6 +7,7 @@ const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 require("isomorphic-fetch");
 require("dotenv").config();
+require("log-timestamp");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
@@ -95,7 +96,9 @@ const createSessionInfo = async token => {
 };
 
 const fail = (res, reason, status = 500)  => {
-    res.status(status).render("fail", { reason });
+    res.render("fail", { reason }, (err, html) => {
+        res.status(status).send(html);
+    });
 };
 
 app.get('/', async (req, res) => {
