@@ -4,22 +4,23 @@
 <head>
     <meta charset="utf-8" />
     <title>Pikapuraisin kiittää puraisusta!</title>
-	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="puraisin.css">
 </head>
 
 <body>
-<div class="jumbotron text-xs-center">
-  <h1 class="display-3">Tattista!</h1>
-  <p class="lead"><strong>Jopas puraisi taas riemukkaasti, </strong><br />
-    mutta muistetaan vastuullinen alkoholinkäyttö,<br />
-    eli ei muuta kuin lisää puraisemaan.</p>
-  <hr>
-  <p>
-    Ongelmia? <a href="https://www.a-klinikka.fi/">Käväise A-klinikalla</a>
-  </p>
-  <p class="lead">
-    <a class="btn btn-primary btn-sm" href="http://heristävä-appi.kosmosry.fi/" role="button">Uusi puraisu?</a>
-  </p>
+
+<div class="container">  
+  <form id="contact" method="post" action="/submit-data">
+
+    <h3>Pikapuraisin (BETA)</h3>
+    <h4>Kiitämme nöyrimmin transaktiologin rikastuttamisesta!</h4>
+    <fieldset>
+      <button id="contact-submit">
+      <!--  <a href="https://heristävä-appi.kosmosry.fi/" role="button">Uusi puraisu?</a> -->
+      <a href="http://localhost:5000">Uusi puraisu ehkäpä?</a> 
+    </button>
+    </fieldset>
 </div>
+
 </body>
 </html>
