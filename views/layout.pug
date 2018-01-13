@@ -1,0 +1,10 @@
+doctype html
+html
+    head
+        title #{title}
+    body
+        header
+            span(class="loggedIn") Logged in as #{realName}
+            | 
+            img(src=`${avatar}`)
+        block content
