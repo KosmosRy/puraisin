@@ -8,7 +8,8 @@ const pgSession = require("connect-pg-simple")(session);
 require("isomorphic-fetch");
 require("dotenv").config();
 
-const mode = process.env.MODE;
+const mode = process.env.MODE || "PROD";
+const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
 const pool = new Pool({connectionString: process.env.DATABASE_URL});
 
 const scopes = "users.profile:read,chat:write:user,channels:read";
@@ -31,13 +32,13 @@ const sess = {
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 365 * 24 * 60 * 60 * 1000
+        maxAge: 365 * 24 * 60 * 60 * 1000,
+        secure
     }
 };
 
-if (mode !== "DEV") {
+if (secure) {
     app.set("trust proxy", 1);
-    sess.cookie.secure = true;
 }
 
 app.use(express.static(path.join(__dirname, 'static')));
@@ -76,7 +77,7 @@ const createSessionInfo = async token => {
         return {
             name: "Pekka Puraisija",
             nickName: process.env.DEV_PURAISIJA || "pp",
-            picture: ""
+            picture: "https://emoji.slack-edge.com/T02MLKTA0/trollface/8c0ac4ae98.png"
         };
     }
     const profileResponse = await fetchJson(getRequest("users.profile.get", token));
@@ -93,9 +94,20 @@ const createSessionInfo = async token => {
     };
 };
 
+const fail = (res, reason, status = 500)  => {
+    res.status(status).render("fail", { reason });
+};
+
 app.get('/', async (req, res) => {
     if (!isLoggedIn(req)) {
-        res.redirect("/login.html");
+        const loginState = await uid(18);
+        req.session.loginState = loginState;
+        res.render('login', {
+            scopes,
+            clientId,
+            state: loginState,
+            redirectUrl: encodeURIComponent(redirectUrl)
+        });
     } else {
         let sessionInfo;
         if (req.cookies.puraisusession) {
@@ -108,16 +120,25 @@ app.get('/', async (req, res) => {
                 console.error("Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token");
                 console.error("Ohjataan sisäänkirjautumissivulle");
                 console.error(err);
-                res.session.destroy(() => res.redirect("/login.html"));
+                req.session.destroy(() =>
+                    fail(res, "Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token", 401));
                 return;
             }
             res.cookie("puraisusession", jwt.sign(sessionInfo, clientSecret, { notBefore: 0 }), {
                 httpOnly: true,
-                secure: mode !== "DEV"
+                secure
             });
         }
 
-        res.render("index", {
+        let page;
+        if (req.session.tattis) {
+            delete req.session.tattis;
+            page = "tattis";
+        } else {
+            page = "index";
+        }
+
+        res.render(page, {
             title: "Pikapuraisin",
             realName: sessionInfo.name,
             avatar: sessionInfo.picture
@@ -125,37 +146,11 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.get("/tattis.html", (req, res) => {
-    res.sendFile("tattis.html", {root: __dirname});
-});
-
 app.get("/logout", (req, res) => {
-    req.session.destroy(() => res.redirect("/"));
-});
-
-app.get("/login.html", async (req, res) => {
-    if (isLoggedIn(req)) {
-        res.redirect("/");
-        return;
-    }
-    const loginState = await uid(18);
-    req.session.loginState = loginState;
-    res.render('login', {
-        scopes,
-        clientId,
-        state: loginState,
-        redirectUrl: encodeURIComponent(redirectUrl)
-    })
+    req.session.destroy(() => res.clearCookie("puraisusession").redirect("/"));
 });
 
 app.get("/auth/redirect", async (req, res) => {
-    const fail = err => {
-        if (err) {
-            console.error(err);
-        }
-        res.redirect("/fail");
-    };
-
     const loginState = req.session.loginState;
     delete req.session.loginState;
     if (!req.query.error && loginState && req.query.state === loginState && req.query.code) {
@@ -165,7 +160,7 @@ app.get("/auth/redirect", async (req, res) => {
             ));
             console.log(authResponse);
             if (!authResponse.ok) {
-                fail("authResponse not OK");
+                fail(res, "authResponse not OK");
             }
 
             Object.assign(req.session, {
@@ -178,11 +173,11 @@ app.get("/auth/redirect", async (req, res) => {
             res.redirect("/");
 
         } catch (err) {
-            fail(err);
+            fail(res, err);
         }
     } else {
         console.error(req.query.error || "Joku virhe");
-        res.status(401).send("Meeppä pois");
+        fail(res, "Meeppä pois", 401);
     }
 });
 
@@ -192,7 +187,7 @@ app.listen(app.get('port'), function () {
 
 app.post('/submit-data', async (req, res) => {
     if (!isLoggedIn(req)) {
-        res.status(401).end();
+        fail(req, "Elä kuule yritä ilman sessiota", 401);
         return;
     }
 
@@ -200,7 +195,7 @@ app.post('/submit-data', async (req, res) => {
     if (req.cookies.puraisusession) {
         sessionInfo = decodeJwt(req.cookies.puraisusession);
     } else {
-        res.status(401).send("Session data puuttuu").end();
+        fail(res, "Session data puuttuu", 401);
         return;
     }
 
@@ -226,9 +221,10 @@ app.post('/submit-data', async (req, res) => {
         await pool.query(
             "INSERT INTO puraisu (type, content, location, source, biter, info) VALUES($1, $2, $3, $4, $5, $6)",
             [type, content, location, source, biter, info]);
-        res.redirect("/tattis.html");
+        req.session.tattis = true;
+        res.redirect("/");
     } catch (err) {
         console.error(err);
-        res.status(500).end();
+        fail(res, err);
     }
 });
