@@ -1,0 +1,8 @@
+extends layout
+
+block content
+    form(method="post" action="/submit-data")
+        input(name="type" type="hidden" value="EP")
+        input(name="content" type="hidden" value="olutta")
+        input(name="location" type="hidden" value="kotona")
+        button(type="submit") Puraise

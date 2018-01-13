@@ -1,15 +1,17 @@
-const {Client} = require('pg');
+const {Pool} = require('pg');
 const bodyParser = require("body-parser");
 const uid = require("uid-safe");
 const jwt = require("jsonwebtoken");
-const {fetchJson, getRequest} = require("./libs/utils");
+const {fetchJson, getRequest, postMessage, getChannels} = require("./libs/utils");
 const session = require("express-session");
+const pgSession = require("connect-pg-simple")(session);
 require("isomorphic-fetch");
 require("dotenv").config();
 
 const mode = process.env.MODE;
+const pool = new Pool({connectionString: process.env.DATABASE_URL});
 
-const scopes = "users.profile:read,chat:write:user";
+const scopes = "users.profile:read,chat:write:user,channels:read";
 const clientId = process.env.AUTH_CLIENT_ID;
 const clientSecret = process.env.AUTH_CLIENT_SECRET;
 const redirectUrl = process.env.AUTH_REDIRECT_URL;
@@ -24,9 +26,15 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(require("cookie-parser")());
 app.use(session({
+    store: new pgSession({
+        pool
+    }),
     secret: clientSecret,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 365 * 24 * 60 * 60 * 1000
+    }
 }));
 
 const encodeState = state => jwt.sign({
@@ -67,7 +75,11 @@ app.get('/', (req, res) => {
     if (!isLoggedIn(req)) {
         res.redirect("/login.html");
     } else {
-        res.sendFile('index.html', {root: __dirname});
+        res.render("index", {
+            title: "Pikapuraisin",
+            realName: req.session.realName,
+            avatar: req.session.avatar
+        });
     }
 });
 
@@ -111,6 +123,10 @@ app.get("/auth/redirect", async (req, res) => {
                 fail("profileResponse not OK");
             }
 
+            const [channelId] = await getChannels(authResponse.access_token)
+                .then(channels => Object.entries(channels).find(([id, o]) => o.name === "hiekkalaatikko"));
+            console.log(channelId);
+
             const {real_name, display_name, image_32} = profileResponse.profile;
             Object.assign(req.session, {
                 loggedIn: true,
@@ -119,7 +135,8 @@ app.get("/auth/redirect", async (req, res) => {
                 teamId: authResponse.team_id,
                 realName: real_name,
                 displayName: display_name,
-                avatar: image_32
+                avatar: image_32,
+                channelId
             });
             req.session.save();
 
@@ -138,7 +155,7 @@ app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ', app.get('port'));
 });
 
-app.post('/submit-data', function (request, response) {
+app.post('/submit-data', async (request, response) => {
     if (!isLoggedIn(request)) {
         response.status(401).end();
         return;
@@ -147,36 +164,25 @@ app.post('/submit-data', function (request, response) {
     const type = request.body.type;
     const content = request.body.content;
     const location = request.body.location;
-    const source = request.body.source;
-    const biter = request.body.biter;
+    const source = "ppapp";
+    const biter = request.session.displayName;
     const info = request.body.info;
-	const query1 = {
-        name: 'create-puraisu',
-        text: 'INSERT INTO puraisu (type, content, location, source, biter, info) VALUES($1, $2, $3, $4, $5, $6) RETURNING type',
-        values: [type, content, location, source, biter,info]
-    };
 
-	const client = new Client({
-	   user: '[username]',
-        host: '127.0.0.1',
-        database: 'puraisin',
-        password: '[password]',
-        port: 5432,
-	    // {connectionString: process.env.DATABASE_URL}
-	})
+    if (request.session.channelId) {
+        postMessage({
+            channel: request.session.channelId,
+            text: `${type};${content};${location}`,
+            as_user: true
+        }, request.session.token).catch(err => console.error(err));
+    }
 
-    // init connection
-    client.connect();
-
-    // fire up query! 
-    client.query(query1, (err, res) => {
-        if (err) {
-            console.log(err.stack);
-        } else {
-            console.log(res.rows[0]);
-        }
+    // fire up query!
+    try {
+        await pool.query(
+            "INSERT INTO puraisu (type, content, location, source, biter, info) VALUES($1, $2, $3, $4, $5, $6)",
+            [type, content, location, source, biter, info]);
         response.sendFile('tattis.html', {root: __dirname});
-        client.end();
-    });
-
+    } catch (err) {
+        response.status(500).end();
+    }
 });

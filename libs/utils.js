@@ -39,15 +39,15 @@ const getUsers = async () => {
     ));
 };
 
-const getChannels = async () => {
-    const channelList = await fetchJson(formRequest("channels.list"));
+const getChannels = async token => {
+    const channelList = await fetchJson(formRequest("channels.list", token));
     return Object.assign({}, ...channelList.channels.map(c => ({[c.id]: {
             name: c.name
         }})
     ));
 };
 
-const postMessage = message => fetchJson(jsonRequest("chat.postMessage", message));
+const postMessage = (message, token) => fetchJson(jsonRequest("chat.postMessage", token, message));
 
 module.exports = {
     encodeForm, formRequest, fetchJson, getUsers, getChannels, postMessage, getRequest
