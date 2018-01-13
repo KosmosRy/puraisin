@@ -1,13 +1,15 @@
+require("isomorphic-fetch");
+require("dotenv").config();
+require("log-timestamp");
 const {Pool} = require('pg');
 const bodyParser = require("body-parser");
 const uid = require("uid-safe");
 const jwt = require("jsonwebtoken");
 const {fetchJson, getRequest, postMessage} = require("./libs/utils");
+const express = require("express");
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
-require("isomorphic-fetch");
-require("dotenv").config();
-require("log-timestamp");
+const path = require("path");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
@@ -15,11 +17,11 @@ const pool = new Pool({connectionString: process.env.DATABASE_URL});
 
 const scopes = "users.profile:read,chat:write:user,channels:read";
 const clientId = process.env.AUTH_CLIENT_ID;
-const clientSecret = process.env.AUTH_CLIENT_SECRET;
+const clientSecret = process.env.AUTH_CLIENT_SECRET || uid(4);
 const redirectUrl = process.env.AUTH_REDIRECT_URL;
 const channelId = process.env.PURAISUT_CHANNEL_ID || "C02NAQFDM"; // oletuksena käytetään #hiekkalaatikko-kanavaa
 
-const app = require('express')();
+const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
@@ -158,9 +160,8 @@ app.get("/auth/redirect", async (req, res) => {
     delete req.session.loginState;
     if (!req.query.error && loginState && req.query.state === loginState && req.query.code) {
         try {
-            const authResponse = await fetchJson(new Request(
-                `https://slack.com/api/oauth.access?client_id=${clientId}&client_secret=${clientSecret}&code=${req.query.code}`
-            ));
+            const query = `client_id=${clientId}&client_secret=${clientSecret}&code=${req.query.code}&redirect_uri=${redirectUrl}`;
+            const authResponse = await fetchJson(new Request(`https://slack.com/api/oauth.access?${query}`));
             console.log(authResponse);
             if (!authResponse.ok) {
                 fail(res, "authResponse not OK");
@@ -202,12 +203,14 @@ app.post('/submit-data', async (req, res) => {
         return;
     }
 
+    /* nää pitäis validoida ennen kantaan tallennusta */
+    /* muistetaan lisätä myös CSRF-suojaus */
     const type = req.body.type;
     const content = req.body.content;
     const location = req.body.location;
+    const info = req.body.info;
     const source = "ppapp";
     const biter = sessionInfo.name;
-    const info = request.body.info;
 
     if (mode !== "DEV") {
         postMessage({
