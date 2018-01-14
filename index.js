@@ -215,7 +215,7 @@ app.post('/submit-data', async (req, res) => {
     if (mode !== "DEV") {
         postMessage({
             channel: channelId,
-            text: `\u{200B}${type};${content};${location}`,
+            text: `\u{200B}${type};${content};${location}${info ? ";" + info : ""}`,
             as_user: true
         }, req.session.token).catch(err => console.error(err));
     } else {
