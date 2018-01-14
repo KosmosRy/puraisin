@@ -1,9 +1,20 @@
 CREATE TABLE puraisu (
-    type character varying(12) NOT NULL,
-    content character varying(64) NOT NULL,
-    location character varying(64) NOT NULL,
-    info text,
-    source character varying(32) NOT NULL,
-    biter character varying(32) NOT NULL,
-    "timestamp" timestamp with time zone DEFAULT now() NOT NULL
+  type        CHARACTER VARYING(12)                  NOT NULL,
+  content     CHARACTER VARYING(64)                  NOT NULL,
+  location    CHARACTER VARYING(64)                  NOT NULL,
+  info        TEXT,
+  source      CHARACTER VARYING(32)                  NOT NULL,
+  biter       CHARACTER VARYING(32)                  NOT NULL,
+  "timestamp" TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
+
+CREATE TABLE "session" (
+  "sid"    VARCHAR      NOT NULL COLLATE "default",
+  "sess"   JSON         NOT NULL,
+  "expire" TIMESTAMP(6) NOT NULL
+)
+WITH (OIDS = FALSE
+);
+ALTER TABLE "session"
+  ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
+  NOT DEFERRABLE INITIALLY IMMEDIATE;

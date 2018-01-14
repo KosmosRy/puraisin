@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Pikapuraisin</title>
+<link rel="stylesheet" type="text/css" href="puraisin.css">
+</head>
+
+<body id="main_body">
+
+<% include ./partials/header.ejs %>
+
+<div class="container">
+    <form id="contact" method="post" action="/submit-data">
+
+    <h3>Pikapuraisin (BETA)</h3>
+    <h4>Tällä puraiset ketterästi tukevassa seilissäkin!</h4>
+    <fieldset>
+      <div>
+        <b>Millanen puraisu?</b><br/>
+	      <input type="radio" name="type" value="Ep" checked> Ensi
+	      <input type="radio" name="type" value="Vp"> Väli
+	      <input type="radio" name="type" value="Lp"> Loppu
+ 	      <input type="radio" name="type" value="Mp"> Muu
+      </div>
+    </fieldset>
+
+<!--
+<secretario 12.1.2018>
+Tähän kohtaan näytetään hakumahdollisuus kantaan jos edellä valittu "muu" vaihtoehdoksi.
+3-4 merkkiä vaadittava ennen kuin liipaistaan haku puraisu-content tms. tauluun.
+-->
+
+	<fieldset>
+    <input placeholder="Mitäs ajattelit puraista?" type="text" name="content">
+    </fieldset>
+
+    <fieldset>
+      <div>
+        <b>Missäs puraisee?</b><br/>
+	    <input type="radio" name="location" value="koti" checked> Kotona
+	    <input type="radio" name="location" value="tyo"> Röissä
+	    <input type="radio" name="location" value="baari"> Paarissa
+ 	    <input type="radio" name="location" value="muu"> Muualla
+      </div>
+    </fieldset>
+    <fieldset>
+      <div>
+      <b>Haluatko lisätä jotain selitykseksi?</b>
+      <textarea placeholder="Lorem ipsum sit dolor amet..." name="info"></textarea>
+      </div>
+    </fieldset>
+    <fieldset>
+      <button name="submit" type="submit" id="contact-submit" data-submit="...puraisee">Puraise!</button>
+    </fieldset>
+    <p class="copyright">Appia heristetty tiimin toimesta.<br/>
+    <!-- <a href="https://www.kosmosry.fi" target="_blank" title="Kosmos ry">Kosmos ry</a></p> -->
+    <input type="hidden" name="source" value="appi"/>
+    <input type="hidden" name="biter" value="dev"/>
+  </form>
+</div>
+</body>
+</html>
