@@ -6,15 +6,29 @@
     <link rel="stylesheet" type="text/css" href="puraisin.css">
 </head>
 
-<body>
-<% include ./partials/header.ejs %>
+<body id="main_body">
 
 <div class="container">
-        <h3>Pikapuraisin (BETA)</h3>
-        <h4>Kiitämme nöyrimmin transaktiologin rikastuttamisesta!</h4>
-        <fieldset>
-            <a href="/">Uusi puraisu ehkäpä?</a>
-        </fieldset>
+	<form id="contact">
+    <table>
+      <tr>
+        <td class="left">
+          <h3>Pikapuraisin</h3>
+          <h4>Yhteisö ja maksa kiittää puraisusta!</h4>
+        </td>
+          <% include ./partials/header.ejs %>
+      </tr>
+    </table>
+    <br/>
+    <p class="leipis">
+    Pikapuraisimen erehtymättömän algoritmin mukaan olet <strong>X promillen</strong> jurrissa antamiesi taustatietojen sekä tähän ränniin luettavan puraisuhistoriasi perusteella. Ja X promillea nyt tässä kohtaa ihan vain siksi, että ko. featurea ei ole vielä implementoitu saatikka implikoitu backlogille.<br/>
+    <br/>
+    Joten, mitäs tässä jauhamaan asijasta sen enempää, miten olisi 
+    </p>
+    <br />
+    <fieldset>
+        <a href="/">Uusi puraisu?</a>
+    </fieldset>
     </form>
 </div>
 </body>

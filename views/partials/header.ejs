@@ -1,5 +1,9 @@
 <header>
-    <span class="loggedIn">Kirjautuneena <%= realName %></span>
-    <img src="<%= avatar %>" alt="<%= realName %>"/>
-    <a href="/logout">Kirjaudu ulos</a>
+    <td class="right">
+      <h4>Kirjautuneena<br/><%= realName %></h4>
+      <a class="logout" href="/logout">Kirjaudu ulos</a>
+    </td>
+    <td class="avatar">
+      <img src="<%= avatar %>" alt="<%= realName %>" width="64" height="64">
+    </td>
 </header>
