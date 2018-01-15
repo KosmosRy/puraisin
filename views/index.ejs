@@ -8,13 +8,20 @@
 
 <body id="main_body">
 
-<% include ./partials/header.ejs %>
-
 <div class="container">
     <form id="contact" method="post" action="/submit-data">
 
-    <h3>Pikapuraisin (BETA)</h3>
-    <h4>Tällä puraiset ketterästi tukevassa seilissäkin!</h4>
+    <table>
+      <tr>
+        <td class="left">
+          <h3>Pikapuraisin</h3>
+          <h4>Tällä puraiset ketterästi seilissäkin!</h4>
+        </td>
+        <% include ../static/viewport.js %>
+        <% include ./partials/header.ejs %>
+      </tr>
+    </table>
+
     <fieldset>
       <div>
         <b>Millanen puraisu?</b><br/>
