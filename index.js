@@ -151,6 +151,8 @@ app.get('/', async (req, res) => {
         if (req.session.tattis) {
             delete req.session.tattis;
             page = "tattis";
+            type = req.session.type;
+            content = req.session.content;
         } else {
             page = "index";
         }
@@ -217,12 +219,24 @@ app.post('/submit-data', async (req, res) => {
 
     /* nää pitäis validoida ennen kantaan tallennusta */
     /* muistetaan lisätä myös CSRF-suojaus */
-    const type = req.body.type;
+    /*
+    secretario 16.1.2018
+    - muutettu "type" tietotyyppi const > var jos typecustomista tulee radio-valintojen ulkopuolinen tieto
+    - lisätty typecustom lomakkeelle, joka luetaan type-kenttään ennen syöttöä, jos siellä on dataa
+    - jos valittu muu, mutta ei syötetty dataa, kirjoitetaan kantaan "Mp"
+     */
+    var type = req.body.type;
     const content = req.body.content;
     const location = req.body.location;
     const info = req.body.info;
     const source = "ppapp";
+    const typecustom = req.body.typecustom;
     const biter = sessionInfo.name;
+
+    /* secretario 16.1.2018: checkki kun tulee typecustom radiovalintojen ulkopuolelta*/
+    if (typecustom !== "" && type==="Mp"){
+        type = req.body.typecustom;
+    }
 
     if (mode !== "DEV") {
         postMessage({
@@ -240,9 +254,12 @@ app.post('/submit-data', async (req, res) => {
             "INSERT INTO puraisu (type, content, location, source, biter, info) VALUES($1, $2, $3, $4, $5, $6)",
             [type, content, location, source, biter, info]);
         req.session.tattis = true;
+        req.session.type = type;
+        req.session.content = content;
         res.redirect("/");
     } catch (err) {
         console.error(err);
         fail(res, err);
     }
 });
+

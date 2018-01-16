@@ -2,11 +2,15 @@
     <fieldset>
         <div>
             <b>Millanen puraisu?</b><br/>
-            <input type="radio" name="type" value="Ep" checked> Ensi
-            <input type="radio" name="type" value="Vp"> Väli
-            <input type="radio" name="type" value="Lp"> Loppu
-            <input type="radio" name="type" value="Mp"> Muu
-        </div>
+            <input type="radio" onclick="javascript:yesnoCheck();" id="noCheck" name="type" value="Ep" checked> Ensi
+            <input type="radio" onclick="javascript:yesnoCheck();" id="noCheck" name="type" value="Vp"> Väli
+            <input type="radio" onclick="javascript:yesnoCheck();" id="noCheck" name="type" value="Lp"> Loppu
+            <input type="radio" onclick="javascript:yesnoCheck();" id="yesCheck" name="type" value="Mp"> Muu
+            <div id="ifYes" style="visibility:hidden">
+            <input class="col-6 form-control" type="text" id="yes" name="typecustom" placeholder="Millanen muu?">
+            </div>
+</div>
+
     </fieldset>
 
     <!--
@@ -16,22 +20,22 @@
     -->
 
     <fieldset>
-        <input placeholder="Mitäs ajattelit puraista?" type="text" name="content">
+        <input class="col-6 form-control" placeholder="Mitäs ajattelit puraista?" type="text" name="content">
     </fieldset>
 
     <fieldset>
         <div>
             <b>Missäs puraisee?</b><br/>
-            <input type="radio" name="location" value="koti" checked> Kotona
-            <input type="radio" name="location" value="tyo"> Röissä
-            <input type="radio" name="location" value="baari"> Paarissa
-            <input type="radio" name="location" value="muu"> Muualla
+            <input type="radio" name="location" value="koti" checked> Koti
+            <input type="radio" name="location" value="tyo"> Ryö
+            <input type="radio" name="location" value="baari"> Paari
+            <input type="radio" name="location" value="muu"> Muu
         </div>
     </fieldset>
     <fieldset>
         <div>
-            <b>Haluatko lisätä jotain selitykseksi?</b>
-            <textarea placeholder="Lorem ipsum sit dolor amet..." name="info"></textarea>
+            <b>Haluatko lisätä jotain puolustukseksi?</b><br/>
+            <textarea class="col-6 form-control" placeholder="Lorem ipsum..." name="info"></textarea>
         </div>
     </fieldset>
     <fieldset>
