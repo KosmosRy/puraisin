@@ -48,6 +48,11 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(require("cookie-parser")());
 app.use(session(sess));
+app.use((req, res, next) => {
+    res.locals.title = "Pikapuraisin";
+    res.locals.loggedIn = false;
+    next();
+});
 
 const isLoggedIn = req => {
     if (mode === "DEV") {
@@ -89,16 +94,22 @@ const createSessionInfo = async token => {
         throw new Error("profileResponse not OK");
     }
 
-    const {real_name, display_name, image_32} = profileResponse.profile;
+    const {real_name, display_name, image_48} = profileResponse.profile;
     return {
         name: real_name,
         nickname: display_name,
-        picture: image_32
+        picture: image_48
     };
 };
 
+const render = (res, page, params) =>
+    res.render("template.ejs", Object.assign({}, params, {page}));
+
 const fail = (res, reason, status = 500)  => {
-    res.render("fail", { reason }, (err, html) => {
+    res.render("template.ejs", {
+        page: "fail",
+        reason: reason || "Hupsista, saatana!"
+    }, (err, html) => {
         res.status(status).send(html);
     });
 };
@@ -107,7 +118,8 @@ app.get('/', async (req, res) => {
     if (!isLoggedIn(req)) {
         const loginState = await uid(18);
         req.session.loginState = loginState;
-        res.render('login', {
+        render(res, "login", {
+            title: "Kirjaudu Puraisimeen!",
             scopes,
             clientId,
             state: loginState,
@@ -143,10 +155,10 @@ app.get('/', async (req, res) => {
             page = "index";
         }
 
-        res.render(page, {
-            title: "Pikapuraisin",
+        render(res, page, {
             realName: sessionInfo.name,
-            avatar: sessionInfo.picture
+            avatar: sessionInfo.picture,
+            loggedIn: true
         });
     }
 });
