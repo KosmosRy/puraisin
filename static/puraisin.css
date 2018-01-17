@@ -19,6 +19,9 @@ body {
     background: #F9F9F9;
 }
 
+#ifYes {
+    visibility: hidden;
+}
 
 fieldset {
     margin-top: 15px;
