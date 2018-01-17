@@ -16,9 +16,17 @@ body {
     font-weight: 100;
     font-size: 16px;
     color: #777;
-    background: #000;
+    background: #F9F9F9;
 }
 
+#ifYes {
+    visibility: hidden;
+}
+
+fieldset {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
 
 .login, .fail {
     text-align: center;
@@ -36,12 +44,12 @@ a.btn {
 .main-content {
     background: #F9F9F9;
     padding: 25px 25px 0;
-    box-shadow: 5px 5px 5px 5px rgba(255, 255, 255, 0.2);
-    border-radius: 25px;
+    /* box-shadow: 5px 5px 5px 5px rgba(255, 255, 255, 0.2);*/
+    /* border-radius: 25px; */
 }
 
 .title h3 {
-    font-size: 40px;
+    font-size: 32px;
     font-weight: 300;
     margin-bottom: 10px;
 }
@@ -65,3 +73,7 @@ a.btn {
 .copyright {
     padding: 15px 0;
 }
+
+/* geolocation api demo style */
+
+#map {width:400px;height:200px;}
