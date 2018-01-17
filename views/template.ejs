@@ -8,9 +8,11 @@
     <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script-->
     <link rel="stylesheet" type="text/css" href="puraisin.css">
     <script src="yesnocheck.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDKtpjGriYDaolAnqnODrcS6t8sL8mFhKw"></script>
+   <script src="geolocation.js"></script> 
 </head>
 
-<body>
+<body onload="javascript:initGeolocation()">
 
 <div class="container-fluid main-container">
     <div class="row justify-content-xs-center">
@@ -29,5 +31,6 @@
         </div>
     </div>
 </div>
+
 </body>
 </html>

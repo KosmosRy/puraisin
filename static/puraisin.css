@@ -73,3 +73,7 @@ a.btn {
 .copyright {
     padding: 15px 0;
 }
+
+/* geolocation api demo style */
+
+#map {width:400px;height:200px;}

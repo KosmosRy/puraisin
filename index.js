@@ -50,6 +50,7 @@ app.use(require("cookie-parser")());
 app.use(session(sess));
 app.use((req, res, next) => {
     res.locals.title = "Pikapuraisin";
+    //res.locals.key = "http://maps.googleapis.com/maps/api/js?key=AIzaSyDKtpjGriYDaolAnqnODrcS6t8sL8mFhKw";
     res.locals.loggedIn = false;
     next();
 });
