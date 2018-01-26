@@ -223,28 +223,46 @@ app.post('/submit-data', async (req, res) => {
 
     /* nää pitäis validoida ennen kantaan tallennusta */
     /* muistetaan lisätä myös CSRF-suojaus */
-    const type = req.body.type;
-    const content = req.body.content;
-    const location = req.body.location;
-    const info = req.body.info;
+    const {type, content, location, info, postfestum} = req.body;
+    const isPf = !!postfestum;
     const source = "ppapp";
     const biter = sessionInfo.name;
-    
+    let coordinates = !isPf ? req.body.coordinates : null;
+    let coordLoc = "";
+
+    if (coordinates) {
+        try {
+            const coordJson = JSON.parse(coordinates);
+            const {latitude, longitude, accuracy} = coordJson;
+            if (latitude && longitude && accuracy) {
+                coordLoc = ` (${latitude.toFixed(4)},${longitude.toFixed(4)} ±${accuracy})`;
+            } else {
+                coordinates = null;
+            }
+        } catch (err) {
+            coordinates = null;
+        }
+    } else {
+        coordinates = null;
+    }
+
+    const slackMsg = `${type};${content};${location}${coordLoc}${info ? ";" + info : ""}`;
     if (mode !== "DEV") {
         postMessage({
             channel: channelId,
-            text: `\u{200B}${type};${content};${location}${info ? ";" + info : ""}`,
+            text: `\u{200B}${slackMsg}`,
             as_user: true
         }, req.session.token).catch(err => console.error(err));
     } else {
-        console.log(`Dev-mode, oltais lähetetty #puraisut-kanavalle: ${type};${content};${location}`)
+        console.log(`Dev-mode, oltais lähetetty #puraisut-kanavalle: ${slackMsg}`)
     }
 
     // fire up query!
     try {
         await pool.query(
-            "INSERT INTO puraisu (type, content, location, source, biter, info) VALUES($1, $2, $3, $4, $5, $6)",
-            [type, content, location, source, biter, info]);
+            `INSERT INTO puraisu (type, content, location, source, biter, info, coordinates, postfestum) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            [type, content, location, source, biter, info, coordinates, isPf]);
         req.session.tattis = true;
         req.session.type = type;
         req.session.content = content;

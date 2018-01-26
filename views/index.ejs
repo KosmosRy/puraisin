@@ -1,9 +1,9 @@
 <form id="puraisu-form" method="post" action="/submit-data">
     <input type="hidden" name="coordinates" id="coordinates"/>
     <fieldset class="form-group row">
-        <legend class="col-form-legend col-12">Millanen puraisu?</legend>
+        <legend class="col-form-legend col">Millanen puraisu?</legend>
 
-        <div class="col-12">
+        <div class="col">
             <div class="form-check form-check-inline">
                 <label class="form-check-label">
                     <input type="radio" class="form-check-input type-input" name="type" value="Ep" checked> Ensi
@@ -27,10 +27,15 @@
                     <input type="radio" class="form-check-input type-input" name="type" id="customtype"> Muu
                 </label>
             </div>
-        </div>
 
+            <div class="form-check form-check-inline float-right">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" name="postfestum"> Postfestum
+                </label>
+            </div>
+        </div>
         <div class="col">
-            <input class="form-control" type="text" id="customtype-input" placeholder="Millanen muu?">
+            <input class="form-control" type="text" id="customtype-input" placeholder="Millanen muu?" maxlength="64">
         </div>
     </fieldset>
 
@@ -48,7 +53,9 @@
     </fieldset>
 
     <fieldset class="form-group row">
-        <legend class="col-form-legend col-12">Missäs puraisee? <span id="accuracy" class="red" title="ei paikkatietoja">●</span></legend>
+        <legend class="col-form-legend col-12">Missäs puraisee? <i id="accuracy"
+                    class="fa fa-compass fa-spin" title="ei paikkatietoja"></i>
+        </legend>
 
         <div class="col-12">
             <div class="form-check form-check-inline">
