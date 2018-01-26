@@ -148,20 +148,24 @@ app.get('/', async (req, res) => {
         }
 
         let page;
+        const context = {
+            realName: sessionInfo.name,
+            avatar: sessionInfo.picture,
+            loggedIn: true
+        };
+
         if (req.session.tattis) {
+            context.type = req.session.type;
+            context.content = req.session.content;
             delete req.session.tattis;
+            delete req.session.type;
+            delete req.session.content;
             page = "tattis";
-            type = req.session.type;
-            content = req.session.content;
         } else {
             page = "index";
         }
 
-        render(res, page, {
-            realName: sessionInfo.name,
-            avatar: sessionInfo.picture,
-            loggedIn: true
-        });
+        render(res, page, context);
     }
 });
 
@@ -219,25 +223,12 @@ app.post('/submit-data', async (req, res) => {
 
     /* nää pitäis validoida ennen kantaan tallennusta */
     /* muistetaan lisätä myös CSRF-suojaus */
-    /*
-    secretario 16.1.2018
-    - muutettu "type" tietotyyppi const > var jos typecustomista tulee radio-valintojen ulkopuolinen tieto
-    - lisätty typecustom lomakkeelle, joka luetaan type-kenttään ennen syöttöä, jos siellä on dataa
-    - jos valittu muu, mutta ei syötetty dataa, kirjoitetaan kantaan "Mp"
-     */
-    var type = req.body.type;
     const content = req.body.content;
     const location = req.body.location;
     const info = req.body.info;
     const source = "ppapp";
-    const typecustom = req.body.typecustom;
     const biter = sessionInfo.name;
-
-    /* secretario 16.1.2018: checkki kun tulee typecustom radiovalintojen ulkopuolelta*/
-    if (typecustom !== "" && type==="Mp"){
-        type = req.body.typecustom;
-    }
-
+    
     if (mode !== "DEV") {
         postMessage({
             channel: channelId,
