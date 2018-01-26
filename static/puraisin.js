@@ -12,6 +12,7 @@
             } else {
                 typeInputs.forEach(i => i.name = "type");
                 customTypeInput.name = "";
+                customTypeInput.value = "";
                 customTypeInput.style.display = "none";
                 customTypeInput.required = false;
                 event.target.checked = true;
@@ -30,6 +31,7 @@
             } else {
                 locationInputs.forEach(i => i.name = "location");
                 customLocationInput.name = "";
+                customLocationInput.value = "";
                 customLocationInput.style.display = "none";
                 customLocationInput.required = false;
                 event.target.checked = true;
