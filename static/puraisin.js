@@ -1,6 +1,66 @@
 (function () {
 
+    function toDM(degrees, pos, neg) {
+        let positive = true;
+        if (degrees < 0) {
+            positive = false;
+            degrees = -degrees;
+        }
+
+        let degreesFull = Math.floor(degrees);
+
+        let minutes = 60 * (degrees - degreesFull);
+        let minutesRounded = minutes.toFixed(3);
+
+        if (minutesRounded === 60) {
+            minutesRounded = "0.000";
+            degreesFull += 1;
+        }
+
+        if (degreesFull < 10) {
+            degreesFull = "0" + degreesFull;
+        }
+
+        if (minutesRounded < 10) {
+            minutesRounded = "0" + minutesRounded;
+        }
+
+        return (degreesFull + "°" + minutesRounded + "'" + (positive ? pos : neg));
+    }
+
+    function formatDM(coords) {
+        return `${toDM(coords.latitude, "N", "S")} ${toDM(coords.longitude, "E", "W")} (±${coords.accuracy})`;
+    }
+
+
     if (document.getElementById("puraisu-form")) {
+
+        if (navigator && navigator.geolocation) {
+            const coordsEl = document.getElementById("coordinates");
+            const accInd = document.getElementById("accuracy");
+            navigator.geolocation.watchPosition(pos => {
+                const {latitude, longitude, accuracy} = pos.coords;
+                coordsEl.value = `${latitude},${longitude}±${accuracy}`;
+                accInd.title = formatDM(pos.coords);
+                if (accuracy <= 10) {
+                    accInd.className = "green";
+                } else if (accuracy <= 50) {
+                    accInd.className = "yellow";
+                } else {
+                    accInd.className = "red";
+                }
+            }, err => {
+                console.error(err);
+                coordsEl.value = "";
+                accInd.className = "red";
+                accInd.title = "ei paikkatietoja";
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 5000
+            })
+        }
+
         const typeInputs = Array.from(document.getElementsByClassName("type-input"));
         const customTypeInput = document.getElementById("customtype-input");
         const typeChanged = function (event) {
