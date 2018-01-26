@@ -21,6 +21,7 @@ body {
 
 #customtype-input, #customlocation-input {
     display: none;
+    margin-bottom: 0.5em;
 }
 
 .login, .fail {
