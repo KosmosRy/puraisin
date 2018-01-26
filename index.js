@@ -246,7 +246,7 @@ app.post('/submit-data', async (req, res) => {
         coordinates = null;
     }
 
-    const slackMsg = `${type};${content};${location}${coordLoc}${info ? ";" + info : ""}`;
+    const slackMsg = `${type}${isPf ? "-postfestum" : ""};${content};${location}${coordLoc}${info ? ";" + info : ""}`;
     if (mode !== "DEV") {
         postMessage({
             channel: channelId,
