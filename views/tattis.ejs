@@ -1,9 +1,21 @@
-<p class="leipis">
-    Pikapuraisimen erehtymättömän algoritmin mukaan olet <strong>X promillen</strong> jurrissa antamiesi taustatietojen sekä tähän ränniin luettavan puraisuhistoriasi perusteella. Ja X promillea nyt tässä kohtaa ihan vain siksi, että ko. featurea ei ole vielä implementoitu saatikka implikoitu backlogille.<br/>
-    <br/>
-    Joten, mitäs tässä jauhamaan asijasta sen enempää, miten olisi
-</p>
-<br />
-<fieldset>
-    <a href="/" class="btn btn-success">Uusi puraisu?</a>
-</fieldset>
+<div class="row">
+    <div class="col">
+        <p class="mt-3 px-0">
+            <i><%= type %></i> on aina hyvän tyyppinen puraisu! Puraisun sisällöksi raportoit: <b>"<%= content %>"</b>.
+            Sehän sisältää etyylialkoholia (etanolia), joka on primäärisiin alkoholeihin kuuluva väritön, tulenarka ja
+            antiseptinen neste. Jos raportoit juoneesi keskiketterää kevyempää, voit poistua Puraisimesta yksin tein.
+        </p>
+        <p class="mt-3 px-0">
+            Lisäksi, Pikapuraisimen erehtymättömän algoritmin mukaan olet
+            <strong><%= (Math.random() * 2).toFixed(1) %> promillen</strong> jurrissa <small>(ei todellinen veren
+                alkoholiprosentti)</small> antamiesi taustatietojen sekä tähän ränniin
+            luettavan puraisuhistoriasi perusteella.
+        </p>
+        <p class="mt-3 px-0">
+            Mutta hii-o soikooon, mitäs tässä jauhamaan enempiä, miten olisi
+        </p>
+        <p class="mt-3 px-0">
+            <a href="/" class="btn btn-success">Uusi puraisu?</a>
+        </p>
+    </div>
+</div>
