@@ -223,6 +223,7 @@ app.post('/submit-data', async (req, res) => {
 
     /* nää pitäis validoida ennen kantaan tallennusta */
     /* muistetaan lisätä myös CSRF-suojaus */
+    const type = req.body.type;
     const content = req.body.content;
     const location = req.body.location;
     const info = req.body.info;
