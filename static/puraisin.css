@@ -90,3 +90,7 @@ a.btn {
 .red, .yellow, .green {
     transition: background 0.5s;
 }
+
+.puraisutype {
+    text-transform: capitalize;
+}
