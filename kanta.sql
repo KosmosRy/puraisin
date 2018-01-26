@@ -1,11 +1,13 @@
 CREATE TABLE puraisu (
-  type        CHARACTER VARYING(12)                  NOT NULL,
-  content     CHARACTER VARYING(64)                  NOT NULL,
-  location    CHARACTER VARYING(64)                  NOT NULL,
+  type        CHARACTER VARYING(64)                  NOT NULL,
+  content     TEXT                                   NOT NULL,
+  location    TEXT                                   NOT NULL,
   info        TEXT,
   source      CHARACTER VARYING(32)                  NOT NULL,
   biter       CHARACTER VARYING(32)                  NOT NULL,
-  "timestamp" TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
+  "timestamp" TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+  postfestum  BOOLEAN                                NOT NULL,
+  coordinates JSON
 );
 
 CREATE TABLE "session" (
@@ -15,6 +17,7 @@ CREATE TABLE "session" (
 )
 WITH (OIDS = FALSE
 );
+
 ALTER TABLE "session"
   ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
   NOT DEFERRABLE INITIALLY IMMEDIATE;

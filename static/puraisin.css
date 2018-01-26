@@ -68,11 +68,15 @@ a.btn {
 }
 
 #accuracy {
-    font-size: large;
+    margin-left: 5px;
 }
 
 .red {
     color: hsl(9, 100%, 55%);
+}
+
+.orange {
+    color: hsl(28, 100%, 52%);
 }
 
 .yellow {

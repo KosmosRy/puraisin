@@ -38,22 +38,32 @@
         if (navigator && navigator.geolocation) {
             const coordsEl = document.getElementById("coordinates");
             const accInd = document.getElementById("accuracy");
+            let indClass = "fa-spin";
+            const searchClass = "fa-compass";
+            const foundClass = "fa-location-arrow";
+            const errorClass = "fa-exclamation-triangle";
             navigator.geolocation.watchPosition(pos => {
                 const {latitude, longitude, accuracy} = pos.coords;
-                coordsEl.value = `${latitude},${longitude}±${accuracy}`;
+                coordsEl.value = JSON.stringify({latitude, longitude, accuracy});
                 accInd.title = formatDM(pos.coords);
+                accInd.classList.remove(searchClass, indClass);
                 if (accuracy <= 10) {
-                    accInd.className = "green";
+                    indClass = "green";
                 } else if (accuracy <= 50) {
-                    accInd.className = "yellow";
+                    indClass = "yellow";
+                } else if (accuracy <= 1000) {
+                    indClass = "orange";
                 } else {
-                    accInd.className = "red";
+                    indClass = "red";
                 }
+                accInd.classList.add(foundClass, indClass);
             }, err => {
                 console.error(err);
                 coordsEl.value = "";
-                accInd.className = "red";
-                accInd.title = "ei paikkatietoja";
+                accInd.title = err;
+                accInd.classList.remove(foundClass, searchClass, indClass);
+                indClass = "red";
+                accInd.classList.add(errorClass);
             }, {
                 enableHighAccuracy: true,
                 timeout: 10000,
