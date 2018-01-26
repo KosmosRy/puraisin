@@ -66,3 +66,23 @@ a.btn {
 .copyright {
     padding: 15px 0;
 }
+
+#accuracy {
+    font-size: large;
+}
+
+.red {
+    color: hsl(9, 100%, 55%);
+}
+
+.yellow {
+    color: hsl(49, 100%, 50%);
+}
+
+.green {
+    color: hsl(89, 100%, 45%);
+}
+
+.red, .yellow, .green {
+    transition: background 0.5s;
+}
