@@ -1,4 +1,5 @@
 <form id="puraisu-form" method="post" action="/submit-data">
+    <input type="hidden" name="coordinates" id="coordinates"/>
     <fieldset class="form-group row">
         <legend class="col-form-legend col-12">Millanen puraisu?</legend>
 
@@ -47,7 +48,7 @@
     </fieldset>
 
     <fieldset class="form-group row">
-        <legend class="col-form-legend col-12">Missäs puraisee?</legend>
+        <legend class="col-form-legend col-12">Missäs puraisee? <span id="accuracy" class="red" title="ei paikkatietoja">●</span></legend>
 
         <div class="col-12">
             <div class="form-check form-check-inline">
