@@ -148,18 +148,24 @@ app.get('/', async (req, res) => {
         }
 
         let page;
+        const context = {
+            realName: sessionInfo.name,
+            avatar: sessionInfo.picture,
+            loggedIn: true
+        };
+
         if (req.session.tattis) {
+            context.type = req.session.type;
+            context.content = req.session.content;
             delete req.session.tattis;
+            delete req.session.type;
+            delete req.session.content;
             page = "tattis";
         } else {
             page = "index";
         }
 
-        render(res, page, {
-            realName: sessionInfo.name,
-            avatar: sessionInfo.picture,
-            loggedIn: true
-        });
+        render(res, page, context);
     }
 });
 
@@ -217,13 +223,12 @@ app.post('/submit-data', async (req, res) => {
 
     /* nää pitäis validoida ennen kantaan tallennusta */
     /* muistetaan lisätä myös CSRF-suojaus */
-    const type = req.body.type;
     const content = req.body.content;
     const location = req.body.location;
     const info = req.body.info;
     const source = "ppapp";
     const biter = sessionInfo.name;
-
+    
     if (mode !== "DEV") {
         postMessage({
             channel: channelId,
@@ -240,9 +245,12 @@ app.post('/submit-data', async (req, res) => {
             "INSERT INTO puraisu (type, content, location, source, biter, info) VALUES($1, $2, $3, $4, $5, $6)",
             [type, content, location, source, biter, info]);
         req.session.tattis = true;
+        req.session.type = type;
+        req.session.content = content;
         res.redirect("/");
     } catch (err) {
         console.error(err);
         fail(res, err);
     }
 });
+
