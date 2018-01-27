@@ -9,6 +9,7 @@ const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const path = require("path");
 const csurf = require("csurf");
+const moment = require("moment-timezone");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
@@ -232,6 +233,12 @@ app.post('/submit-data', async (req, res) => {
     let coordinates = !isPf ? req.body.coordinates : null;
     let coordLoc = "";
 
+    let tz;
+    try {
+        moment.tz(req.body.tz);
+        tz = req.body.tz;
+    } catch (e) {}
+
     if (coordinates) {
         try {
             const coordJson = JSON.parse(coordinates);
@@ -261,7 +268,7 @@ app.post('/submit-data', async (req, res) => {
 
     // fire up query!
     try {
-        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates);
+        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates, tz);
         req.session.tattis = true;
         req.session.type = type;
         req.session.content = content;
