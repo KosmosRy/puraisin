@@ -1,5 +1,6 @@
 <form id="puraisu-form" method="post" action="/submit-data">
     <input type="hidden" name="coordinates" id="coordinates"/>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
     <div class="row">
         <div class="col-form-legend col">Millanen puraisu?</div>
     </div>
