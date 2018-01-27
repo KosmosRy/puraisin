@@ -242,9 +242,10 @@ app.post('/submit-data', async (req, res) => {
     if (coordinates) {
         try {
             const coordJson = JSON.parse(coordinates);
-            const {latitude, longitude, accuracy} = coordJson;
+            const {latitude, longitude, accuracy} = coordJson;             
             if (latitude && longitude && accuracy) {
-                coordLoc = ` (${latitude.toFixed(4)},${longitude.toFixed(4)} ±${accuracy.toFixed(0)}m)`;
+                const gmapUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+                coordLoc = ` (<${gmapUrl}|${latitude.toFixed(4)},${longitude.toFixed(4)}> ±${accuracy.toFixed(0)}m)`;
             } else {
                 coordinates = null;
             }
