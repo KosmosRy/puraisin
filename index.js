@@ -235,7 +235,7 @@ app.post('/submit-data', async (req, res) => {
             const coordJson = JSON.parse(coordinates);
             const {latitude, longitude, accuracy} = coordJson;
             if (latitude && longitude && accuracy) {
-                coordLoc = ` (${latitude.toFixed(4)},${longitude.toFixed(4)} ±${accuracy})`;
+                coordLoc = ` (${latitude.toFixed(4)},${longitude.toFixed(4)} ±${accuracy.toFixed(0)}m)`;
             } else {
                 coordinates = null;
             }

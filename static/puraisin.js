@@ -29,7 +29,7 @@
     }
 
     function formatDM(coords) {
-        return `${toDM(coords.latitude, "N", "S")} ${toDM(coords.longitude, "E", "W")} (±${coords.accuracy})`;
+        return `${toDM(coords.latitude, "N", "S")} ${toDM(coords.longitude, "E", "W")} (±${coords.accuracy.toFixed(0)}m)`;
     }
 
 
@@ -43,8 +43,8 @@
             const foundClass = "fa-location-arrow";
             const errorClass = "fa-exclamation-triangle";
             navigator.geolocation.watchPosition(pos => {
-                const {latitude, longitude, accuracy} = pos.coords;
-                coordsEl.value = JSON.stringify({latitude, longitude, accuracy});
+                const {latitude, longitude, accuracy, altitude, altitudeAccuracy} = pos.coords;
+                coordsEl.value = JSON.stringify({latitude, longitude, accuracy, altitude, altitudeAccuracy});
                 accInd.title = formatDM(pos.coords);
                 accInd.classList.remove(searchClass, indClass);
                 if (accuracy <= 10) {
