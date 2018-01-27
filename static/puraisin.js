@@ -35,6 +35,8 @@
 
     if (document.getElementById("puraisu-form")) {
 
+        document.getElementById("tz").value = moment.tz.guess();
+
         if (navigator && navigator.geolocation) {
             const coordsEl = document.getElementById("coordinates");
             const accInd = document.getElementById("accuracy");
