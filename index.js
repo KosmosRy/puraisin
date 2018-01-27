@@ -10,6 +10,7 @@ const express = require("express");
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const path = require("path");
+const csurf = require("csurf");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
@@ -48,6 +49,7 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(require("cookie-parser")());
 app.use(session(sess));
+app.use(csurf({}));
 app.use((req, res, next) => {
     res.locals.title = "Pikapuraisin";
     res.locals.loggedIn = false;
@@ -162,6 +164,7 @@ app.get('/', async (req, res) => {
             delete req.session.content;
             page = "tattis";
         } else {
+            context.csrfToken = req.csrfToken();
             page = "index";
         }
 
@@ -221,8 +224,11 @@ app.post('/submit-data', async (req, res) => {
         return;
     }
 
-    /* nää pitäis validoida ennen kantaan tallennusta */
-    /* muistetaan lisätä myös CSRF-suojaus */
+    /*
+    päästetään läpi ilman sanitointia, slack ja express sanitoivat syötteet automaattisesti
+    ja sql-injektiot vältetään prepared statementeilla. Pitää muistaa sitten itse sanitoida
+    arvot tarpeen mukaan
+    */
     const {type, content, location, info, postfestum} = req.body;
     const isPf = !!postfestum;
     const source = "ppapp";
