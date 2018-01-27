@@ -268,7 +268,7 @@ app.post('/submit-data', async (req, res) => {
         await pool.query(
             `INSERT INTO puraisu (type, content, location, source, biter, info, coordinates, postfestum) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-            [type, content, location, source, biter, info, coordinates, isPf]);
+            [type, content, location, source, req.session.userId, info, coordinates, isPf]);
         req.session.tattis = true;
         req.session.type = type;
         req.session.content = content;

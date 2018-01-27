@@ -1,12 +1,13 @@
 CREATE TABLE puraisu (
-  type        CHARACTER VARYING(64)                  NOT NULL,
-  content     TEXT                                   NOT NULL,
-  location    TEXT                                   NOT NULL,
+  type        CHARACTER VARYING(64)                           NOT NULL,
+  content     TEXT                                            NOT NULL,
+  location    TEXT                                            NOT NULL,
   info        TEXT,
-  source      CHARACTER VARYING(32)                  NOT NULL,
-  biter       CHARACTER VARYING(32)                  NOT NULL,
-  "timestamp" TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-  postfestum  BOOLEAN                                NOT NULL,
+  source      CHARACTER VARYING(32)                           NOT NULL,
+  biter       CHARACTER VARYING(32)                           NOT NULL,
+  "timestamp" TIMESTAMP WITH TIME ZONE DEFAULT now()          NOT NULL,
+  timezone    CHARACTER VARYING(24) DEFAULT 'Europe/Helsinki' NOT NULL,
+  postfestum  BOOLEAN                                         NOT NULL,
   coordinates JSON
 );
 
