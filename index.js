@@ -1,11 +1,9 @@
-require("isomorphic-fetch");
 require("dotenv").config();
 require("log-timestamp");
-const {Pool} = require('pg');
 const bodyParser = require("body-parser");
 const uid = require("uid-safe");
 const jwt = require("jsonwebtoken");
-const {fetchJson, getRequest, postMessage} = require("./libs/utils");
+const {fetchJson, getRequest, postMessage, puraisuDB} = require("kosmos-utils");
 const express = require("express");
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
@@ -14,7 +12,7 @@ const csurf = require("csurf");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
-const pool = new Pool({connectionString: process.env.DATABASE_URL});
+const db = puraisuDB(process.env.DATABASE_URL, "ppapp");
 
 const scopes = "users.profile:read,chat:write:user,channels:read";
 const clientId = process.env.AUTH_CLIENT_ID;
@@ -30,7 +28,7 @@ app.set('port', (process.env.PORT || 5000));
 
 const sess = {
     store: new pgSession({
-        pool
+        pool: db.pool
     }),
     secret: clientSecret,
     resave: false,
@@ -231,8 +229,6 @@ app.post('/submit-data', async (req, res) => {
     */
     const {type, content, location, info, postfestum} = req.body;
     const isPf = !!postfestum;
-    const source = "ppapp";
-    const biter = sessionInfo.name;
     let coordinates = !isPf ? req.body.coordinates : null;
     let coordLoc = "";
 
@@ -265,10 +261,7 @@ app.post('/submit-data', async (req, res) => {
 
     // fire up query!
     try {
-        await pool.query(
-            `INSERT INTO puraisu (type, content, location, source, biter, info, coordinates, postfestum) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-            [type, content, location, source, req.session.userId, info, coordinates, isPf]);
+        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates);
         req.session.tattis = true;
         req.session.type = type;
         req.session.content = content;
