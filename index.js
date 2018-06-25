@@ -261,6 +261,7 @@ app.post('/submit-data', async (req, res) => {
         postMessage({
             channel: channelId,
             text: `\u{200B}${slackMsg}`,
+            unfurl_links: false,
             as_user: true
         }, req.session.token).catch(err => console.error(err));
     } else {
