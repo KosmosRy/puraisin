@@ -209,6 +209,10 @@ app.listen(app.get('port'), function () {
     console.log('Node app is running on port: ', app.get('port'));
 });
 
+app.get("/map.html", (req, res) => {
+    res.sendFile(__dirname + "/map.html");
+});
+
 app.post('/submit-data', async (req, res) => {
     if (!isLoggedIn(req)) {
         fail(req, "Elä kuule yritä ilman sessiota", 401);
