@@ -22,7 +22,9 @@
     "moment-timezone": "^0.5.14",
     "uid-safe": "^2.1.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "pg": "^7.4.3"
+  },
   "repository": {
     "type": "github",
     "url": "https://github.com/KosmosRy/puraisin"

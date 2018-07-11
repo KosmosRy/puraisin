@@ -14,6 +14,7 @@ const moment = require("moment-timezone");
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
 const db = puraisuDB(process.env.DATABASE_URL, "ppapp");
+const {processBite, processBinge} = require("./lib");
 
 const scopes = "users.profile:read,chat:write:user,channels:read";
 const clientId = process.env.AUTH_CLIENT_ID;
@@ -80,27 +81,52 @@ const decodeJwt = jwtToken => {
     }
 };
 
-const createSessionInfo = async token => {
+const getBites = async (userId, since) => {
+    const rs = await db.pool.query(
+        "SELECT timestamp AS ts, 1 AS portion FROM puraisu " +
+        "WHERE biter = $1 AND postfestum = false " +
+        "AND ($2::timestamp IS NULL OR timestamp > $2) " +
+        "ORDER BY timestamp", [userId, since ? moment(since).format() : null]
+    );
+    return rs.rows.map(({ts, portion}) => ({ts: moment(ts), portion}));
+};
+
+const createSessionInfo = async (token, userId) => {
+    let profile;
     if (mode === "DEV") {
         console.log("Dev-mode, ei käydä oikeasti slackissa");
-        return {
-            name: "Pekka Puraisija",
-            nickName: process.env.DEV_PURAISIJA || "pp",
-            picture: "https://emoji.slack-edge.com/T02MLKTA0/trollface/8c0ac4ae98.png"
+        profile = {
+            real_name: "Pekka Puraisija",
+            display_name: process.env.DEV_PURAISIJA || "pp",
+            image_48: "https://emoji.slack-edge.com/T02MLKTA0/trollface/8c0ac4ae98.png"
         };
-    }
-    const profileResponse = await fetchJson(getRequest("users.profile.get", token));
-    if (!profileResponse.ok) {
-        console.error(profileResponse);
-        throw new Error("profileResponse not OK");
+    } else {
+        const profileResponse = await fetchJson(getRequest("users.profile.get", token));
+        if (!profileResponse.ok) {
+            console.error(profileResponse);
+            throw new Error("profileResponse not OK");
+        }
+        profile = profileResponse.profile;
     }
 
-    const {real_name, display_name, image_48} = profileResponse.profile;
+    const bites = await getBites(userId);
+    const lastBite = processBinge(85.5, bites);
+
+    const {real_name, display_name, image_48} = profile;
     return {
         name: real_name,
         nickname: display_name,
-        picture: image_48
+        picture: image_48,
+        lastBite
     };
+};
+
+const savePuraisuSession = (res, sessionInfo) => {
+    delete sessionInfo.nbf;
+    res.cookie("puraisusession", jwt.sign(sessionInfo, clientSecret, { notBefore: 0 }), {
+        httpOnly: true,
+        secure
+    });
 };
 
 const render = (res, page, params) =>
@@ -130,10 +156,15 @@ app.get('/', async (req, res) => {
         let sessionInfo;
         if (req.cookies.puraisusession) {
             sessionInfo = decodeJwt(req.cookies.puraisusession);
+            const bites = await getBites(req.session.userId, sessionInfo.lastBite.lastBite);
+            if (bites && bites.length) {
+                sessionInfo.lastBite = processBinge(85.5, bites, sessionInfo.lastBite);
+                savePuraisuSession(res, sessionInfo);
+            }
         } else {
             console.log("Uusi sessio, haetaan infot Slackista");
             try {
-                sessionInfo = await createSessionInfo(req.session.token);
+                sessionInfo = await createSessionInfo(req.session.token, req.session.userId);
             } catch (err) {
                 console.error("Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token");
                 console.error("Ohjataan sisäänkirjautumissivulle");
@@ -142,17 +173,21 @@ app.get('/', async (req, res) => {
                     fail(res, "Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token", 401));
                 return;
             }
-            res.cookie("puraisusession", jwt.sign(sessionInfo, clientSecret, { notBefore: 0 }), {
-                httpOnly: true,
-                secure
-            });
+            savePuraisuSession(res, sessionInfo);
         }
+
+        console.log(sessionInfo.lastBite);
+        const currentLevel = processBite(85.5, sessionInfo.lastBite, {ts: moment(), portion: 0});
+        console.log(currentLevel);
 
         let page;
         const context = {
             realName: sessionInfo.name,
             avatar: sessionInfo.picture,
-            loggedIn: true
+            loggedIn: true,
+            currentPct: currentLevel.currentPct.toFixed(2),
+            timeTillSober: `${Math.floor(currentLevel.timeTillSober / 3600)} tunnin ${Math.floor((currentLevel.timeTillSober % 3600) / 60)} minuutin`,
+            lastBite: moment(currentLevel.lastBite).format("LLLL")
         };
 
         if (req.session.tattis) {
