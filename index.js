@@ -9,7 +9,9 @@ const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const path = require("path");
 const csurf = require("csurf");
-const moment = require("moment-timezone");
+const moment = require("moment");
+
+moment.locale("fi");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
@@ -110,14 +112,14 @@ const createSessionInfo = async (token, userId) => {
     }
 
     const bites = await getBites(userId);
-    const lastBite = processBinge(85.5, bites);
+    const prevBite = processBinge(85.5, bites);
 
     const {real_name, display_name, image_48} = profile;
     return {
         name: real_name,
         nickname: display_name,
         picture: image_48,
-        lastBite
+        prevBite
     };
 };
 
@@ -156,9 +158,9 @@ app.get('/', async (req, res) => {
         let sessionInfo;
         if (req.cookies.puraisusession) {
             sessionInfo = decodeJwt(req.cookies.puraisusession);
-            const bites = await getBites(req.session.userId, sessionInfo.lastBite.lastBite);
+            const bites = await getBites(req.session.userId, sessionInfo.prevBite.lastBite);
             if (bites && bites.length) {
-                sessionInfo.lastBite = processBinge(85.5, bites, sessionInfo.lastBite);
+                sessionInfo.prevBite = processBinge(85.5, bites, sessionInfo.prevBite);
                 savePuraisuSession(res, sessionInfo);
             }
         } else {
@@ -176,18 +178,18 @@ app.get('/', async (req, res) => {
             savePuraisuSession(res, sessionInfo);
         }
 
-        console.log(sessionInfo.lastBite);
-        const currentLevel = processBite(85.5, sessionInfo.lastBite, {ts: moment(), portion: 0});
-        console.log(currentLevel);
+        const prevBite = sessionInfo.prevBite;
+        const currentBite = processBite(85.5, prevBite, {ts: moment(), portion: 0});
+        console.log(currentBite);
 
         let page;
         const context = {
             realName: sessionInfo.name,
             avatar: sessionInfo.picture,
             loggedIn: true,
-            currentPct: currentLevel.currentPct.toFixed(2),
-            timeTillSober: `${Math.floor(currentLevel.timeTillSober / 3600)} tunnin ${Math.floor((currentLevel.timeTillSober % 3600) / 60)} minuutin`,
-            lastBite: moment(currentLevel.lastBite).format("LLLL")
+            currentPct: currentBite.currentPct.toFixed(2),
+            timeTillSober: `${Math.floor(currentBite.timeTillSober / 3600)} h ${Math.floor((currentBite.timeTillSober % 3600) / 60)} min`,
+            lastBite: currentBite.lastBite ? moment(currentBite.lastBite).format("dddd, D.M.Y [klo.] H:mm Z") : null
         };
 
         if (req.session.tattis) {
@@ -201,6 +203,8 @@ app.get('/', async (req, res) => {
             context.csrfToken = req.csrfToken();
             page = "index";
         }
+
+        console.log(context);
 
         render(res, page, context);
     }
@@ -254,29 +258,16 @@ app.post('/submit-data', async (req, res) => {
         return;
     }
 
-    let sessionInfo;
-    if (req.cookies.puraisusession) {
-        sessionInfo = decodeJwt(req.cookies.puraisusession);
-    } else {
-        fail(res, "Session data puuttuu", 401);
-        return;
-    }
-
     /*
     päästetään läpi ilman sanitointia, slack ja express sanitoivat syötteet automaattisesti
     ja sql-injektiot vältetään prepared statementeilla. Pitää muistaa sitten itse sanitoida
     arvot tarpeen mukaan
     */
-    const {type, content, location, info, postfestum} = req.body;
+    const {content, location, info, postfestum, pftime} = req.body;
+    const type = "p";
     const isPf = !!postfestum;
     let coordinates = !isPf ? req.body.coordinates : null;
     let coordLoc = "";
-
-    let tz;
-    try {
-        moment.tz(req.body.tz);
-        tz = req.body.tz;
-    } catch (e) {}
 
     if (coordinates) {
         try {
@@ -309,7 +300,7 @@ app.post('/submit-data', async (req, res) => {
 
     // fire up query!
     try {
-        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates, tz);
+        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates);
         req.session.tattis = true;
         req.session.type = type;
         req.session.content = content;

@@ -2,14 +2,15 @@
     <div class="col-8 title">
         <h3>Pikapuraisin</h3>
         <h4><%= realName %>, vanha Homo Sapiens! </h4>
-        <h4>
-        <% if (currentPct > 0) { %>
-            Ränni on päällä. Promillemääräsi on <%= currentPct %> ‰.
-            Selvänä olet taas <%= timeTillSober %> päästä.
-        <% } else { %>
-            Ränni on katki. Puraisit viimeksi <%= lastBite %>.
-        <% } %>
-        </h4>
+        <ul>
+            <% if (lastBite) {%>
+                <li><b>Viime puraisu:</b> <%= lastBite %></li>
+            <% } %>
+            <% if (currentPct > 0) { %>
+                <li><b>Promillemäärä:</b> <%= currentPct %> ‰</li>
+                <li><b>Selviämisarvio:</b> <%= timeTillSober %></li>
+            <% } %>
+        </ul>
     </div>
     <div class="col-4 user-info">
         <img src="<%= avatar %>" title="<%= realName %>"/><br/>

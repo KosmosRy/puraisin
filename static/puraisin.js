@@ -35,7 +35,7 @@
 
     if (document.getElementById("puraisu-form")) {
 
-        document.getElementById("tz").value = moment.tz.guess();
+        //document.getElementById("tz").value = moment.tz.guess();
 
         if (navigator && navigator.geolocation) {
             const coordsEl = document.getElementById("coordinates");
@@ -73,24 +73,15 @@
             })
         }
 
-        const typeInputs = Array.from(document.getElementsByClassName("type-input"));
-        const customTypeInput = document.getElementById("customtype-input");
-        const typeChanged = function (event) {
-            if (event.target.id === "customtype") {
-                customTypeInput.name = "type";
-                customTypeInput.style.display = "inline";
-                customTypeInput.required = true;
-                typeInputs.forEach(i => i.name = "");
+        const postfestumInput = document.getElementById("postfestum");
+        const postfestumHours = document.getElementById("postfestum-hours");
+        postfestumInput.addEventListener("change", function (event) {
+            if (event.target.checked) {
+                postfestumHours.style.display = "flex";
             } else {
-                typeInputs.forEach(i => i.name = "type");
-                customTypeInput.name = "";
-                customTypeInput.value = "";
-                customTypeInput.style.display = "none";
-                customTypeInput.required = false;
-                event.target.checked = true;
+                postfestumHours.style.display = "none";
             }
-        };
-        typeInputs.forEach(e => e.addEventListener("click", typeChanged));
+        });
 
         const locationInputs = Array.from(document.getElementsByClassName("location-input"));
         const customLocationInput = document.getElementById("customlocation-input");

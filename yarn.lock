@@ -298,9 +298,9 @@ jws@^3.1.4:
     jwa "^1.1.4"
     safe-buffer "^5.0.1"
 
-"kosmos-utils@github:KosmosRy/kosmos-utils#v1.0.3":
+"kosmos-utils@github:KosmosRy/kosmos-utils#v1.0.4":
   version "1.0.3"
-  resolved "https://codeload.github.com/KosmosRy/kosmos-utils/tar.gz/006f84a0d98abbc68705a2db1152796c01a1c2c8"
+  resolved "https://codeload.github.com/KosmosRy/kosmos-utils/tar.gz/1579240b39a9c70bba1f97c4a90e76f47d9e429e"
   dependencies:
     isomorphic-fetch "^2.2.1"
     pg "^7.4.1"
