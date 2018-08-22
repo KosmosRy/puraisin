@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,300,600,400italic');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-weight: 100;
+  font-size: 16px;
+  color: #777;
+  background: #F9F9F9;
+}
+
+.col-xs-auto:first-child {
+  padding: 0 15px;
+}
+
+#postfestum-hours {
+  width: 175px;
+}
+
+#customlocation-input {
+  margin-bottom: 0.5em;
+}
+
+.login, .fail {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.login .disclaimer {
+  font-size: small;
+  margin-bottom: 25px;
+}
+
+a.btn {
+  cursor: default;
+}
+
+.main-content {
+  background: #F9F9F9;
+}
+
+.title h3 {
+  font-size: 32px;
+  font-weight: 300;
+  margin-bottom: 10px;
+}
+
+.title h4 {
+  margin: 5px 0 15px;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.title ul {
+  list-style-type: none;
+}
+
+.user-info {
+  text-align: right;
+  line-height: 20px;
+  font-size: 14px;
+}
+
+.user-info .btn {
+  margin-top: 5px;
+}
+
+.copyright {
+  padding: 15px 0;
+}
+
+#accuracy {
+  margin-left: 5px;
+}
+
+.red {
+  color: hsl(9, 100%, 55%);
+}
+
+.orange {
+  color: hsl(28, 100%, 52%);
+}
+
+.yellow {
+  color: hsl(49, 100%, 50%);
+}
+
+.green {
+  color: hsl(89, 100%, 45%);
+}
+
+.red, .yellow, .green {
+  transition: background 0.5s;
+}
+
+.puraisutype {
+  text-transform: capitalize;
+}
