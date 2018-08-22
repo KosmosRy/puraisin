@@ -19,7 +19,16 @@ body {
     background: #F9F9F9;
 }
 
-#customtype-input, #customlocation-input {
+.col-xs-auto:first-child {
+    padding: 0 15px;
+}
+
+#postfestum-hours {
+    display: none;
+    width: 150px;
+}
+
+#customlocation-input {
     display: none;
     margin-bottom: 0.5em;
 }
@@ -52,6 +61,10 @@ a.btn {
     margin: 5px 0 15px;
     font-size: 16px;
     font-weight: 400;
+}
+
+.title ul {
+    list-style-type: none;
 }
 
 .user-info {

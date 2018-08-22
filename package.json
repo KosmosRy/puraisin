@@ -16,7 +16,7 @@
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.1.0",
-    "kosmos-utils": "github:KosmosRy/kosmos-utils#v1.0.3",
+    "kosmos-utils": "github:KosmosRy/kosmos-utils#v1.0.4",
     "log-timestamp": "^0.1.2",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.14",

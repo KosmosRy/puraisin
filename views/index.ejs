@@ -1,55 +1,22 @@
 <form id="puraisu-form" method="post" action="/submit-data">
     <input type="hidden" name="coordinates" id="coordinates"/>
     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-    <input type="hidden" name="tz" id="tz"/>
-    <div class="row">
-        <div class="col-form-legend col">Millanen puraisu?</div>
-    </div>
 
-    <div class="row">
-        <div class="col">
+    <div class="row justify-content-start">
+        <div class="form-group col-xs-auto">
             <div class="form-check form-check-inline">
                 <label class="form-check-label">
-                    <input type="radio" class="form-check-input type-input" name="type" value="ep" checked> Ensi
-                </label>
-            </div>
-
-            <div class="form-check form-check-inline">
-                <label class="form-check-label">
-                    <input type="radio" class="form-check-input type-input" name="type" value="vp"> Väli
-                </label>
-            </div>
-
-            <div class="form-check form-check-inline">
-                <label class="form-check-label">
-                    <input type="radio" class="form-check-input type-input" name="type" value="lp"> Loppu
-                </label>
-            </div>
-
-            <div class="form-check form-check-inline">
-                <label class="form-check-label">
-                    <input type="radio" class="form-check-input type-input" name="type" id="customtype"> Muu
+                    <input type="checkbox" class="form-check-input" id="postfestum" name="postfestum"> Postfestum
                 </label>
             </div>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <input class="form-control" type="text" id="customtype-input" placeholder="Millanen muu?" maxlength="64">
+        <div id="postfestum-hours" class="form-group col-sm-auto input-group input-group-sm">
+            <input class="form-control" type="number" id="pf-time" name="pftime" title="Postfestum-ajankohta" value="1"/>
+            <div class="input-group-addon">tuntia sitten</div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="form-group col">
-            <div class="form-check form-check-inline">
-                <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" name="postfestum"> Postfestum
-                </label>
-            </div>
-        </div>
-    </div>
-
+    
     <!--
     <secretario 12.1.2018>
     Tähän kohtaan näytetään hakumahdollisuus kantaan jos edellä valittu "muu" vaihtoehdoksi.
@@ -57,14 +24,13 @@
     -->
     <div class="row">
         <div class="form-group col">
-            <label for="content">Puraisun kohde</label>
             <input class="form-control" placeholder="Mitäs ajattelit puraista?"
                    type="text" id="content" name="content">
         </div>
     </div>
 
     <div class="row">
-        <div class="col-form-legend col">Missäs puraisee? <i
+        <div class="col-form-legend col">Missä? <i
                     id="accuracy" class="fa fa-compass fa-spin" title="ei paikkatietoja"></i>
         </div>
     </div>
@@ -105,7 +71,6 @@
 
     <div class="row">
         <div class="form-group col">
-            <label for="info">Haluatko lisätä jotain puolustukseksi?</label>
             <textarea class="form-control" placeholder="Lorem ipsum..." id="info" name="info"></textarea>
         </div>
     </div>
