@@ -162,18 +162,7 @@ app.get("/info", async (req, res) => {
 });
 
 app.delete("/logout", (req, res) => {
-    req.session.regenerate(async () => {
-        const loginState = await uid(18);
-        req.session.loginState = loginState;
-        res.json({
-            loginInfo: {
-                scopes,
-                clientId,
-                state: loginState,
-                redirectUri: encodeURIComponent(redirectUrl)
-            }
-        });
-    });
+    req.session.regenerate(() => res.sendStatus(204));
 });
 
 app.get("/auth/redirect", async (req, res) => {

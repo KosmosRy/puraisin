@@ -78,7 +78,7 @@ const logout = async ():Promise<AppInfo> => {
         headers: new Headers({
             "CSRF-Token": csrfToken
         })
-    }).then(res => handleAppInfo(res));
+    });
 };
 
 export {

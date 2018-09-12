@@ -101,6 +101,7 @@ class App extends Component<Props, State> {
     info() {
         getInfo()
             .then((appInfo:AppInfo) => {
+                console.log(appInfo);
                 this.setState({appInfo});
             })
             .catch(reason => {
@@ -136,10 +137,8 @@ class App extends Component<Props, State> {
     }
 
     logout = async () => {
-        const resp = await logout();
-        this.setState({
-            appInfo: (resp:AppInfo)
-        });
+        await logout();
+        this.info();
     };
 
     render() {
