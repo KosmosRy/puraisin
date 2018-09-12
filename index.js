@@ -126,10 +126,6 @@ const sendSessionInfo = (req, res) => {
     });
 };
 
-app.get('/', async (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend/build/index.html"));
-});
-
 app.get("/info", async (req, res) => {
     if (!isLoggedIn(req)) {
         const loginState = await uid(18);

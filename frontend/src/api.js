@@ -55,7 +55,7 @@ const handleAppInfo = async (res:Response):Promise<AppInfo> => {
 };
 
 const getInfo = async ():Promise<AppInfo> => {
-    return await fetch("/info", {cache: "no-store"}).then(res => handleAppInfo(res));
+    return await fetch("/info", {cache: "no-store", credentials: "same-origin"}).then(res => handleAppInfo(res));
 };
 
 const formatDate = (date:Date, pattern:string) => format(date, pattern, {locale: fiLocale});
@@ -66,7 +66,8 @@ const submitBite = async (data:Bite):Promise<AppInfo> => {
             "CSRF-Token": csrfToken,
             "Content-Type": "application/json"
         }),
-        cache: "no-store", 
+        cache: "no-store",
+        credentials: "same-origin",
         method: "POST",
         body: JSON.stringify(data)
     }).then(res => handleAppInfo(res));
@@ -75,6 +76,7 @@ const submitBite = async (data:Bite):Promise<AppInfo> => {
 const logout = async ():Promise<AppInfo> => {
     return await fetch(new Request("/logout"), {
         method: "DELETE",
+        credentials: "same-origin",
         headers: new Headers({
             "CSRF-Token": csrfToken
         })
