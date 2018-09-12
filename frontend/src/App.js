@@ -7,11 +7,20 @@ import BiteForm from "./components/BiteForm";
 import "./App.css";
 import differenceInSeconds from "date-fns/difference_in_seconds";
 import {Alert} from "react-bootstrap";
+import { CSSTransitionGroup } from "react-transition-group";
 
 type Props = {};
 type State = {
     appInfo: ?AppInfo,
-    biteDone: boolean
+    biteDone: boolean,
+    lastContent?: string
+}
+type FpProps = {
+    info:Info,
+    logout:Function,
+    submitBite:Function,
+    biteDone:boolean,
+    lastContent:string
 }
 
 const calcCurrentPermillage = (permillage:number, burnFactor:number, lastBite?:Date):number => {
@@ -21,7 +30,7 @@ const calcCurrentPermillage = (permillage:number, burnFactor:number, lastBite?:D
     return 0;
 };
 
-const FrontPage = (props:{info:Info, logout: Function, submitBite:Function, biteDone:boolean}) => {
+const FrontPage = (props:FpProps) => {
     const {realName, permillage, lastBite, burnFactor, avatar} = props.info;
     const currentPermillage = (permillage && burnFactor) ? calcCurrentPermillage(permillage, burnFactor, lastBite) : 0;
     const timeTillSober = burnFactor ? currentPermillage / burnFactor : 0;
@@ -34,11 +43,16 @@ const FrontPage = (props:{info:Info, logout: Function, submitBite:Function, bite
                      logout={props.logout}
             />
 
-            {props.biteDone && (
-                <Alert bsStyle="success">
-                    <p>Jei, hyvin juotu!</p>
-                </Alert>
-            )}
+            <CSSTransitionGroup transitionName="bitesuccess"
+                                transitionEnterTimeout={1}
+                                transitionLeaveTimeout={1000}>
+                {props.biteDone && (
+                    <Alert bsStyle="success">
+                        <div>Toppen! Raportoit puraisun "{props.lastContent}", jonka juotuasi olet noin {currentPermillage.toFixed(2)}{" "}
+                            promillen humalassa.<br/>{currentPermillage > 0.5 && <strong>Muista jättää ajaminen muille!</strong>}</div>
+                    </Alert>
+                )}
+            </CSSTransitionGroup>
 
             <BiteForm submitBite={props.submitBite}/>
 
@@ -99,7 +113,8 @@ class App extends Component<Props, State> {
             .then((appInfo:AppInfo) => {
                 this.setState({
                     appInfo,
-                    biteDone: true
+                    biteDone: true,
+                    lastContent: data.content
                 }, () => {
                     setTimeout(() => this.setState({biteDone: false}), 5000);
                 });
@@ -131,7 +146,7 @@ class App extends Component<Props, State> {
         let page;
         if (this.state.appInfo) {
             if (this.state.appInfo.info) {
-                page = <FrontPage info={this.state.appInfo.info} logout={this.logout}
+                page = <FrontPage info={this.state.appInfo.info} logout={this.logout} lastContent={this.state.lastContent || ""}
                                   submitBite={this.submitBite} biteDone={this.state.biteDone}/>;
             } else if (this.state.appInfo.loginInfo) {
                 page = <LoginPage loginInfo={this.state.appInfo.loginInfo}/>;
