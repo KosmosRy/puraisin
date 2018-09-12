@@ -7,7 +7,7 @@ import type {Coords, Bite} from "../api";
 
 type PfProps = {
     postfestum: boolean,
-    pftime: number,
+    pftime: number | null,
     handleChange: Function
 }
 class PostFestum extends React.Component<PfProps> {
@@ -172,18 +172,19 @@ class Location extends React.Component<LocationProps> {
 
 class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     watchId: number | null;
+    initState = {
+        postfestum: false,
+        location: "koti",
+        coordinates: {},
+        pftime: null,
+        content: "",
+        customlocation: "",
+        info: ""
+    };
     
     constructor(props:{submitBite:Function}) {
         super(props);
-        this.state = {
-            postfestum: false,
-            location: "koti",
-            coordinates: {},
-            content: "",
-            pftime: 1,
-            customlocation: "",
-            info: ""
-        };
+        this.state = this.initState;
     }
 
     componentDidMount () {
@@ -226,6 +227,7 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     handleSubmit = (event: SyntheticEvent<HTMLInputElement>) => {
         console.log(this.state);
         this.props.submitBite(this.state);
+        this.setState(this.initState);
         event.preventDefault();
     };
 

@@ -110,3 +110,12 @@ a.btn {
 .puraisutype {
     text-transform: capitalize;
 }
+
+.bitesuccess-leave {
+    opacity: 1;
+}
+
+.bitesuccess-leave.bitesuccess-leave-active {
+    opacity: 0.01;
+    transition: opacity 1000ms ease-in;
+}
