@@ -1,6 +1,9 @@
 const lib = require("./lib");
-const moment = require("moment");
 const {Client} = require("pg");
+const differenceInHours = require("date-fns/difference_in_hours");
+const differenceInMinutes = require("date-fns/difference_in_minutes");
+const addSeconds = require("date-fns/add_seconds");
+const format = require("date-fns/format");
 
 const dbTest = async () => {
     const client = new Client({
@@ -14,15 +17,15 @@ const dbTest = async () => {
     try {
         client.connect();
         const puraisut = await client.query("SELECT timestamp FROM puraisu WHERE biter = $1 ORDER BY timestamp", ["U02MLKTA2"]);
-        const times = puraisut.rows.map(r => moment(r.timestamp));
+        const times = puraisut.rows.map(r => r.timestamp);
 
         let lastBite = null;
         for (let ts of times) {
-            console.log(`Ajanhetkellä ${ts.format()} join alkoholia 1 annoksen verran`);
+            console.log(`Ajanhetkellä ${ts} join alkoholia 1 annoksen verran`);
             lastBite = lib.processBite(85.5, lastBite, {ts, portion: 1});
             console.log(`Alkoholiprosenttini on ${lastBite.currentPct.toFixed(3)}`);
-            const dur = moment.duration(lastBite.timeTillSober, "hours");
-            console.log(`Selvänä olen seuraavan kerran ${dur.hours()} tunnin ${dur.minutes() % 60} minuutin kuluttua (klo. ${moment(ts).add(dur).format("HH:mm")})`);
+            const soberAt = addSeconds(lastBite.lastBite, lastBite.timeTillSober);
+            console.log(`Selvänä olen seuraavan kerran ${differenceInHours(soberAt, ts)} tunnin ${differenceInMinutes(soberAt, ts) % 60} minuutin kuluttua (klo. ${format(soberAt, "HH:mm")})`);
             console.log("\n");
         }
 

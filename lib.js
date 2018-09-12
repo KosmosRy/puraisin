@@ -1,4 +1,4 @@
-const moment = require("moment");
+const differenceInSeconds = require("date-fns/difference_in_seconds");
 
 const bodyWater = 0.806;
 const bodyWaterConstantMale = 0.58;
@@ -17,10 +17,10 @@ const defaultBite = () => ({
 
 const processBite = (weight, prevBite, bite) => {
     const b = (bodyWater * permillageConvertion * swedishMultiplier) / (bodyWaterConstantMale * weight);
-    let { currentPct, timeTillSober, lastBite } = prevBite ? prevBite : defaultBite();
+    let { currentPct, timeTillSober, lastBite } = prevBite || defaultBite();
     const { ts, portion } = bite;
     if (lastBite) {
-        currentPct = Math.max(currentPct - a * moment(ts).diff(lastBite, "seconds"), 0);
+        currentPct = Math.max(currentPct - a * differenceInSeconds(ts, lastBite), 0);
     }
     currentPct += b * portion;
     timeTillSober = currentPct / a;
@@ -36,5 +36,7 @@ exports.processBinge = (weight, bites, prevBite) => {
     if (!bites || !bites.length) {
         return defaultBite();
     }
-    return bites.reduce((prev, curr) => processBite(weight, prev, curr), prevBite ? prevBite : defaultBite());
+    return bites.reduce((prev, curr) => processBite(weight, prev, curr), prevBite || defaultBite());
 };
+
+exports.burnFactor = a;

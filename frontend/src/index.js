@@ -4,10 +4,10 @@ import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
-import moment from "moment";
-import "moment/locale/fi";
+import { library } from "@fortawesome/fontawesome-svg-core"
+import { faStroopwafel } from "@fortawesome/free-solid-svg-icons"
 
-moment.locale("fi");
+library.add(faStroopwafel);
 
 ReactDOM.render(<App />, document.getElementById("root"));
 registerServiceWorker();
