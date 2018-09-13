@@ -1,18 +1,19 @@
+/* global Request:false */
 require("dotenv").config();
 require("log-timestamp");
 const bodyParser = require("body-parser");
 const uid = require("uid-safe");
-const jwt = require("jsonwebtoken");
-const {fetchJson, getRequest, postMessage, puraisuDB} = require("kosmos-utils");
+const {fetchJson, getRequest, postMessage} = require("kosmos-utils");
 const express = require("express");
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const path = require("path");
+const addHours = require("date-fns/add_hours");
 const csurf = require("csurf");
-const moment = require("moment-timezone");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
+const {processBinge, processBite, burnFactor, puraisuDB} = require("./lib");
 const db = puraisuDB(process.env.DATABASE_URL, "ppapp");
 
 const scopes = "users.profile:read,chat:write:user,channels:read";
@@ -44,8 +45,8 @@ if (secure) {
     app.set("trust proxy", 1);
 }
 
-app.use(express.static(path.join(__dirname, 'static')));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, "frontend/build")));
+app.use(bodyParser.json());
 app.use(require("cookie-parser")());
 app.use(session(sess));
 app.use(csurf({}));
@@ -66,36 +67,29 @@ const isLoggedIn = req => {
             });
         }
         return true;
-    } else {
-        return req.session.loggedIn;
     }
+    return req.session.loggedIn;
 };
 
-const decodeJwt = jwtToken => {
-    try {
-        return jwt.verify(jwtToken, clientSecret);
-    } catch (err) {
-        console.error(err);
-        return null;
-    }
-};
-
-const createSessionInfo = async token => {
+const createSessionInfo = async (token) => {
+    let profile;
     if (mode === "DEV") {
         console.log("Dev-mode, ei käydä oikeasti slackissa");
-        return {
-            name: "Pekka Puraisija",
-            nickName: process.env.DEV_PURAISIJA || "pp",
-            picture: "https://emoji.slack-edge.com/T02MLKTA0/trollface/8c0ac4ae98.png"
+        profile = {
+            real_name: "Pekka Puraisija",
+            display_name: process.env.DEV_PURAISIJA || "pp",
+            image_48: "https://emoji.slack-edge.com/T02MLKTA0/trollface/8c0ac4ae98.png"
         };
-    }
-    const profileResponse = await fetchJson(getRequest("users.profile.get", token));
-    if (!profileResponse.ok) {
-        console.error(profileResponse);
-        throw new Error("profileResponse not OK");
+    } else {
+        const profileResponse = await fetchJson(getRequest("users.profile.get", token));
+        if (!profileResponse.ok) {
+            console.error(profileResponse);
+            throw new Error("profileResponse not OK");
+        }
+        profile = profileResponse.profile;
     }
 
-    const {real_name, display_name, image_48} = profileResponse.profile;
+    const {real_name, display_name, image_48} = profile;
     return {
         name: real_name,
         nickname: display_name,
@@ -103,37 +97,42 @@ const createSessionInfo = async token => {
     };
 };
 
-const render = (res, page, params) =>
-    res.render("template.ejs", Object.assign({}, params, {page}));
-
 const fail = (res, reason, status = 500)  => {
-    res.render("template.ejs", {
-        page: "fail",
-        reason: reason || "Hupsista, saatana!"
-    }, (err, html) => {
-        res.status(status).send(html);
+    res.status(status).send(reason || "Hupsista, saatana!")
+};
+
+const sendSessionInfo = (req, res) => {
+    const sessionInfo = req.session.sessionInfo;
+    const prevBite = sessionInfo.prevBite;
+    res.json({
+        info: {
+            realName: sessionInfo.name,
+            avatar: sessionInfo.picture,
+            permillage: prevBite.currentPct,
+            lastBite: prevBite.lastBite,
+            burnFactor,
+            csrf: req.csrfToken()
+        }
     });
 };
 
-app.get('/', async (req, res) => {
+app.get("/info", async (req, res) => {
     if (!isLoggedIn(req)) {
         const loginState = await uid(18);
         req.session.loginState = loginState;
-        render(res, "login", {
-            title: "Kirjaudu Puraisimeen!",
-            scopes,
-            clientId,
-            state: loginState,
-            redirectUrl: encodeURIComponent(redirectUrl)
+        res.json({
+            loginInfo: {
+                scopes,
+                clientId,
+                state: loginState,
+                redirectUri: encodeURIComponent(redirectUrl)
+            }
         });
     } else {
-        let sessionInfo;
-        if (req.cookies.puraisusession) {
-            sessionInfo = decodeJwt(req.cookies.puraisusession);
-        } else {
-            console.log("Uusi sessio, haetaan infot Slackista");
+        if (!req.session.sessionInfo) {
+            console.log("No session info in session, create");
             try {
-                sessionInfo = await createSessionInfo(req.session.token);
+                req.session.sessionInfo = await createSessionInfo(req.session.token);
             } catch (err) {
                 console.error("Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token");
                 console.error("Ohjataan sisäänkirjautumissivulle");
@@ -142,37 +141,14 @@ app.get('/', async (req, res) => {
                     fail(res, "Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token", 401));
                 return;
             }
-            res.cookie("puraisusession", jwt.sign(sessionInfo, clientSecret, { notBefore: 0 }), {
-                httpOnly: true,
-                secure
-            });
         }
-
-        let page;
-        const context = {
-            realName: sessionInfo.name,
-            avatar: sessionInfo.picture,
-            loggedIn: true
-        };
-
-        if (req.session.tattis) {
-            context.type = req.session.type;
-            context.content = req.session.content;
-            delete req.session.tattis;
-            delete req.session.type;
-            delete req.session.content;
-            page = "tattis";
-        } else {
-            context.csrfToken = req.csrfToken();
-            page = "index";
-        }
-
-        render(res, page, context);
+        req.session.sessionInfo.prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
+        sendSessionInfo(req, res);
     }
 });
 
-app.get("/logout", (req, res) => {
-    req.session.destroy(() => res.clearCookie("puraisusession").redirect("/"));
+app.delete("/logout", (req, res) => {
+    req.session.regenerate(() => res.sendStatus(204));
 });
 
 app.get("/auth/redirect", async (req, res) => {
@@ -182,7 +158,6 @@ app.get("/auth/redirect", async (req, res) => {
         try {
             const query = `client_id=${clientId}&client_secret=${clientSecret}&code=${req.query.code}&redirect_uri=${redirectUrl}`;
             const authResponse = await fetchJson(new Request(`https://slack.com/api/oauth.access?${query}`));
-            console.log(authResponse);
             if (!authResponse.ok) {
                 fail(res, "authResponse not OK");
             }
@@ -205,7 +180,7 @@ app.get("/auth/redirect", async (req, res) => {
     }
 });
 
-app.listen(app.get('port'), function () {
+app.listen(app.get('port'), () => {
     console.log('Node app is running on port: ', app.get('port'));
 });
 
@@ -215,34 +190,27 @@ app.post('/submit-data', async (req, res) => {
         return;
     }
 
-    let sessionInfo;
-    if (req.cookies.puraisusession) {
-        sessionInfo = decodeJwt(req.cookies.puraisusession);
-    } else {
-        fail(res, "Session data puuttuu", 401);
-        return;
-    }
+    let prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
+    let currentPermillage = processBite(85.5, prevBite, {ts: new Date(), portion: 0}).currentPct;
 
     /*
     päästetään läpi ilman sanitointia, slack ja express sanitoivat syötteet automaattisesti
     ja sql-injektiot vältetään prepared statementeilla. Pitää muistaa sitten itse sanitoida
     arvot tarpeen mukaan
     */
-    const {type, content, location, info, postfestum} = req.body;
+    const {content, info, postfestum} = req.body;
+    const type = currentPermillage > 0 ? "p" : "ep";
     const isPf = !!postfestum;
+    const pftime = isPf ? parseFloat(req.body.pftime) : 0;
+    const ts = addHours(new Date(), -pftime);
+    const location = req.body.location === "else" ? req.body.customlocation : req.body.location;
+    const portion = parseFloat(req.body.portion);
     let coordinates = !isPf ? req.body.coordinates : null;
     let coordLoc = "";
 
-    let tz;
-    try {
-        moment.tz(req.body.tz);
-        tz = req.body.tz;
-    } catch (e) {}
-
     if (coordinates) {
         try {
-            const coordJson = JSON.parse(coordinates);
-            const {latitude, longitude, accuracy} = coordJson;             
+            const {latitude, longitude, accuracy} = coordinates;
             if (latitude && longitude && accuracy) {
                 const gmapUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
                 coordLoc = ` (<${gmapUrl}|${latitude.toFixed(4)},${longitude.toFixed(4)}> ±${accuracy.toFixed(0)}m)`;
@@ -256,7 +224,20 @@ app.post('/submit-data', async (req, res) => {
         coordinates = null;
     }
 
-    const slackMsg = `${type}${isPf ? "-postfestum" : ""};${content};${location}${coordLoc}${info ? ";" + info : ""}`;
+    // fire up query!
+    try {
+        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates, portion, ts);
+    } catch (err) {
+        console.error(err);
+        fail(res, err);
+        return;
+    }
+
+    prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
+    currentPermillage = prevBite.currentPct;
+
+    const typePostfix = isPf ? `-postfestum (${pftime} h sitten)` : "";
+    const slackMsg = `${type}${typePostfix};${content};${location}${coordLoc};${currentPermillage.toFixed(2).replace(".", ",")}\u00A0‰${info ? ";" + info : ""}`;
     if (mode !== "DEV") {
         postMessage({
             channel: channelId,
@@ -268,16 +249,7 @@ app.post('/submit-data', async (req, res) => {
         console.log(`Dev-mode, oltais lähetetty #puraisut-kanavalle: ${slackMsg}`)
     }
 
-    // fire up query!
-    try {
-        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates, tz);
-        req.session.tattis = true;
-        req.session.type = type;
-        req.session.content = content;
-        res.redirect("/");
-    } catch (err) {
-        console.error(err);
-        fail(res, err);
-    }
+    req.session.sessionInfo.prevBite = prevBite;
+    sendSessionInfo(req, res);
 });
 
