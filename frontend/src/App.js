@@ -1,6 +1,6 @@
 // @flow
 import React, {Component} from "react";
-import {getInfo, submitBite, logout} from "./api";
+import {getInfo, submitBite, logout, listenUpdatedStatus} from "./api";
 import type {Info, LoginInfo, AppInfo, Bite} from "./api";
 import Heading from "./components/Heading";
 import BiteForm from "./components/BiteForm";
@@ -13,7 +13,8 @@ type Props = {};
 type State = {
     appInfo: ?AppInfo,
     biteDone: boolean,
-    lastContent?: string
+    lastContent?: string,
+    appUpdated: boolean
 }
 type FpProps = {
     info:Info,
@@ -91,7 +92,8 @@ class App extends Component<Props, State> {
         super(props);
         this.state = {
             appInfo: null,
-            biteDone: false
+            biteDone: false,
+            appUpdated: false
         };
     }
 
@@ -101,7 +103,6 @@ class App extends Component<Props, State> {
     info() {
         getInfo()
             .then((appInfo:AppInfo) => {
-                console.log(appInfo);
                 this.setState({appInfo});
             })
             .catch(reason => {
@@ -126,6 +127,7 @@ class App extends Component<Props, State> {
     };
 
     componentDidMount () {
+        listenUpdatedStatus((appUpdated:boolean) => this.setState({appUpdated}));
         this.info();
         this.intervalId = setInterval(() => this.info(), 60000);
     }
@@ -153,11 +155,20 @@ class App extends Component<Props, State> {
         } else {
             page = <div/>;
         }
+
         return (
-            <div className="container-fluid main-container">
-                <div className="row justify-content-xs-center">
-                    <div className="main-content offset-lg-3 col-lg-6">
-                        {page}
+            <div>
+                {this.state.appUpdated && (
+                    <Alert bsStyle="warning">
+                        <strong>Puraisin on päivittynyt. <a href="/">Päivity</a> sinäkin!</strong>
+                    </Alert>
+                )}
+                <div className="container-fluid main-container">
+
+                    <div className="row justify-content-xs-center">
+                        <div className="main-content offset-lg-3 col-lg-6">
+                            {page}
+                        </div>
                     </div>
                 </div>
             </div>
