@@ -29,24 +29,29 @@ class Heading extends Component<Props> {
     render() {
         const {realName, lastBite, permillage, timeTillSober, avatar, logout} = this.props;
         return (
-            <div className="row">
-                <div className="col-8 title">
-                    <h3>Pikapuraisin</h3>
-                    <h4>
-                        {realName}, vanha Homo Sapiens! </h4>
-                    <ul>
-                        {lastBite && <li><b>Viime puraisu:</b> {formatLastBite(lastBite)}</li>}
-                        {permillage > 0 && (<section>
-                            <li><b>Promillemäärä:</b> {permillage.toFixed(2)} ‰</li>
-                            <li><b>Selviämisarvio:</b> {formatTimeTillSober(timeTillSober)}</li>
-                        </section>)}
-                    </ul>
+            <section className="heading">
+                <div className="row">
+                    <div className="col-8 title">
+                        <h3>Pikapuraisin</h3>
+                        <h4>{realName}, vanha Homo Sapiens!</h4>
+                    </div>
+                    <div className="col-4 user-info">
+                        <img src={avatar} title={realName} alt={realName}/><br/>
+                        <a className="btn btn-warning btn-sm" onClick={logout}>Kirjaudu ulos</a>
+                    </div>
                 </div>
-                <div className="col-4 user-info">
-                    <img src={avatar} title={realName} alt={realName}/><br/>
-                    <a className="btn btn-warning btn-sm" onClick={logout}>Kirjaudu ulos</a>
+                <div className="row">
+                    <div className="col title">
+                        <ul>
+                            {lastBite && <li><b>Viime puraisu:</b> {formatLastBite(lastBite)}</li>}
+                            {permillage > 0 && (<section>
+                                <li><b>Promillemäärä:</b> {permillage.toFixed(2)}&nbsp;‰</li>
+                                <li><b>Selviämisarvio:</b> {formatTimeTillSober(timeTillSober)}</li>
+                            </section>)}
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            </section>
         )
     }
 }

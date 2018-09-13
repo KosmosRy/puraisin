@@ -49,6 +49,10 @@ a.btn {
     background: #F9F9F9;
 }
 
+section.heading {
+    margin-top: 5px;
+}
+
 .title h3 {
     font-size: 32px;
     font-weight: 300;

@@ -7,7 +7,7 @@ import type {Coords, Bite} from "../api";
 
 type PfProps = {
     postfestum: boolean,
-    pftime: number | null,
+    pftime: string,
     handleChange: Function
 }
 class PostFestum extends React.Component<PfProps> {
@@ -28,6 +28,7 @@ class PostFestum extends React.Component<PfProps> {
                     <div id="postfestum-hours" className="form-group col-sm-auto input-group input-group-sm">
                         <input className="form-control" type="number" id="pf-time" name="pftime" required={true}
                                title="Postfestum-ajankohta" value={this.props.pftime} onChange={this.props.handleChange}
+                               min="0.5" step="0.5"
                         />
                         <div className="input-group-append">
                             <div className="input-group-text">tuntia sitten</div>
@@ -124,7 +125,7 @@ class Location extends React.Component<LocationProps> {
                 </div>
 
                 <div className="row">
-                    <div className="col">
+                    <div className="form-group col">
                         <div className="form-check form-check-inline">
                             <label className="form-check-label">
                                 <input type="radio" className="form-check-input location-input" name="location"
@@ -160,7 +161,7 @@ class Location extends React.Component<LocationProps> {
                         <div className="form-group col">
                             <input className="form-control" type="text" id="customlocation-input"
                                    placeholder="Missäs sitten?" value={this.props.customlocation}
-                                   onChange={handleChange} name="customlocation"
+                                   onChange={handleChange} name="customlocation" required={true}
                             />
                         </div>
                     </div>
@@ -173,10 +174,11 @@ class Location extends React.Component<LocationProps> {
 class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     watchId: number | null;
     initState = {
+        portion: "1",
         postfestum: false,
+        pftime: "",
         location: "koti",
         coordinates: {},
-        pftime: null,
         content: "",
         customlocation: "",
         info: ""
@@ -224,6 +226,10 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
         });
     };
 
+    handleSelect = (event: SyntheticEvent<HTMLSelectElement>) => {
+        this.setState({portion: event.currentTarget.value});
+    };
+
     handleSubmit = (event: SyntheticEvent<HTMLInputElement>) => {
         console.log(this.state);
         this.props.submitBite(this.state);
@@ -232,6 +238,7 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     };
 
     render () {
+        const portionLabel = this.state.portion === "1" ? "annos" : "annosta";
         return (
             <form onSubmit={this.handleSubmit}>
                 <input type="hidden" name="coordinates" id="coordinates" value={JSON.stringify(this.state.coordinates)}/>
@@ -242,6 +249,30 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
                                type="text" id="content" name="content" value={this.state.content}
                                onChange={this.handleChange} required={true}
                         />
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="form-group col-6 col-sm-4">
+                        <label htmlFor="portion-select" className="control-label">Alkoholiannos</label>
+                        <select id="portion-select" name="portion-select" className="form-control" onChange={this.handleSelect}>
+                            <option value="1">Pieni tuoppi keskiolutta tms.</option>
+                            <option value="1.5">Iso tuoppi keskiolutta tms.</option>
+                            <option value="1.3">Pieni tuoppi nelosta tms.</option>
+                            <option value="2">Iso tuoppi nelosta tms.</option>
+                            <option value="1.3">16 senttiä viiniä</option>
+                            <option value="1.9">24 senttiä viiniä</option>
+                            <option value="1">Jälkkäriviini tms.</option>
+                            <option value="1">Shotti viinaa</option>
+                            <option value="1.6">Shotti 60% viinaa</option>
+                        </select>
+                    </div>
+                    <div className="form-group col-4 col-sm-3 input-group input-group-sm align-self-end">
+                        <input className="form-control" type="number" min="0" step="0.1" id="portion"
+                               name="portion" value={this.state.portion} onChange={this.handleChange}/>
+                        <div className="input-group-append">
+                            <div className="input-group-text">{portionLabel}</div>
+                        </div>
                     </div>
                 </div>
 
