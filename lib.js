@@ -1,4 +1,5 @@
 const differenceInSeconds = require("date-fns/difference_in_seconds");
+const {Pool} = require("pg");
 
 const bodyWater = 0.806;
 const bodyWaterConstantMale = 0.58;
@@ -40,3 +41,32 @@ exports.processBinge = (weight, bites, prevBite) => {
 };
 
 exports.burnFactor = a;
+
+const puraisuDB = (connectionString, source) => {
+    const pool = new Pool({connectionString});
+
+    const insertPuraisu = (user, type, content, location, info, pf, coordinates, portion, timestamp = new Date()) => {
+        console.log("Inserting puraisu");
+        return pool.query(
+            `INSERT INTO puraisu (type, content, location, info, source, biter, postfestum, coordinates, timestamp, portion) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+            [type, content, location, info, source, user, pf, coordinates, timestamp, portion]
+        );
+    };
+
+    const getBites = async (userId, since) => {
+        const rs = await pool.query(
+            "SELECT timestamp AS ts, portion FROM puraisu " +
+            "WHERE biter = $1 " +
+            "AND ($2::timestamp IS NULL OR timestamp > $2) " +
+            "ORDER BY timestamp", [userId, since]
+        );
+        return rs.rows;
+    };
+
+    return {
+        pool, insertPuraisu, getBites
+    };
+};
+
+exports.puraisuDB = puraisuDB;

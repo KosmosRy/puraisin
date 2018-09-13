@@ -6,9 +6,9 @@ CREATE TABLE puraisu (
   source      CHARACTER VARYING(32)                           NOT NULL,
   biter       CHARACTER VARYING(32)                           NOT NULL,
   "timestamp" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP(0)          NOT NULL,
-  timezone    CHARACTER VARYING(24) DEFAULT 'Europe/Helsinki' NOT NULL,
   postfestum  BOOLEAN                                         NOT NULL,
-  coordinates JSON
+  coordinates JSON,
+  portion     NUMERIC DEFAULT 1                               NOT NULL
 );
 
 CREATE TABLE "session" (

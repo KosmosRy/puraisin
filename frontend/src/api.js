@@ -35,8 +35,9 @@ export type Coords = {
 export type Bite = {
     coordinates: Coords,
     content: string,
+    portion: string,
     postfestum: boolean,
-    pftime: number | null,
+    pftime: string,
     location: string,
     customlocation: string,
     info: string

@@ -3,7 +3,7 @@ require("dotenv").config();
 require("log-timestamp");
 const bodyParser = require("body-parser");
 const uid = require("uid-safe");
-const {fetchJson, getRequest, postMessage, puraisuDB} = require("kosmos-utils");
+const {fetchJson, getRequest, postMessage} = require("kosmos-utils");
 const express = require("express");
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
@@ -13,8 +13,8 @@ const csurf = require("csurf");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
+const {processBinge, processBite, burnFactor, puraisuDB} = require("./lib");
 const db = puraisuDB(process.env.DATABASE_URL, "ppapp");
-const {processBinge, processBite, burnFactor} = require("./lib");
 
 const scopes = "users.profile:read,chat:write:user,channels:read";
 const clientId = process.env.AUTH_CLIENT_ID;
@@ -69,16 +69,6 @@ const isLoggedIn = req => {
         return true;
     }
     return req.session.loggedIn;
-};
-
-const getBites = async (userId, since) => {
-    const rs = await db.pool.query(
-        "SELECT timestamp AS ts, 1 AS portion FROM puraisu " +
-        "WHERE biter = $1 " +
-        "AND ($2::timestamp IS NULL OR timestamp > $2) " +
-        "ORDER BY timestamp", [userId, since]
-    );
-    return rs.rows;
 };
 
 const createSessionInfo = async (token) => {
@@ -152,7 +142,7 @@ app.get("/info", async (req, res) => {
                 return;
             }
         }
-        req.session.sessionInfo.prevBite = await getBites(req.session.userId).then(b => processBinge(85.5, b));
+        req.session.sessionInfo.prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
         sendSessionInfo(req, res);
     }
 });
@@ -200,7 +190,7 @@ app.post('/submit-data', async (req, res) => {
         return;
     }
 
-    let prevBite = await getBites(req.session.userId).then(b => processBinge(85.5, b));
+    let prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
     let currentPermillage = processBite(85.5, prevBite, {ts: new Date(), portion: 0}).currentPct;
 
     /*
@@ -208,11 +198,13 @@ app.post('/submit-data', async (req, res) => {
     ja sql-injektiot vältetään prepared statementeilla. Pitää muistaa sitten itse sanitoida
     arvot tarpeen mukaan
     */
-    const {content, location, info, postfestum} = req.body;
+    const {content, info, postfestum} = req.body;
     const type = currentPermillage > 0 ? "p" : "ep";
     const isPf = !!postfestum;
     const pftime = isPf ? parseFloat(req.body.pftime) : 0;
     const ts = addHours(new Date(), -pftime);
+    const location = req.body.location === "else" ? req.body.customlocation : req.body.location;
+    const portion = parseFloat(req.body.portion);
     let coordinates = !isPf ? req.body.coordinates : null;
     let coordLoc = "";
 
@@ -234,18 +226,18 @@ app.post('/submit-data', async (req, res) => {
 
     // fire up query!
     try {
-        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates, ts);
+        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates, portion, ts);
     } catch (err) {
         console.error(err);
         fail(res, err);
         return;
     }
 
-    prevBite = await getBites(req.session.userId).then(b => processBinge(85.5, b));
-    currentPermillage = processBite(85.5, prevBite, {ts: new Date(), portion: 0}).currentPct;
+    prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
+    currentPermillage = prevBite.currentPct;
 
     const typePostfix = isPf ? `-postfestum (${pftime} h sitten)` : "";
-    const slackMsg = `${type}${typePostfix};${content};${location}${coordLoc};${currentPermillage.toFixed(2)}‰;${info ? ";" + info : ""}`;
+    const slackMsg = `${type}${typePostfix};${content};${location}${coordLoc};${currentPermillage.toFixed(2).replace(".", ",")}\u00A0‰${info ? ";" + info : ""}`;
     if (mode !== "DEV") {
         postMessage({
             channel: channelId,
