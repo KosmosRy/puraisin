@@ -83,6 +83,15 @@ const logout = async ():Promise<AppInfo> => {
     });
 };
 
+const updatedStatusListeners:Array<Function> = [];
+const listenUpdatedStatus = (listener:Function) => {
+  updatedStatusListeners.push(listener);
+};
+
+const setUpdatedStatus = (updated:boolean) => {
+    updatedStatusListeners.forEach((fn) => fn(updated));
+};
+
 export {
-    getInfo, formatDate, submitBite, logout
+    getInfo, formatDate, submitBite, logout, listenUpdatedStatus, setUpdatedStatus
 };
