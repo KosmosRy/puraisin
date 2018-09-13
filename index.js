@@ -199,12 +199,27 @@ app.post('/submit-data', async (req, res) => {
     arvot tarpeen mukaan
     */
     const {content, info, postfestum} = req.body;
+    let {portion, pftime} = req.body;
     const type = currentPermillage > 0 ? "p" : "ep";
     const isPf = !!postfestum;
-    const pftime = isPf ? parseFloat(req.body.pftime) : 0;
+    pftime = isPf ? (() => {
+        const t = pftime ? parseFloat(pftime.replace(",", ".")) : 0;
+        if (isNaN(t)) {
+            console.error(`Can't parse postfestum time from ${pftime}`);
+            return 0;
+        }
+        return t;
+    })() : 0;
     const ts = addHours(new Date(), -pftime);
     const location = req.body.location === "else" ? req.body.customlocation : req.body.location;
-    const portion = parseFloat(req.body.portion);
+    portion = portion ? (() => {
+        const t = parseFloat(portion.replace(",", "."));
+        if (isNaN(t)) {
+            console.error(`Can't parse portion from ${portion}`);
+            return 1;
+        }
+        return t;
+    })() : 1;
     let coordinates = !isPf ? req.body.coordinates : null;
     let coordLoc = "";
 
