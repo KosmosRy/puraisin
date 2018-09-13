@@ -267,7 +267,7 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
                             <option value="1.6">Shotti 60% viinaa</option>
                         </select>
                     </div>
-                    <div className="form-group col-4 col-sm-3 input-group input-group-sm align-self-end">
+                    <div className="form-group col-5 col-sm-3 input-group input-group-sm align-self-end">
                         <input className="form-control" type="number" min="0" step="0.1" id="portion"
                                name="portion" value={this.state.portion} onChange={this.handleChange}/>
                         <div className="input-group-append">
