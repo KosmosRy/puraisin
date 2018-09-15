@@ -238,7 +238,7 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     };
 
     render () {
-        const portionLabel = this.state.portion === "1" ? "annos" : "annosta";
+        const portionLabel = parseFloat(this.state.portion.replace(",", ".")) === 1 ? "annos" : "annosta";
         return (
             <form onSubmit={this.handleSubmit}>
                 <input type="hidden" name="coordinates" id="coordinates" value={JSON.stringify(this.state.coordinates)}/>

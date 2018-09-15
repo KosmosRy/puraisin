@@ -7,7 +7,7 @@ import locale from "date-fns/locale/fi";
 
 type Props = {
     realName: string,
-    lastBite?: Date,
+    lastBite: ?Date,
     permillage: number,
     timeTillSober: number,
     avatar: string,
@@ -45,7 +45,7 @@ class Heading extends Component<Props> {
                         <ul>
                             {lastBite && <li><b>Viime puraisu:</b> {formatLastBite(lastBite)}</li>}
                             {permillage > 0 && (<section>
-                                <li><b>Promillemäärä:</b> {permillage.toFixed(2)}&nbsp;‰</li>
+                                <li><b>Promillemäärä:</b> {permillage.toFixed(2).replace(".", ",")}{"\u00A0"}‰</li>
                                 <li><b>Selviämisarvio:</b> {formatTimeTillSober(timeTillSober)}</li>
                             </section>)}
                         </ul>

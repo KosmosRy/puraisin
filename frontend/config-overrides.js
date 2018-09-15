@@ -10,6 +10,9 @@ module.exports = function override(config, env) {
     swPrecacheConfig.options.runtimeCaching = [{
         urlPattern: /\/info$/,
         handler: 'networkFirst'
+    },{
+        urlPattern: /\/user-status$/,
+        handler: 'networkFirst'
     }, {
         urlPattern: /^https:\/\/fonts\.googleapis\.com\/css.*/,
         handler: 'cacheFirst'
