@@ -101,50 +101,61 @@ const fail = (res, reason, status = 500)  => {
     res.status(status).send(reason || "Hupsista, saatana!")
 };
 
-const sendSessionInfo = (req, res) => {
-    const sessionInfo = req.session.sessionInfo;
-    const prevBite = sessionInfo.prevBite;
+const sendLoginInfo = async (req, res) => {
+    const loginState = await uid(18);
+    req.session.loginState = loginState;
+    res.status(401).json({
+        scopes,
+        clientId,
+        state: loginState,
+        redirectUri: encodeURIComponent(redirectUrl)
+    });
+};
+
+const sendUserStatus = async (req, res, prevBite) => {
+    if (!isLoggedIn(req)) {
+        await sendLoginInfo(req, res);
+        return;
+    }
+    let pb = prevBite;
+    if (!pb) {
+        pb = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
+    }
     res.json({
-        info: {
-            realName: sessionInfo.name,
-            avatar: sessionInfo.picture,
-            permillage: prevBite.currentPct,
-            lastBite: prevBite.lastBite,
-            burnFactor,
-            csrf: req.csrfToken()
-        }
+        permillage: pb.currentPct,
+        lastBite: pb.lastBite,
+        csrf: req.csrfToken()
     });
 };
 
 app.get("/info", async (req, res) => {
     if (!isLoggedIn(req)) {
-        const loginState = await uid(18);
-        req.session.loginState = loginState;
-        res.json({
-            loginInfo: {
-                scopes,
-                clientId,
-                state: loginState,
-                redirectUri: encodeURIComponent(redirectUrl)
-            }
-        });
+        await sendLoginInfo(req, res);
     } else {
-        if (!req.session.sessionInfo) {
-            console.log("No session info in session, create");
+        let sessionInfo = req.session.sessionInfo;
+        if (!sessionInfo) {
             try {
-                req.session.sessionInfo = await createSessionInfo(req.session.token);
+                sessionInfo = req.session.sessionInfo = await createSessionInfo(req.session.token);
             } catch (err) {
                 console.error("Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token");
                 console.error("Ohjataan sisäänkirjautumissivulle");
                 console.error(err);
-                req.session.destroy(() =>
-                    fail(res, "Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token", 401));
+                req.session.regenerate(() => {
+                    sendLoginInfo(req, res);
+                });
                 return;
             }
         }
-        req.session.sessionInfo.prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
-        sendSessionInfo(req, res);
+        res.json({
+            realName: sessionInfo.name,
+            avatar: sessionInfo.picture,
+            burnFactor
+        });
     }
+});
+
+app.get("/user-status", async (req, res) => {
+    sendUserStatus(req, res);
 });
 
 app.delete("/logout", (req, res) => {
@@ -186,7 +197,7 @@ app.listen(app.get('port'), () => {
 
 app.post('/submit-data', async (req, res) => {
     if (!isLoggedIn(req)) {
-        fail(req, "Elä kuule yritä ilman sessiota", 401);
+        await sendLoginInfo(req, res);
         return;
     }
 
@@ -264,7 +275,6 @@ app.post('/submit-data', async (req, res) => {
         console.log(`Dev-mode, oltais lähetetty #puraisut-kanavalle: ${slackMsg}`)
     }
 
-    req.session.sessionInfo.prevBite = prevBite;
-    sendSessionInfo(req, res);
+    await sendUserStatus(req, res, prevBite);
 });
 

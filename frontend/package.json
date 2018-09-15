@@ -29,6 +29,12 @@
     "/info": {
       "target": "http://localhost:5000"
     },
+    "/login-info": {
+      "target": "http://localhost:5000"
+    },
+    "/user-status": {
+      "target": "http://localhost:5000"
+    },
     "/logout": {
       "target": "http://localhost:5000"
     },

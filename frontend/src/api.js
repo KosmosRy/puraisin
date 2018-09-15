@@ -4,14 +4,6 @@ import format from "date-fns/format";
 import fiLocale from "date-fns/locale/fi";
 
 
-export type Info = {
-    realName: string,
-    permillage: number,
-    lastBite?: Date,
-    burnFactor: number,
-    avatar: string
-}
-
 export type LoginInfo = {
     scopes: string,
     clientId: string,
@@ -20,8 +12,14 @@ export type LoginInfo = {
 }
 
 export type AppInfo = {
-    info?: Info,
-    loginInfo?: LoginInfo
+    realName: string,
+    burnFactor: number,
+    avatar: string
+}
+
+export type UserStatus = {
+    permillage: number,
+    lastBite: ?Date
 }
 
 export type Coords = {
@@ -45,23 +43,46 @@ export type Bite = {
 
 let csrfToken:string = "";
 
-const handleAppInfo = async (res:Response):Promise<AppInfo> => {
-    const json = await res.json();
-    if (json.info && json.info.lastBite) {
-        json.info.lastBite = parse(json.info.lastBite);
+class ServerError extends Error {
+    response:Response;
+    status:number;
+    constructor(message:string, response:Response) {
+        super(message);
+        this.response = response;
+        this.status = response.status;
+        Error.captureStackTrace(this, ServerError);
     }
-    csrfToken = json.info ? json.info.csrf : "";
+}
 
-    return (json:AppInfo);
+const handleResponse = async (res:Response):Promise<any> => {
+    if (res.ok) {
+        return await res.json();
+    } else {
+        throw new ServerError(res.statusText, res);
+    }
 };
 
-const getInfo = async ():Promise<AppInfo> => {
-    return await fetch("/info", {cache: "no-store", credentials: "same-origin"}).then(res => handleAppInfo(res));
+const handleUserState = async (res:Response):Promise<UserStatus> => {
+    const json = await handleResponse(res);
+    if (json.lastBite) {
+        json.lastBite = parse(json.lastBite);
+    }
+    csrfToken = json.csrf;
+
+    return (json:UserStatus);
+};
+
+const getStatus = async ():Promise<UserStatus> => {
+    return await fetch("/user-status", {cache: "no-store", credentials: "same-origin"}).then(handleUserState);
+};
+
+const getAppInfo = async ():Promise<AppInfo> => {
+    return await fetch("/info", {cache: "no-store", credentials: "same-origin"}).then(handleResponse);
 };
 
 const formatDate = (date:Date, pattern:string) => format(date, pattern, {locale: fiLocale});
 
-const submitBite = async (data:Bite):Promise<AppInfo> => {
+const submitBite = async (data:Bite):Promise<UserStatus> => {
     return await fetch("/submit-data", {
         headers: new Headers({
             "CSRF-Token": csrfToken,
@@ -71,11 +92,11 @@ const submitBite = async (data:Bite):Promise<AppInfo> => {
         credentials: "same-origin",
         method: "POST",
         body: JSON.stringify(data)
-    }).then(res => handleAppInfo(res));
+    }).then(handleUserState);
 };
 
-const logout = async ():Promise<AppInfo> => {
-    return await fetch(new Request("/logout"), {
+const logout = async ():Promise<void> => {
+    await fetch(new Request("/logout"), {
         method: "DELETE",
         credentials: "same-origin",
         headers: new Headers({
@@ -94,5 +115,5 @@ const setUpdatedStatus = (updated:boolean) => {
 };
 
 export {
-    getInfo, formatDate, submitBite, logout, listenUpdatedStatus, setUpdatedStatus
+    getAppInfo, getStatus, formatDate, submitBite, logout, listenUpdatedStatus, setUpdatedStatus
 };
