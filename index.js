@@ -22,12 +22,6 @@ const clientSecret = process.env.AUTH_CLIENT_SECRET || uid(4);
 const redirectUrl = process.env.AUTH_REDIRECT_URL;
 const channelId = process.env.PURAISUT_CHANNEL_ID || "C02NAQFDM"; // oletuksena käytetään #hiekkalaatikko-kanavaa
 
-const app = express();
-
-app.set("view engine", "ejs");
-app.set("views", "./views");
-app.set('port', (process.env.PORT || 5000));
-
 const sess = {
     store: new pgSession({
         pool: db.pool
@@ -40,21 +34,6 @@ const sess = {
         secure
     }
 };
-
-if (secure) {
-    app.set("trust proxy", 1);
-}
-
-app.use(express.static(path.join(__dirname, "frontend/build")));
-app.use(bodyParser.json());
-app.use(require("cookie-parser")());
-app.use(session(sess));
-app.use(csurf({}));
-app.use((req, res, next) => {
-    res.locals.title = "Pikapuraisin";
-    res.locals.loggedIn = false;
-    next();
-});
 
 const isLoggedIn = req => {
     if (mode === "DEV") {
@@ -113,13 +92,9 @@ const sendLoginInfo = async (req, res) => {
 };
 
 const sendUserStatus = async (req, res, prevBite) => {
-    if (!isLoggedIn(req)) {
-        await sendLoginInfo(req, res);
-        return;
-    }
     let pb = prevBite;
     if (!pb) {
-        pb = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
+        pb = await db.getBites(req.session.userId).then(b => processBinge(b));
     }
     res.json({
         permillage: pb.currentPct,
@@ -128,39 +103,15 @@ const sendUserStatus = async (req, res, prevBite) => {
     });
 };
 
-app.get("/info", async (req, res) => {
-    if (!isLoggedIn(req)) {
-        await sendLoginInfo(req, res);
-    } else {
-        let sessionInfo = req.session.sessionInfo;
-        if (!sessionInfo) {
-            try {
-                sessionInfo = req.session.sessionInfo = await createSessionInfo(req.session.token);
-            } catch (err) {
-                console.error("Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token");
-                console.error("Ohjataan sisäänkirjautumissivulle");
-                console.error(err);
-                req.session.regenerate(() => {
-                    sendLoginInfo(req, res);
-                });
-                return;
-            }
-        }
-        res.json({
-            realName: sessionInfo.name,
-            avatar: sessionInfo.picture,
-            burnFactor
-        });
-    }
-});
-
-app.get("/user-status", async (req, res) => {
-    sendUserStatus(req, res);
-});
-
-app.delete("/logout", (req, res) => {
-    req.session.regenerate(() => res.sendStatus(204));
-});
+const app = express();
+app.set('port', (process.env.PORT || 5000));
+if (secure) {
+    app.set("trust proxy", 1);
+}
+app.use(express.static(path.join(__dirname, "frontend/build")));
+app.use(bodyParser.json());
+app.use(session(sess));
+app.use(csurf({}));
 
 app.get("/auth/redirect", async (req, res) => {
     const loginState = req.session.loginState;
@@ -191,18 +142,48 @@ app.get("/auth/redirect", async (req, res) => {
     }
 });
 
-app.listen(app.get('port'), () => {
-    console.log('Node app is running on port: ', app.get('port'));
+app.delete("/logout", (req, res) => {
+    req.session.regenerate(() => res.sendStatus(204));
 });
 
-app.post('/submit-data', async (req, res) => {
+app.use(async (req, res, next) => {
     if (!isLoggedIn(req)) {
         await sendLoginInfo(req, res);
-        return;
+    } else {
+        next();
     }
+});
 
-    let prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
-    let currentPermillage = processBite(85.5, prevBite, {ts: new Date(), portion: 0}).currentPct;
+app.get("/info", async (req, res) => {
+    let sessionInfo = req.session.sessionInfo;
+    if (!sessionInfo) {
+        try {
+            sessionInfo = req.session.sessionInfo = await createSessionInfo(req.session.token);
+        } catch (err) {
+            console.error("Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token");
+            console.error("Ohjataan sisäänkirjautumissivulle");
+            console.error(err);
+            req.session.regenerate(async () => {
+                await sendLoginInfo(req, res);
+            });
+            return;
+        }
+    }
+    res.json({
+        realName: sessionInfo.name,
+        avatar: sessionInfo.picture,
+        burnFactor
+    });
+});
+
+app.get("/user-status", async (req, res) => {
+    await sendUserStatus(req, res);
+});
+
+
+app.post('/submit-data', async (req, res) => {
+    let prevBite = await db.getBites(req.session.userId).then(b => processBinge(b));
+    let currentPermillage = processBite(prevBite, {ts: new Date(), portion: 0, weight: prevBite.weight}).currentPct;
 
     /*
     päästetään läpi ilman sanitointia, slack ja express sanitoivat syötteet automaattisesti
@@ -231,6 +212,7 @@ app.post('/submit-data', async (req, res) => {
         }
         return t;
     })() : 1;
+    const alcoholW = Math.round(portion * 12);
     let coordinates = !isPf ? req.body.coordinates : null;
     let coordLoc = "";
 
@@ -239,7 +221,7 @@ app.post('/submit-data', async (req, res) => {
             const {latitude, longitude, accuracy} = coordinates;
             if (latitude && longitude && accuracy) {
                 const gmapUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-                coordLoc = ` (<${gmapUrl}|${latitude.toFixed(4)},${longitude.toFixed(4)}> ±${accuracy.toFixed(0)}m)`;
+                coordLoc = ` (<${gmapUrl}|${latitude.toFixed(4)},${longitude.toFixed(4)}>\u00A0±${accuracy.toFixed(0)}m)`;
             } else {
                 coordinates = null;
             }
@@ -259,11 +241,11 @@ app.post('/submit-data', async (req, res) => {
         return;
     }
 
-    prevBite = await db.getBites(req.session.userId).then(b => processBinge(85.5, b));
+    prevBite = await db.getBites(req.session.userId).then(b => processBinge(b));
     currentPermillage = prevBite.currentPct;
 
     const typePostfix = isPf ? `-postfestum (${pftime} h sitten)` : "";
-    const slackMsg = `${type}${typePostfix};${content};${location}${coordLoc};${currentPermillage.toFixed(2).replace(".", ",")}\u00A0‰${info ? ";" + info : ""}`;
+    const slackMsg = `${type}${typePostfix};${content}\u00A0(${alcoholW}\u00A0g);${location}${coordLoc};${currentPermillage.toFixed(2).replace(".", ",")}\u00A0‰${info ? ";" + info : ""}`;
     if (mode !== "DEV") {
         postMessage({
             channel: channelId,
@@ -278,3 +260,6 @@ app.post('/submit-data', async (req, res) => {
     await sendUserStatus(req, res, prevBite);
 });
 
+app.listen(app.get('port'), () => {
+    console.log('Node app is running on port: ', app.get('port'));
+});

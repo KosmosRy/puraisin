@@ -8,7 +8,8 @@ CREATE TABLE puraisu (
   "timestamp" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP(0)          NOT NULL,
   postfestum  BOOLEAN                                         NOT NULL,
   coordinates JSON,
-  portion     NUMERIC DEFAULT 1                               NOT NULL
+  portion     NUMERIC DEFAULT 1                               NOT NULL,
+  weight      NUMERIC DEFAULT 85.5                            NOT NULL
 );
 
 CREATE TABLE "session" (
@@ -22,3 +23,8 @@ WITH (OIDS = FALSE
 ALTER TABLE "session"
   ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
   NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+CREATE TABLE megafauna (
+  biter     CHARACTER VARYING(32)    NOT NULL PRIMARY KEY,
+  weight    NUMERIC                  NOT NULL
+);
