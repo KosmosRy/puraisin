@@ -174,7 +174,7 @@ class Location extends React.Component<LocationProps> {
 class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     watchId: number | null;
     initState = {
-        portion: "1",
+        portion: 1,
         postfestum: false,
         pftime: "",
         location: "koti",
@@ -183,6 +183,8 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
         customlocation: "",
         info: ""
     };
+
+    portionArr = [1, 1.5, 1.2, 1.8, 1, 1.3, 2, 1, 1.1, 1.6];
     
     constructor(props:{submitBite:Function}) {
         super(props);
@@ -227,7 +229,7 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     };
 
     handleSelect = (event: SyntheticEvent<HTMLSelectElement>) => {
-        this.setState({portion: event.currentTarget.value});
+        this.setState({portion: this.portionArr[parseInt(event.currentTarget.value, 10)]});
     };
 
     handleSubmit = (event: SyntheticEvent<HTMLInputElement>) => {
@@ -238,7 +240,7 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     };
 
     render () {
-        const portionLabel = parseFloat(this.state.portion.replace(",", ".")) === 1 ? "annos" : "annosta";
+        const portionLabel = this.state.portion === 1 ? "annos" : "annosta";
         return (
             <form onSubmit={this.handleSubmit}>
                 <input type="hidden" name="coordinates" id="coordinates" value={JSON.stringify(this.state.coordinates)}/>
@@ -256,16 +258,16 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
                     <div className="form-group col-6 col-sm-4">
                         <label htmlFor="portion-select" className="control-label">Alkoholiannos</label>
                         <select id="portion-select" name="portion-select" className="form-control" onChange={this.handleSelect}>
-                            <option value="1">Pieni tuoppi keskaria (330 ml, 4,6 %)</option>
-                            <option value="1.5">Iso tuoppi keskaria (500 ml, 4,6 %)</option>
-                            <option value="1.2">Pieni tuoppi nelosta (330 ml, 5,2 %)</option>
-                            <option value="1.8">Iso tuoppi nelosta (500 ml, 5,2 %)</option>
-                            <option value="1">12 senttiä viiniä (120 ml, 12,5 %)</option>
-                            <option value="1.3">16 senttiä viiniä (160 ml, 12,5 %)</option>
-                            <option value="2">24 senttiä viiniä (240 ml, 12,5 %)</option>
-                            <option value="1">8 senttiä väkevää viiniä (80 ml, 20 %)</option>
-                            <option value="1.1">4 cl viinaa (40 ml, 40 %)</option>
-                            <option value="1.6">4 cl 60-volttista viinaa (40 ml, 60 %)</option>
+                            <option value="0">Pieni tuoppi keskaria (330 ml, 4,6 %)</option>
+                            <option value="1">Iso tuoppi keskaria (500 ml, 4,6 %)</option>
+                            <option value="2">Pieni tuoppi nelosta (330 ml, 5,2 %)</option>
+                            <option value="3">Iso tuoppi nelosta (500 ml, 5,2 %)</option>
+                            <option value="4">12 senttiä viiniä (120 ml, 12,5 %)</option>
+                            <option value="5">16 senttiä viiniä (160 ml, 12,5 %)</option>
+                            <option value="6">24 senttiä viiniä (240 ml, 12,5 %)</option>
+                            <option value="7">8 senttiä väkevää viiniä (80 ml, 20 %)</option>
+                            <option value="8">4 cl viinaa (40 ml, 40 %)</option>
+                            <option value="9">4 cl 60-volttista viinaa (40 ml, 60 %)</option>
                         </select>
                     </div>
                     <div className="form-group col-5 col-sm-3 input-group input-group-sm align-self-end">

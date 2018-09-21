@@ -34,7 +34,7 @@ export type Coords = {
 export type Bite = {
     coordinates: Coords,
     content: string,
-    portion: string,
+    portion: number,
     postfestum: boolean,
     pftime: string,
     location: string,
@@ -51,7 +51,7 @@ class ServerError extends Error {
         super(message);
         this.response = response;
         this.status = response.status;
-        Error.captureStackTrace(this, ServerError);
+        Error.captureStackTrace && Error.captureStackTrace(this, ServerError);
     }
 }
 
