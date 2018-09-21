@@ -13,7 +13,7 @@ const csurf = require("csurf");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
-const {processBinge, processBite, burnFactor, puraisuDB} = require("./lib");
+const {processBinge, processBite, burnFactor, puraisuDB, currentStatus} = require("./lib");
 const db = puraisuDB(process.env.DATABASE_URL, "ppapp");
 
 const scopes = "users.profile:read,chat:write:user,channels:read";
@@ -99,7 +99,8 @@ const sendUserStatus = async (req, res, prevBite) => {
     res.json({
         permillage: pb.currentPct,
         lastBite: pb.lastBite,
-        csrf: req.csrfToken()
+        csrf: req.csrfToken(),
+        bingeStart: pb.bingeStart
     });
 };
 
@@ -183,7 +184,7 @@ app.get("/user-status", async (req, res) => {
 
 app.post('/submit-data', async (req, res) => {
     let prevBite = await db.getBites(req.session.userId).then(b => processBinge(b));
-    let currentPermillage = processBite(prevBite, {ts: new Date(), portion: 0, weight: prevBite.weight}).currentPct;
+    let currentPermillage = currentStatus(prevBite).currentPct;
 
     /*
     päästetään läpi ilman sanitointia, slack ja express sanitoivat syötteet automaattisesti
