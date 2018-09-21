@@ -5,6 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompass, faLocationArrow, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import type {Coords, Bite} from "../api";
 
+// noinspection JSUnresolvedVariable
+type ReactObjRef<ElementType: React.ElementType> = {
+    // noinspection JSUnresolvedVariable
+    current: null | React.ElementRef<ElementType>
+}
+
 type PfProps = {
     postfestum: boolean,
     pftime: string,
@@ -185,10 +191,13 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     };
 
     portionArr = [1, 1.5, 1.2, 1.8, 1, 1.3, 2, 1, 1.1, 1.6];
+
+    portionSelect: ReactObjRef<'select'>;
     
     constructor(props:{submitBite:Function}) {
         super(props);
         this.state = this.initState;
+        this.portionSelect = React.createRef();
     }
 
     componentDidMount () {
@@ -229,13 +238,18 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     };
 
     handleSelect = (event: SyntheticEvent<HTMLSelectElement>) => {
-        this.setState({portion: this.portionArr[parseInt(event.currentTarget.value, 10)]});
+        const val = event.currentTarget.value;
+        this.setState({
+            portion: this.portionArr[parseInt(val, 10)]
+        });
     };
 
     handleSubmit = (event: SyntheticEvent<HTMLInputElement>) => {
-        console.log(this.state);
         this.props.submitBite(this.state);
         this.setState(this.initState);
+        if (this.portionSelect.current) {
+            this.portionSelect.current.value = "0";
+        }
         event.preventDefault();
     };
 
@@ -257,7 +271,9 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
                 <div className="row">
                     <div className="form-group col-6 col-sm-4">
                         <label htmlFor="portion-select" className="control-label">Alkoholiannos</label>
-                        <select id="portion-select" name="portion-select" className="form-control" onChange={this.handleSelect}>
+                        <select id="portion-select" name="portion-select" className="form-control"
+                                onChange={this.handleSelect} ref={this.portionSelect}
+                        >
                             <option value="0">Pieni tuoppi keskaria (330 ml, 4,6 %)</option>
                             <option value="1">Iso tuoppi keskaria (500 ml, 4,6 %)</option>
                             <option value="2">Pieni tuoppi nelosta (330 ml, 5,2 %)</option>
