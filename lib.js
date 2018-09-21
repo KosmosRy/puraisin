@@ -1,5 +1,6 @@
 const differenceInSeconds = require("date-fns/difference_in_seconds");
-const {Pool} = require("pg");
+const {Pool, types} = require("pg");
+types.setTypeParser(1700, 'text', parseFloat);
 
 const bodyWater = 0.806;
 const bodyWaterConstantMale = 0.58;
@@ -14,23 +15,31 @@ const defaultBite = () => ({
     currentPct: 0,
     timeTillSober: 0,
     lastBite: null,
-    weight: 85.5
+    bingeStart: null
 });
 
 const processBite = (prevBite, bite) => {
-    const b = (bodyWater * permillageConvertion * swedishMultiplier) / (bodyWaterConstantMale * bite.weight);
-    let { currentPct, timeTillSober, lastBite } = prevBite || defaultBite();
-    const { ts, portion } = bite;
+    let { currentPct, timeTillSober, lastBite, bingeStart } = prevBite || defaultBite();
+    const { ts, portion, weight } = bite;
     if (lastBite) {
         currentPct = Math.max(currentPct - a * differenceInSeconds(ts, lastBite), 0);
     }
-    currentPct += b * portion;
-    timeTillSober = currentPct / a;
     if (portion) {
+        if (currentPct === 0) {
+            bingeStart = ts;
+        }
+        const b = (bodyWater * permillageConvertion * swedishMultiplier) / (bodyWaterConstantMale * (weight || 85.5));
+        currentPct += b * portion;
         lastBite = ts;
     }
-    return { currentPct, timeTillSober, lastBite };
+    if (currentPct === 0) {
+        bingeStart = null;
+    }
+    timeTillSober = currentPct / a;
+    return { currentPct, timeTillSober, lastBite, bingeStart };
 };
+
+exports.currentStatus = (prevBite = defaultBite()) => processBite(prevBite, {ts: new Date()});
 
 exports.processBite = processBite;
 
@@ -57,7 +66,7 @@ const puraisuDB = (connectionString, source) => {
 
     const getBites = async (userId, since) => {
         const rs = await pool.query(
-            `SELECT timestamp AS ts, portion, weight
+            `SELECT timestamp AS ts, portion, weight::decimal
              FROM puraisu
              WHERE biter = $1
                AND ($2::timestamp IS NULL OR timestamp > $2)

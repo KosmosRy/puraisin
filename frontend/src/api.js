@@ -19,7 +19,8 @@ export type AppInfo = {
 
 export type UserStatus = {
     permillage: number,
-    lastBite: ?Date
+    lastBite: ?Date,
+    bingeStart: ?Date
 }
 
 export type Coords = {
@@ -66,6 +67,9 @@ const handleUserState = async (res:Response):Promise<UserStatus> => {
     const json = await handleResponse(res);
     if (json.lastBite) {
         json.lastBite = parse(json.lastBite);
+    }
+    if (json.bingeStart) {
+        json.bingeStart = parse(json.bingeStart);
     }
     csrfToken = json.csrf;
 

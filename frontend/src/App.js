@@ -23,6 +23,7 @@ type FpProps = {
 type FpState = {
     permillage: number,
     lastBite: ?Date,
+    bingeStart: ?Date,
     biteDone:boolean,
     lastContent:string,
     error?:string
@@ -41,6 +42,7 @@ class FrontPage extends Component<FpProps, FpState> {
         this.state = {
             permillage: 0,
             lastBite: null,
+            bingeStart: null,
             biteDone: false,
             lastContent: ""
         };
@@ -52,6 +54,7 @@ class FrontPage extends Component<FpProps, FpState> {
                 this.setState({
                     permillage: userStatus.permillage,
                     lastBite: userStatus.lastBite,
+                    bingeStart: userStatus.bingeStart,
                     biteDone: true,
                     lastContent: data.content,
                     error: undefined
@@ -78,6 +81,7 @@ class FrontPage extends Component<FpProps, FpState> {
                 this.setState({
                     permillage: userStatus.permillage,
                     lastBite: userStatus.lastBite,
+                    bingeStart: userStatus.bingeStart,
                     error: undefined
                 });
             })
@@ -108,13 +112,14 @@ class FrontPage extends Component<FpProps, FpState> {
 
     render() {
         const {realName, burnFactor, avatar} = this.props.info;
-        const {permillage, lastBite} = this.state;
+        const {permillage, lastBite, bingeStart} = this.state;
         const currentPermillage = (permillage && burnFactor) ? calcCurrentPermillage(permillage, burnFactor, lastBite) : 0;
         const timeTillSober = burnFactor ? currentPermillage / burnFactor : 0;
         return (
             <section>
                 <Heading realName={realName} permillage={currentPermillage}
                          timeTillSober={timeTillSober}
+                         bingeStart={bingeStart}
                          lastBite={lastBite}
                          avatar={avatar}
                          logout={this.props.logout}
