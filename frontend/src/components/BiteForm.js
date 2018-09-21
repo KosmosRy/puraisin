@@ -268,7 +268,7 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
                         </select>
                     </div>
                     <div className="form-group col-5 col-sm-3 input-group input-group-sm align-self-end">
-                        <input className="form-control" type="number" min="0" step="0.1" id="portion"
+                        <input className="form-control" type="number" min="0" step="0.1" id="portion" required={true}
                                name="portion" value={this.state.portion} onChange={this.handleChange}/>
                         <div className="input-group-append">
                             <div className="input-group-text">{portionLabel}</div>
@@ -282,7 +282,7 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
 
                 <div className="row">
                     <div className="form-group col">
-                        <textarea className="form-control" placeholder="Lorem ipsum..." id="info"
+                        <textarea className="form-control" placeholder="Erityisiä huomioita puraisuun liittyen.." id="info"
                                   name="info" value={this.state.info} onChange={this.handleChange}/>
                     </div>
                 </div>
