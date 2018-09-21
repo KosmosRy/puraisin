@@ -191,8 +191,8 @@ app.post('/submit-data', async (req, res) => {
     ja sql-injektiot vältetään prepared statementeilla. Pitää muistaa sitten itse sanitoida
     arvot tarpeen mukaan
     */
-    const {content, info, postfestum, portion} = req.body;
-    let {pftime} = req.body;
+    const {content, info, postfestum} = req.body;
+    let {pftime, portion} = req.body;
     const type = currentPermillage > 0 ? "p" : "ep";
     const isPf = !!postfestum;
     pftime = isPf ? (() => {
@@ -203,6 +203,14 @@ app.post('/submit-data', async (req, res) => {
         }
         return t;
     })() : 0;
+    portion = (() => {
+        let p = parseFloat(portion.replace ? portion.replace(",", ".") : portion);
+        if (isNaN(p)) {
+            console.error(`Can't parse portion from ${portion}`);
+            return 1;
+        }
+        return p;
+    })();
     const ts = addHours(new Date(), -pftime);
     const location = req.body.location === "else" ? req.body.customlocation : req.body.location;
     const alcoholW = Math.round(portion * 12);
