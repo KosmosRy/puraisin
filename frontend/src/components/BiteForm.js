@@ -256,15 +256,16 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
                     <div className="form-group col-6 col-sm-4">
                         <label htmlFor="portion-select" className="control-label">Alkoholiannos</label>
                         <select id="portion-select" name="portion-select" className="form-control" onChange={this.handleSelect}>
-                            <option value="1">Pieni tuoppi keskiolutta tms.</option>
-                            <option value="1.5">Iso tuoppi keskiolutta tms.</option>
-                            <option value="1.3">Pieni tuoppi nelosta tms.</option>
-                            <option value="2">Iso tuoppi nelosta tms.</option>
-                            <option value="1.3">16 senttiä viiniä</option>
-                            <option value="1.9">24 senttiä viiniä</option>
-                            <option value="1">Jälkkäriviini tms.</option>
-                            <option value="1">Shotti viinaa</option>
-                            <option value="1.6">Shotti 60% viinaa</option>
+                            <option value="1">Pieni tuoppi keskaria (330 ml, 4,6 %)</option>
+                            <option value="1.5">Iso tuoppi keskaria (500 ml, 4,6 %)</option>
+                            <option value="1.2">Pieni tuoppi nelosta (330 ml, 5,2 %)</option>
+                            <option value="1.8">Iso tuoppi nelosta (500 ml, 5,2 %)</option>
+                            <option value="1">12 senttiä viiniä (120 ml, 12,5 %)</option>
+                            <option value="1.3">16 senttiä viiniä (160 ml, 12,5 %)</option>
+                            <option value="2">24 senttiä viiniä (240 ml, 12,5 %)</option>
+                            <option value="1">8 senttiä väkevää viiniä (80 ml, 20 %)</option>
+                            <option value="1.1">4 cl viinaa (40 ml, 40 %)</option>
+                            <option value="1.6">4 cl 60-volttista viinaa (40 ml, 60 %)</option>
                         </select>
                     </div>
                     <div className="form-group col-5 col-sm-3 input-group input-group-sm align-self-end">
