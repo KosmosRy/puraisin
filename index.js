@@ -10,17 +10,48 @@ const pgSession = require("connect-pg-simple")(session);
 const path = require("path");
 const addHours = require("date-fns/add_hours");
 const csurf = require("csurf");
+const SlackStrategy = require("passport-slack").Strategy;
+const passport = require("passport");
 
 const mode = process.env.MODE || "PROD";
 const secure = process.env.SECURE ? process.env.SECURE === "true" : mode === "PROD";
-const {processBinge, processBite, burnFactor, puraisuDB, currentStatus} = require("./lib");
+const {processBinge, burnFactor, puraisuDB, currentStatus} = require("./lib");
 const db = puraisuDB(process.env.DATABASE_URL, "ppapp");
 
-const scopes = "users.profile:read,chat:write:user,channels:read";
-const clientId = process.env.AUTH_CLIENT_ID;
+const scope = "users.profile:read,chat:write:user,channels:read";
+const clientID = process.env.AUTH_CLIENT_ID;
 const clientSecret = process.env.AUTH_CLIENT_SECRET || uid(4);
 const redirectUrl = process.env.AUTH_REDIRECT_URL;
 const channelId = process.env.PURAISUT_CHANNEL_ID || "C02NAQFDM"; // oletuksena käytetään #hiekkalaatikko-kanavaa
+
+passport.use(new SlackStrategy({
+        clientID,
+        clientSecret,
+        skipUserProfile: true,
+        //callbackURL: "/auth/redirect",
+        callbackURL: redirectUrl,
+        scope
+    },
+    (accessToken, refreshToken, params, profile, done) => {
+        const {access_token, user_id} = params;
+        if (access_token && user_id) {
+            done(null, {
+                token: access_token,
+                userId: user_id
+            });
+        } else {
+            done(null, false);
+        }
+    }
+));
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(id, done) {
+    done(null, id);
+});
 
 const sess = {
     store: new pgSession({
@@ -80,17 +111,6 @@ const fail = (res, reason, status = 500)  => {
     res.status(status).send(reason || "Hupsista, saatana!")
 };
 
-const sendLoginInfo = async (req, res) => {
-    const loginState = await uid(18);
-    req.session.loginState = loginState;
-    res.status(401).json({
-        scopes,
-        clientId,
-        state: loginState,
-        redirectUri: encodeURIComponent(redirectUrl)
-    });
-};
-
 const sendUserStatus = async (req, res, prevBite) => {
     let pb = prevBite;
     if (!pb) {
@@ -112,44 +132,31 @@ if (secure) {
 app.use(express.static(path.join(__dirname, "frontend/build")));
 app.use(bodyParser.json());
 app.use(session(sess));
+app.use(passport.initialize());
 app.use(csurf({}));
 
-app.get("/auth/redirect", async (req, res) => {
-    const loginState = req.session.loginState;
-    delete req.session.loginState;
-    if (!req.query.error && loginState && req.query.state === loginState && req.query.code) {
-        try {
-            const query = `client_id=${clientId}&client_secret=${clientSecret}&code=${req.query.code}&redirect_uri=${redirectUrl}`;
-            const authResponse = await fetchJson(new Request(`https://slack.com/api/oauth.access?${query}`));
-            if (!authResponse.ok) {
-                fail(res, "authResponse not OK");
-            }
 
-            Object.assign(req.session, {
-                loggedIn: true,
-                token: authResponse.access_token,
-                userId: authResponse.user_id,
-                teamId: authResponse.team_id
+app.get("/auth/slack", passport.authorize("slack"));
+app.get("/auth/redirect", passport.authorize("slack", { failureRedirect: "/"}),
+    (req, res) => {
+        if (req.account) {
+            Object.assign(req.session, req.account, {
+                loggedIn: true
             });
-
-            res.redirect("/");
-
-        } catch (err) {
-            fail(res, err);
+            res.redirect("/")
+        } else {
+            fail(res, "Meeppä pois", 401);
         }
-    } else {
-        console.error(req.query.error || "Joku virhe");
-        fail(res, "Meeppä pois", 401);
     }
-});
+);
 
 app.delete("/logout", (req, res) => {
     req.session.regenerate(() => res.sendStatus(204));
 });
 
-app.use(async (req, res, next) => {
+app.use((req, res, next) => {
     if (!isLoggedIn(req)) {
-        await sendLoginInfo(req, res);
+        res.sendStatus(401);
     } else {
         next();
     }
@@ -164,8 +171,8 @@ app.get("/info", async (req, res) => {
             console.error("Profiilitietojen haku epäonnistui, syynä mahdollisesti hapantunut access token");
             console.error("Ohjataan sisäänkirjautumissivulle");
             console.error(err);
-            req.session.regenerate(async () => {
-                await sendLoginInfo(req, res);
+            req.session.regenerate(() => {
+                res.sendStatus(401);
             });
             return;
         }

@@ -1,7 +1,7 @@
 // @flow
 import React, {Component} from "react";
 import {getAppInfo, getStatus, submitBite, logout, listenUpdatedStatus} from "./api";
-import type {UserStatus, LoginInfo, AppInfo, Bite} from "./api";
+import type {UserStatus, AppInfo, Bite} from "./api";
 import Heading from "./components/Heading";
 import BiteForm from "./components/BiteForm";
 import "./App.css";
@@ -11,9 +11,9 @@ import { CSSTransitionGroup } from "react-transition-group";
 
 type Props = {};
 type State = {
-    loginInfo?: LoginInfo,
     appInfo: ?AppInfo,
-    appUpdated: boolean
+    appUpdated: boolean,
+    initialized: boolean
 }
 type FpProps = {
     info:AppInfo,
@@ -154,10 +154,9 @@ class FrontPage extends Component<FpProps, FpState> {
     }
 }
 
-class LoginPage extends Component<{loginInfo:LoginInfo}> {
+class LoginPage extends Component<{}> {
     render() {
-        const {scopes, clientId, state, redirectUri} = this.props.loginInfo;
-        const loginUrl = `https://slack.com/oauth/authorize?scope=${scopes}&client_id=${clientId}&state=${state}&redirect_uri=${redirectUri}`;
+        const loginUrl = `/auth/slack`;
         return (
             <div className="row">
                 <div className="col login">
@@ -184,23 +183,21 @@ class App extends Component<Props, State> {
         super(props);
         this.state = {
             appInfo: null,
-            appUpdated: false
+            appUpdated: false,
+            initialized: false
         };
     }
 
     init = () => {
         getAppInfo()
-            .then(appInfo => this.setState({appInfo}))
+            .then(appInfo => this.setState({appInfo, initialized: true}))
             .catch(err => {
-                if (err.status === 401) {
-                    err.response.json().then(loginInfo => this.setState({loginInfo}))
-                } else {
-                    this.setState({
-                        appInfo: null,
-                        appUpdated: false,
-                        loginInfo: undefined
-                    })
-                }
+                console.error(err); // TODO: virhesivu?
+                this.setState({
+                    appInfo: null,
+                    appUpdated: false,
+                    initialized: true
+                });
             });
     };
 
@@ -216,13 +213,13 @@ class App extends Component<Props, State> {
 
     render() {
         let page;
-        if (this.state.loginInfo) {
-            page = <LoginPage loginInfo={this.state.loginInfo}/>;
-        } else  if (this.state.appInfo) {
-            page = <FrontPage info={this.state.appInfo} logout={this.logout}/>;
+        if (!this.state.initialized) {
+            page = <div/>
+        } else if (!this.state.appInfo) {
+            page = <LoginPage/>;
         } else {
-            page = <div/>;
-        }
+            page = <FrontPage info={this.state.appInfo} logout={this.logout}/>;
+        } 
 
         return (
             <div>
