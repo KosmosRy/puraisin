@@ -155,6 +155,18 @@ class FrontPage extends Component<FpProps, FpState> {
 }
 
 class LoginPage extends Component<{}> {
+    openLoginWindow() {
+        const loginPopup = window.open("/auth/slack", "auth");
+
+        const listener = event => {
+            console.log(event.data);
+            loginPopup.close();
+            window.removeEventListener("message", listener);
+        };
+
+        window.addEventListener("message", listener);
+    }
+
     render() {
         const loginUrl = `/auth/slack`;
         return (
@@ -165,7 +177,7 @@ class LoginPage extends Component<{}> {
                     <div className="disclaimer">kunhan annat ensiksi Slackille oikeudet pankkitiliisi ja
                         perikuntaasi
                     </div>
-                    <a href={loginUrl}>
+                    <a onClick={this.openLoginWindow}>
                         <img src="https://platform.slack-edge.com/img/sign_in_with_slack.png"
                              srcSet="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x"
                              alt="Sign in"

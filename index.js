@@ -134,16 +134,32 @@ app.use(bodyParser.json());
 app.use(session(sess));
 app.use(passport.initialize());
 app.use(csurf({}));
+app.set("view engine", "ejs");
+app.set("views", "./views");
 
 
 app.get("/auth/slack", passport.authorize("slack"));
 app.get("/auth/redirect", passport.authorize("slack", { failureRedirect: "/"}),
-    (req, res) => {
+    async (req, res) => {
         if (req.account) {
+            const sid = await db.createSession(req.account);
             Object.assign(req.session, req.account, {
                 loggedIn: true
             });
             res.redirect("/")
+        } else {
+            fail(res, "Meeppä pois", 401);
+        }
+    }
+);
+app.get("/auth/slack/callback", passport.authorize("slack", { failureRedirect: "/"}),
+    async (req, res) => {
+        if (req.account) {
+            const sid = await db.createSession(req.account);
+            Object.assign(req.session, req.account, {
+                loggedIn: true
+            });
+            res.render("auth.ejs", {sid});
         } else {
             fail(res, "Meeppä pois", 401);
         }

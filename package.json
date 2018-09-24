@@ -12,6 +12,7 @@
     "csurf": "^1.9.0",
     "date-fns": "^1.29.0",
     "dotenv": "^4.0.0",
+    "ejs": "^2.6.1",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "kosmos-utils": "github:KosmosRy/kosmos-utils#v1.0.4",

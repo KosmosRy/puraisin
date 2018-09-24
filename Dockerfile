@@ -13,6 +13,7 @@ COPY yarn.lock .
 RUN yarn
 
 COPY ./*.js ./
+COPY views ./views/
 COPY --from=frontend /build/build ./frontend/build
 
 EXPOSE 5000

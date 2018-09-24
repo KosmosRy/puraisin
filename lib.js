@@ -1,5 +1,7 @@
 const differenceInSeconds = require("date-fns/difference_in_seconds");
+const addYears = require("date-fns/add_years");
 const {Pool, types} = require("pg");
+const uuid = require("uid-safe");
 types.setTypeParser(1700, 'text', parseFloat);
 
 const bodyWater = 0.806;
@@ -75,8 +77,29 @@ const puraisuDB = (connectionString, source) => {
         return rs.rows;
     };
 
+    const createSession = async (data) => {
+        const sid = await uuid(24);
+        const expiration = addYears(new Date(), 1);
+        await pool.query(
+            `INSERT INTO session (sid, sess, expire)
+             VALUES ($1, $2, $3)`,
+            [sid, data, expiration]
+        );
+        return sid;
+    };
+
+    const getSession = async (sid) => {
+        const rs = await pool.query(
+            `SELECT sess
+            FROM session
+            WHERE sid = $1 AND expire > $2`,
+            [sid, new Date()]
+        );
+        return rs.rows.length ? rs.rows[0].sess : null;
+    };
+
     return {
-        pool, insertPuraisu, getBites
+        pool, insertPuraisu, getBites, createSession, getSession
     };
 };
 
