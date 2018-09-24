@@ -4,7 +4,7 @@ module.exports = function override(config, env) {
     );
     // Prevent some URLs from being cached by the service worker
     swPrecacheConfig.options.navigateFallbackWhitelist = [
-        /^(?!\/(__|auth\/redirect)).*/
+        /^(?!\/(__|auth\/)).*/
     ];
 
     swPrecacheConfig.options.runtimeCaching = [{

@@ -4,13 +4,6 @@ import format from "date-fns/format";
 import fiLocale from "date-fns/locale/fi";
 
 
-export type LoginInfo = {
-    scopes: string,
-    clientId: string,
-    state: string,
-    redirectUri: string
-}
-
 export type AppInfo = {
     realName: string,
     burnFactor: number,
