@@ -203,10 +203,10 @@ class BiteForm extends React.Component<{submitBite:Function}, Bite> {
     componentDidMount () {
         if (navigator && navigator.geolocation) {
             this.watchId = navigator.geolocation.watchPosition(pos => {
-                const {accuracy, longitude, latitude, altitude, altitudeAccuracy} = pos.coords;
+                const {accuracy, longitude, latitude, altitude, altitudeAccuracy, speed, heading} = pos.coords;
                 this.setState({
                     coordinates: {
-                        accuracy, longitude, latitude, altitude, altitudeAccuracy
+                        accuracy, longitude, latitude, altitude, altitudeAccuracy, speed, heading
                     }
                 });
             }, err => {
