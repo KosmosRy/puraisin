@@ -25,6 +25,7 @@ ALTER TABLE "session"
   NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 CREATE TABLE megafauna (
-  biter     CHARACTER VARYING(32)    NOT NULL PRIMARY KEY,
-  weight    NUMERIC                  NOT NULL
+  biter       CHARACTER VARYING(32)    NOT NULL PRIMARY KEY,
+  weight      NUMERIC                  NOT NULL,
+  displayname CHARACTER VARYING(50)
 );
