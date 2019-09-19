@@ -218,7 +218,7 @@ app.post('/submit-data', async (req, res) => {
         }
         return p;
     })();
-    const ts = addHours(new Date(), -pftime);
+    const ts = addHours(new Date(), -(pftime / 60));
     const location = req.body.location === "else" ? req.body.customlocation : req.body.location;
     const alcoholW = Math.round(portion * 12);
     let coordinates = !isPf ? req.body.coordinates : null;
@@ -252,7 +252,7 @@ app.post('/submit-data', async (req, res) => {
     prevBite = await db.getBites(req.session.userId).then(b => processBinge(b));
     currentPermillage = prevBite.currentPct;
 
-    const typePostfix = isPf ? `-postfestum (${pftime} h sitten)` : "";
+    const typePostfix = isPf ? `-postfestum (${pftime} min sitten)` : "";
     const slackMsg = `${type}${typePostfix};${content}\u00A0(${alcoholW}\u00A0g);${location}${coordLoc};${currentPermillage.toFixed(2).replace(".", ",")}\u00A0‰${info ? ";" + info : ""}`;
     if (mode !== "DEV") {
         postMessage({
