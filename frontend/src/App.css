@@ -23,7 +23,7 @@ body {
     padding: 0 15px;
 }
 
-#postfestum-hours {
+#postfestum-minutes {
     width: 175px;
 }
 
@@ -122,4 +122,9 @@ section.heading {
 .bitesuccess-leave.bitesuccess-leave-active {
     opacity: 0.01;
     transition: opacity 1000ms ease-in;
+}
+
+/* Bootstrap style overrides */
+div.form-group + div.form-group {
+    padding-left: 0;
 }

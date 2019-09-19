@@ -31,13 +31,13 @@ class PostFestum extends React.Component<PfProps> {
                     </div>
                 </div>
                 {this.props.postfestum && (
-                    <div id="postfestum-hours" className="form-group col-sm-auto input-group input-group-sm">
+                    <div id="postfestum-minutes" className="form-group col-sm-auto input-group input-group-sm">
                         <input className="form-control" type="number" id="pf-time" name="pftime" required={true}
                                title="Postfestum-ajankohta" value={this.props.pftime} onChange={this.props.handleChange}
-                               min="0.5" step="0.5"
+                               min="1" step="1"
                         />
                         <div className="input-group-append">
-                            <div className="input-group-text">tuntia sitten</div>
+                            <div className="input-group-text">min sitten</div>
                         </div>
                     </div>
                 )}
