@@ -8,7 +8,7 @@ const express = require("express");
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const path = require("path");
-const addHours = require("date-fns/add_hours");
+const addMinutes = require("date-fns/add_minutes");
 const csurf = require("csurf");
 const SlackStrategy = require("passport-slack").Strategy;
 const passport = require("passport");
@@ -218,7 +218,7 @@ app.post('/submit-data', async (req, res) => {
         }
         return p;
     })();
-    const ts = addHours(new Date(), -(pftime / 60));
+    const ts = addMinutes(new Date(), -pftime);
     const location = req.body.location === "else" ? req.body.customlocation : req.body.location;
     const alcoholW = Math.round(portion * 12);
     let coordinates = !isPf ? req.body.coordinates : null;
