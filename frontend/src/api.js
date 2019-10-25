@@ -88,7 +88,7 @@ const submitBite = async (data:Bite):Promise<UserStatus> => {
         cache: "no-store",
         credentials: "same-origin",
         method: "POST",
-        body: JSON.stringify(data)
+        body: JSON.stringify({...data, tzOffset: new Date().getTimezoneOffset()})
     }).then(handleUserState);
 };
 

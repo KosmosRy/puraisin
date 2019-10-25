@@ -198,7 +198,7 @@ app.post('/submit-data', async (req, res) => {
     ja sql-injektiot vältetään prepared statementeilla. Pitää muistaa sitten itse sanitoida
     arvot tarpeen mukaan
     */
-    const {content, info, postfestum} = req.body;
+    const {content, info, postfestum, tzOffset} = req.body;
     let {pftime, portion} = req.body;
     const type = currentPermillage > 0 ? "p" : "ep";
     const isPf = !!postfestum;
@@ -242,7 +242,7 @@ app.post('/submit-data', async (req, res) => {
 
     // fire up query!
     try {
-        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates, portion, ts);
+        await db.insertPuraisu(req.session.userId, type, content, location, info, isPf, coordinates, portion, ts, tzOffset);
     } catch (err) {
         console.error(err);
         fail(res, err);
