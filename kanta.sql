@@ -1,4 +1,5 @@
 CREATE TABLE puraisu (
+  id          BIGSERIAL PRIMARY KEY,
   type        CHARACTER VARYING(64)                           NOT NULL,
   content     TEXT                                            NOT NULL,
   location    TEXT                                            NOT NULL,
@@ -10,7 +11,7 @@ CREATE TABLE puraisu (
   coordinates JSON,
   portion     NUMERIC DEFAULT 1                               NOT NULL,
   weight      NUMERIC DEFAULT 85.5                            NOT NULL,
-  tzoffset    SMALLINT DEFAULT 0                              NOT NULL
+  tzoffset    VARCHAR(6) DEFAULT '0:00'                       NOT NULL
 );
 
 CREATE TABLE "session" (
