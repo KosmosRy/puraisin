@@ -11,7 +11,7 @@ CREATE TABLE puraisu (
   coordinates JSON,
   portion     NUMERIC DEFAULT 1                               NOT NULL,
   weight      NUMERIC DEFAULT 85.5                            NOT NULL,
-  tzoffset    VARCHAR(6) DEFAULT '0:00'                       NOT NULL
+  tzoffset    VARCHAR(6)
 );
 
 CREATE TABLE "session" (
