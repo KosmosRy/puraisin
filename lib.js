@@ -55,12 +55,12 @@ exports.burnFactor = a;
 const puraisuDB = (connectionString, source) => {
     const pool = new Pool({connectionString});
 
-    const insertPuraisu = (user, type, content, location, info, pf, coordinates, portion, timestamp = new Date()) => {
+    const insertPuraisu = (user, type, content, location, info, pf, coordinates, portion, timestamp = new Date(), tzoffset = 0) => {
         console.log("Inserting puraisu");
         return pool.query(
-            `INSERT INTO puraisu (type, content, location, info, source, biter, postfestum, coordinates, timestamp, portion, weight)
-            SELECT $1, $2, $3, $4, $5, $6::varchar(32), $7, $8, $9, $10, coalesce((select weight from megafauna where biter = $6), 85.5)`,
-            [type, content, location, info, source, user, pf, coordinates, timestamp, portion]
+            `INSERT INTO puraisu (type, content, location, info, source, biter, postfestum, coordinates, timestamp, portion, weight, tzoffset)
+            SELECT $1, $2, $3, $4, $5, $6::varchar(32), $7, $8, $9, $10, coalesce((select weight from megafauna where biter = $6), 85.5), $11`,
+            [type, content, location, info, source, user, pf, coordinates, timestamp, portion, tzoffset]
         );
     };
 

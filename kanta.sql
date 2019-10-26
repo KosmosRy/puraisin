@@ -9,7 +9,8 @@ CREATE TABLE puraisu (
   postfestum  BOOLEAN                                         NOT NULL,
   coordinates JSON,
   portion     NUMERIC DEFAULT 1                               NOT NULL,
-  weight      NUMERIC DEFAULT 85.5                            NOT NULL
+  weight      NUMERIC DEFAULT 85.5                            NOT NULL,
+  tzoffset    SMALLINT DEFAULT 0                              NOT NULL
 );
 
 CREATE TABLE "session" (
