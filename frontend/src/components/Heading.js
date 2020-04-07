@@ -1,8 +1,7 @@
 // @flow
 import React, { Component } from "react";
 import {formatDate} from "../api";
-import distanceInWordsToNow from "date-fns/distance_in_words_to_now";
-import addSeconds from "date-fns/add_seconds";
+import { formatDistanceToNow, addSeconds }  from "date-fns";
 import locale from "date-fns/locale/fi";
 
 type Props = {
@@ -15,17 +14,17 @@ type Props = {
     logout: Function
 }
 
-const formatLastBite = (lastBite:Date) => formatDate(lastBite, "ddd, D.M.YY [klo.] H:mm Z");
+const formatLastBite = (lastBite:Date) => formatDate(lastBite, "EEEE, d.M.yy 'klo.' H:mm XXX");
 const formatTimeTillSober = (timeTillSober:number) => {
     if (timeTillSober > 0) {
-        return distanceInWordsToNow(addSeconds(new Date(), timeTillSober), {locale});
+        return formatDistanceToNow(addSeconds(new Date(), timeTillSober), {locale});
     } else {
         return "-";
     }
 };
 const formatTimeToNow = (from:?Date) => {
     if (from) {
-        return distanceInWordsToNow(from, {locale});
+        return formatDistanceToNow(from, {locale});
     } else {
         return "-";
     }
