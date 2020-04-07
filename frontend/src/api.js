@@ -1,6 +1,5 @@
 // @flow
-import parse from "date-fns/parse";
-import format from "date-fns/format";
+import { parseISO, format } from "date-fns";
 import fiLocale from "date-fns/locale/fi";
 
 
@@ -59,10 +58,10 @@ const handleResponse = async (res:Response):Promise<any> => {
 const handleUserState = async (res:Response):Promise<UserStatus> => {
     const json = await handleResponse(res);
     if (json.lastBite) {
-        json.lastBite = parse(json.lastBite);
+        json.lastBite = parseISO(json.lastBite);
     }
     if (json.bingeStart) {
-        json.bingeStart = parse(json.bingeStart);
+        json.bingeStart = parseISO(json.bingeStart);
     }
     csrfToken = json.csrf;
 
@@ -88,7 +87,7 @@ const submitBite = async (data:Bite):Promise<UserStatus> => {
         cache: "no-store",
         credentials: "same-origin",
         method: "POST",
-        body: JSON.stringify({...data, tzOffset: formatDate(new Date(), "Z")})
+        body: JSON.stringify({...data, tzOffset: formatDate(new Date(), "XXX")})
     }).then(handleUserState);
 };
 

@@ -1,4 +1,4 @@
-const differenceInSeconds = require("date-fns/difference_in_seconds");
+const differenceInSeconds = require("date-fns/differenceInSeconds");
 const {Pool, types} = require("pg");
 types.setTypeParser(1700, 'text', parseFloat);
 

@@ -5,7 +5,7 @@ import type {UserStatus, AppInfo, Bite} from "./api";
 import Heading from "./components/Heading";
 import BiteForm from "./components/BiteForm";
 import "./App.css";
-import differenceInSeconds from "date-fns/difference_in_seconds";
+import { differenceInSeconds } from "date-fns";
 import {Alert} from "react-bootstrap";
 import { CSSTransitionGroup } from "react-transition-group";
 
@@ -219,7 +219,7 @@ class App extends Component<Props, State> {
             page = <LoginPage/>;
         } else {
             page = <FrontPage info={this.state.appInfo} logout={this.logout}/>;
-        } 
+        }
 
         return (
             <div>
