@@ -6,8 +6,8 @@ import Heading from "./components/Heading";
 import BiteForm from "./components/BiteForm";
 import "./App.css";
 import { differenceInSeconds } from "date-fns";
-import {Alert} from "react-bootstrap";
-import { CSSTransitionGroup } from "react-transition-group";
+import { Alert } from "react-bootstrap";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 type Props = {};
 type State = {
@@ -125,19 +125,19 @@ class FrontPage extends Component<FpProps, FpState> {
                          logout={this.props.logout}
                 />
 
-                <CSSTransitionGroup transitionName="bitesuccess"
-                                    transitionEnterTimeout={1}
-                                    transitionLeaveTimeout={1000}>
+                <TransitionGroup>
                     {this.state.biteDone && (
-                        <Alert bsStyle="success">
+                      <CSSTransition classNames="bitesuccess" timeout={{ enter: 1, exit: 1000 }}>
+                        <Alert variant="success">
                             <div>Toppen! Raportoit puraisun "{this.state.lastContent}", jonka juotuasi olet noin {currentPermillage.toFixed(2)}{" "}
                                 promillen humalassa.<br/>{currentPermillage > 0.5 && <strong>Muista jättää ajaminen muille!</strong>}</div>
                         </Alert>
+                      </CSSTransition>
                     )}
-                </CSSTransitionGroup>
+                </TransitionGroup>
 
                 {this.state.error && (
-                    <Alert bsStyle="danger">
+                    <Alert variant="danger">
                         <div>Viduiks män, syy: "{this.state.error}". <a href="/">Verestä sivu</a> ja kokeile uudestaan, tai jotain</div>
                     </Alert>
                 )}
