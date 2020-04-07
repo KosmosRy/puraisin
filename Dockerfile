@@ -1,23 +1,19 @@
-FROM node:10-alpine as frontend
+FROM node:lts-alpine
 
-WORKDIR /build
-COPY frontend/package.json frontend/yarn.lock ./
-RUN yarn
-COPY frontend/ ./
-RUN yarn build
-
-FROM node:10-alpine
 WORKDIR /puraisu
-COPY package.json .
-COPY yarn.lock .
+COPY package.json yarn.lock ./
+COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/
 RUN yarn
 
-COPY ./*.js ./
-COPY --from=frontend /build/build ./frontend/build
+COPY frontend ./frontend/
+RUN yarn build-front
+
+COPY backend ./backend/
 
 EXPOSE 5000
 
 RUN addgroup -g 998 kosmos && adduser --uid 998 -D -G kosmos kosmos
 USER kosmos:kosmos
 
-CMD ["node", "index.js"]
+CMD ["node", "backend/index.js"]

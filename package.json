@@ -3,24 +3,16 @@
   "version": "0.0.1",
   "description": "Heinänen testaa ja testaa ja testaa",
   "main": "index.js",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
   "scripts": {
-    "start": "node index.js"
+    "start-back": "yarn workspace backend node index.js",
+    "start-front": "yarn workspace frontend react-scripts start",
+    "start": "yarn start-back & yarn start-front",
+    "build-front": "yarn workspace frontend react-app-rewired build",
+    "test": "yarn frontend react-scripts test --env=jsdom"
   },
-  "dependencies": {
-    "body-parser": "^1.18.3",
-    "connect-pg-simple": "^6.0.1",
-    "csurf": "^1.9.0",
-    "date-fns": "^1.29.0",
-    "dotenv": "^4.0.0",
-    "express": "^4.16.3",
-    "express-session": "^1.15.6",
-    "kosmos-utils": "github:KosmosRy/kosmos-utils#v1.0.4",
-    "log-timestamp": "^0.1.2",
-    "passport": "^0.4.0",
-    "passport-slack": "^0.0.7",
-    "pg": "^7.4.3",
-    "uid-safe": "^2.1.5"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "repository": {
     "type": "github",
