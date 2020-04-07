@@ -115,11 +115,11 @@ section.heading {
     text-transform: capitalize;
 }
 
-.bitesuccess-leave {
+.bitesuccess-exit {
     opacity: 1;
 }
 
-.bitesuccess-leave.bitesuccess-leave-active {
+.bitesuccess-exit.bitesuccess-exit-active {
     opacity: 0.01;
     transition: opacity 1000ms ease-in;
 }
