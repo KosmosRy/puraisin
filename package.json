@@ -14,6 +14,9 @@
   },
   "dependencies": {},
   "devDependencies": {},
+  "resolutions": {
+    "js-yaml": "3.13.1"
+  },
   "repository": {
     "type": "github",
     "url": "https://github.com/KosmosRy/puraisin"
