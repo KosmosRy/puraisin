@@ -1,115 +1,47 @@
-// @flow
-import { parseISO, format } from "date-fns";
-import fiLocale from "date-fns/locale/fi";
+import dayjs from 'dayjs'
+import { BiteInfo, UserStatus } from '../common/types'
 
-
-export type AppInfo = {
-    realName: string,
-    burnFactor: number,
-    avatar: string
+const handleResponse = async <T>(res: Response): Promise<T> => {
+  if (res.ok) {
+    return res.json()
+  } else {
+    throw new Error(res.statusText)
+  }
 }
 
-export type UserStatus = {
-    permillage: number,
-    lastBite: ?Date,
-    bingeStart: ?Date
+const handleUserState = async (res: Response): Promise<UserStatus> => {
+  const { permillage, lastBite, bingeStart } = await handleResponse<{
+    permillage: number
+    lastBite?: string
+    bingeStart?: string
+  }>(res)
+
+  const userStatus: UserStatus = { permillage }
+
+  if (lastBite) {
+    userStatus.lastBite = dayjs(lastBite).toDate()
+  }
+  if (bingeStart) {
+    userStatus.bingeStart = dayjs(bingeStart).toDate()
+  }
+
+  return userStatus
 }
 
-export type Coords = {
-    accuracy?:number,
-    longitude?:number,
-    latitude?:number,
-    altitude?:number,
-    altitudeAccuracy?:number
+export const getStatus = async (): Promise<UserStatus> => {
+  return fetch('/user-status', { cache: 'no-store', credentials: 'same-origin' }).then(
+    handleUserState
+  )
 }
 
-export type Bite = {
-    coordinates: Coords,
-    content: string,
-    portion: number,
-    postfestum: boolean,
-    pftime: string,
-    location: string,
-    customlocation: string,
-    info: string
-};
-
-let csrfToken:string = "";
-
-class ServerError extends Error {
-    response:Response;
-    status:number;
-    constructor(message:string, response:Response) {
-        super(message);
-        this.response = response;
-        this.status = response.status;
-        Error.captureStackTrace && Error.captureStackTrace(this, ServerError);
-    }
+export const submitBite = async (data: BiteInfo): Promise<UserStatus> => {
+  return fetch('/submit-data', {
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    }),
+    cache: 'no-store',
+    credentials: 'same-origin',
+    method: 'POST',
+    body: JSON.stringify({ ...data, tzOffset: dayjs().format('XXX') })
+  }).then(handleUserState)
 }
-
-const handleResponse = async (res:Response):Promise<any> => {
-    if (res.ok) {
-        return await res.json();
-    } else {
-        throw new ServerError(res.statusText, res);
-    }
-};
-
-const handleUserState = async (res:Response):Promise<UserStatus> => {
-    const json = await handleResponse(res);
-    if (json.lastBite) {
-        json.lastBite = parseISO(json.lastBite);
-    }
-    if (json.bingeStart) {
-        json.bingeStart = parseISO(json.bingeStart);
-    }
-    csrfToken = json.csrf;
-
-    return (json:UserStatus);
-};
-
-const getStatus = async ():Promise<UserStatus> => {
-    return await fetch("/user-status", {cache: "no-store", credentials: "same-origin"}).then(handleUserState);
-};
-
-const getAppInfo = async ():Promise<AppInfo> => {
-    return await fetch("/info", {cache: "no-store", credentials: "same-origin"}).then(handleResponse);
-};
-
-const formatDate = (date:Date, pattern:string) => format(date, pattern, {locale: fiLocale});
-
-const submitBite = async (data:Bite):Promise<UserStatus> => {
-    return await fetch("/submit-data", {
-        headers: new Headers({
-            "CSRF-Token": csrfToken,
-            "Content-Type": "application/json"
-        }),
-        cache: "no-store",
-        credentials: "same-origin",
-        method: "POST",
-        body: JSON.stringify({...data, tzOffset: formatDate(new Date(), "XXX")})
-    }).then(handleUserState);
-};
-
-const logout = async ():Promise<void> => {
-    await fetch(new Request("/logout"), {
-        method: "DELETE",
-        credentials: "same-origin",
-        headers: new Headers({
-            "CSRF-Token": csrfToken
-        })
-    });
-};
-
-const updatedStatusListeners:Array<Function> = [];
-const listenUpdatedStatus = (listener:Function) => {
-  updatedStatusListeners.push(listener);
-};
-
-const setUpdatedStatus = (updated:boolean) => {
-    updatedStatusListeners.forEach((fn) => fn(updated));
-};
-
-export {
-    getAppInfo, getStatus, formatDate, submitBite, logout, listenUpdatedStatus, setUpdatedStatus
-};

@@ -1,0 +1,21 @@
+{
+  "server": {
+    "publicHost": "https://test.kosmosry.fi",
+    "port": 3000
+  },
+  "slack": {
+    "redirect_path": "/auth/slack",
+    "signingSecret": "SIGNING_SECRET",
+    "botToken": "BOT_TOKEN",
+    "appToken": "APP_TOKEN",
+    "client_id": "CLIENT_ID",
+    "client_secret": "CLIENT_SECRET"
+  },
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "puraisin",
+    "password": "puraisin",
+    "database": "puraisin"
+  }
+}

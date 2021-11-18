@@ -1,0 +1,11 @@
+version: '3.2'
+
+services:
+  puraisin-db:
+    image: "postgres"
+    container_name: "puraisin-db"
+    environment:
+      - POSTGRES_USER=puraisin
+      - POSTGRES_PASSWORD=puraisin
+    ports:
+      - "5432:5432"

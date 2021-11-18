@@ -1,319 +1,214 @@
-// @flow
-/* global SyntheticEvent */
-import * as React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCompass, faLocationArrow, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import type {Coords, Bite} from "../api";
+import { PfEvent, PostFestum } from './PostFestum'
+import { Location, LocationEvent } from './Location'
+import { BiteInfo } from '../../common/types'
+import { ChangeEvent, useRef, useState, VFC } from 'react'
+import styled from 'styled-components'
+import { AdornedInput } from './AdornedInput'
+import { Row } from './CommonStyles'
 
-// noinspection JSUnresolvedVariable
-type ReactObjRef<ElementType: React.ElementType> = {
-    // noinspection JSUnresolvedVariable
-    current: null | React.ElementRef<ElementType>
+type BiteFormProps = {
+  submitBite: (b: BiteInfo) => void
 }
 
-type PfProps = {
-    postfestum: boolean,
-    pftime: string,
-    handleChange: Function
-}
-class PostFestum extends React.Component<PfProps> {
-    render () {
-        return (
-            <div className="row justify-content-start">
-                <div className="form-group col-xs-auto">
-                    <div className="form-check form-check-inline">
-                        <label className="form-check-label">
-                            <input type="checkbox" className="form-check-input" id="postfestum"
-                                   name="postfestum" checked={this.props.postfestum}
-                                   onChange={this.props.handleChange}
-                            /> Postfestum
-                        </label>
-                    </div>
-                </div>
-                {this.props.postfestum && (
-                    <div id="postfestum-minutes" className="form-group col-sm-auto input-group input-group-sm">
-                        <input className="form-control" type="number" id="pf-time" name="pftime" required={true}
-                               title="Postfestum-ajankohta" value={this.props.pftime} onChange={this.props.handleChange}
-                               min="1" step="1"
-                        />
-                        <div className="input-group-append">
-                            <div className="input-group-text">min sitten</div>
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
+const portions: [string, number][] = [
+  ['Pieni tuoppi keskaria (330 ml, 4,6 %)', 1],
+  ['Iso tuoppi keskaria (500 ml, 4,6 %)', 1.5],
+  ['Pieni tuoppi nelosta (330 ml, 5,2 %)', 1.2],
+  ['Iso tuoppi nelosta (500 ml, 5,2 %)', 1.8],
+  ['12 senttiä viiniä (120 ml, 12,5 %)', 1],
+  ['16 senttiä viiniä (160 ml, 12,5 %)', 1.3],
+  ['24 senttiä viiniä (240 ml, 12,5 %)', 2],
+  ['8 senttiä väkevää viiniä (80 ml, 20 %)', 1],
+  ['4 cl viinaa (40 ml, 40 %)', 1.1],
+  ['4 cl 60-volttista viinaa (40 ml, 60 %)', 1.6]
+]
+
+export const BiteForm: VFC<BiteFormProps> = ({ submitBite }) => {
+  const [portion, setPortion] = useState(1)
+  const [postfestum, setPostfestum] = useState(false)
+  const [pftime, setPftime] = useState(0)
+  const [location, setLocation] = useState('koti')
+  const [content, setContent] = useState('')
+  const [customLocation, setCustomLocation] = useState<string>()
+  const [info, setInfo] = useState('')
+  const [coordinates, setCoordinates] = useState<GeolocationCoordinates | null>()
+
+  const clearState = () => {
+    setPortion(1)
+    setPostfestum(false)
+    setPftime(0)
+    setLocation('koti')
+    setContent('')
+    setCustomLocation(undefined)
+    setInfo('')
+  }
+
+  const portionSelect = useRef<HTMLSelectElement>(null)
+
+  const portionLabel = portion === 1 ? 'annos' : 'annosta'
+
+  const textChangeHandler =
+    (fn: (v: string) => void) =>
+    (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) =>
+      fn(event.target.value)
+
+  const handlePostfestum = (pfEvent: PfEvent) => {
+    setPostfestum(pfEvent.postfestum)
+    setPftime(pfEvent.pftime)
+  }
+
+  const handleLocation = (locationEvent: LocationEvent) => {
+    setLocation(locationEvent.location)
+    setCustomLocation(locationEvent.customLocation)
+  }
+
+  const handleSelect = (event: ChangeEvent<HTMLSelectElement>) => {
+    setPortion(parseFloat(event.target.value))
+  }
+
+  const handleSubmit = () => {
+    submitBite({
+      portion,
+      postfestum,
+      pftime,
+      location,
+      content,
+      customLocation,
+      info,
+      coordinates
+    })
+    clearState()
+    if (portionSelect.current) {
+      portionSelect.current.selectedIndex = 0
     }
-}
+  }
 
-function toDM(degrees:number, pos, neg) {
-    let positive = true;
-    if (degrees < 0) {
-        positive = false;
-        degrees = -degrees;
-    }
+  return (
+    <Form>
+      <FullWidthRow>
+        <input
+          placeholder="Mitäs ajattelit puraista?"
+          type="text"
+          value={content}
+          onChange={textChangeHandler(setContent)}
+          required={true}
+        />
+      </FullWidthRow>
 
-    let degreesFull = Math.floor(degrees);
-
-    let minutes = 60 * (degrees - degreesFull);
-    let minutesRounded = minutes.toFixed(3);
-
-    if (minutesRounded === 60) {
-        minutesRounded = "0.000";
-        degreesFull += 1;
-    }
-
-    if (degreesFull < 10) {
-        degreesFull = "0" + degreesFull;
-    }
-
-    if (parseInt(minutesRounded, 10) < 10) {
-        minutesRounded = "0" + minutesRounded;
-    }
-
-    return (degreesFull + "°" + minutesRounded + "'" + (positive ? pos : neg));
-}
-
-function formatDM(coords:Coords) {
-    if (coords.accuracy && !isNaN(coords.accuracy)) {
-        const c = ((coords:any):Coordinates);
-        return `${toDM(c.latitude, "N", "S")} ${toDM(c.longitude, "E", "W")} (±${c.accuracy.toFixed(0)}m)`;
-    } else {
-        return "ei paikkatietoja";
-    }
-}
-
-type LocationProps = {
-    location: string,
-    coordinates: Coords,
-    customlocation: string,
-    handleChange: Function
-}
-class Location extends React.Component<LocationProps> {
-    render () {
-        const {location, handleChange} = this.props;
-
-        const { accuracy } = this.props.coordinates;
-        const locationIndicator = {
-            icon: faCompass,
-            className: "compass",
-            spin: true
-        };
-
-
-        if (accuracy !== undefined) {
-            locationIndicator.spin = false;
-            if (isNaN(accuracy)) {
-                locationIndicator.icon = faExclamationTriangle;
-                locationIndicator.className = "red";
-            } else {
-                locationIndicator.icon = faLocationArrow;
-                if (accuracy <= 10) {
-                    locationIndicator.className = "green";
-                } else if (accuracy <= 50) {
-                    locationIndicator.className = "yellow";
-                } else if (accuracy <= 1000) {
-                    locationIndicator.className = "orange";
-                } else {
-                    locationIndicator.className = "red";
-                }
+      <PortionRow>
+        <div>
+          <label htmlFor="portion-select">Alkoholiannos</label>
+        </div>
+        <PortionSelect>
+          <div className="portion-select">
+            <select onChange={handleSelect} ref={portionSelect}>
+              {portions.map(([option, value], index) => (
+                <option key={index} value={value}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          <AdornedInput
+            className="portion-input"
+            input={
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                required={true}
+                value={portion}
+                onChange={textChangeHandler((v: string) => setPortion(parseFloat(v)))}
+              />
             }
-        }
+            adornment={portionLabel}
+          />
+        </PortionSelect>
+      </PortionRow>
 
-        return (
-            <section>
-                <div className="row">
-                    <div className="col-form-legend col">Missä?
-                        <i title={formatDM(this.props.coordinates)}> <FontAwesomeIcon icon={locationIndicator.icon}
-                                                                                      spin={locationIndicator.spin}
-                                                                                      className={locationIndicator.className}/></i>
-                    </div>
-                </div>
+      <PostFestum postfestum={postfestum} pftime={pftime} handleChange={handlePostfestum} />
 
-                <div className="row">
-                    <div className="form-group col">
-                        <div className="form-check form-check-inline">
-                            <label className="form-check-label">
-                                <input type="radio" className="form-check-input location-input" name="location"
-                                       value="koti" checked={location === "koti"} onChange={handleChange}/> Koti
-                            </label>
-                        </div>
+      <Location
+        location={location}
+        customLocation={customLocation}
+        handleChange={handleLocation}
+        setCoordinates={setCoordinates}
+      />
 
-                        <div className="form-check form-check-inline">
-                            <label className="form-check-label">
-                                <input type="radio" className="form-check-input location-input" name="location"
-                                       value="työ" checked={location === "työ"} onChange={handleChange}/> Työ
-                            </label>
-                        </div>
+      <FullWidthRow>
+        <textarea
+          placeholder="Erityisiä huomioita puraisuun liittyen.."
+          value={info}
+          onChange={textChangeHandler(setInfo)}
+        />
+      </FullWidthRow>
 
-                        <div className="form-check form-check-inline">
-                            <label className="form-check-label">
-                                <input type="radio" className="form-check-input location-input" name="location"
-                                       value="baari" checked={location === "baari"} onChange={handleChange}/> Baari
-                            </label>
-                        </div>
-
-                        <div className="form-check form-check-inline">
-                            <label className="form-check-label">
-                                <input type="radio" className="form-check-input location-input" name="location"
-                                       id="customlocation" value="else" checked={location === "else"} onChange={handleChange}/> Muu
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                {location === "else" && (
-                    <div className="row">
-                        <div className="form-group col">
-                            <input className="form-control" type="text" id="customlocation-input"
-                                   placeholder="Missäs sitten?" value={this.props.customlocation}
-                                   onChange={handleChange} name="customlocation" required={true}
-                            />
-                        </div>
-                    </div>
-                )}
-            </section>
-        );
-    }
+      <Submit type="submit" onClick={handleSubmit}>
+        Puraise!
+      </Submit>
+    </Form>
+  )
 }
 
-class BiteForm extends React.Component<{submitBite:Function}, Bite> {
-    watchId: number | null;
-    initState = {
-        portion: 1,
-        postfestum: false,
-        pftime: "",
-        location: "koti",
-        coordinates: {},
-        content: "",
-        customlocation: "",
-        info: ""
-    };
+const Form = styled.div`
+  label {
+    font-weight: 100;
+  }
+`
 
-    portionArr = [1, 1.5, 1.2, 1.8, 1, 1.3, 2, 1, 1.1, 1.6];
+const FullWidthRow = styled(Row)`
+  > * {
+    width: 100%;
+  }
+`
 
-    portionSelect: ReactObjRef<'select'>;
-    
-    constructor(props:{submitBite:Function}) {
-        super(props);
-        this.state = this.initState;
-        this.portionSelect = React.createRef();
+const PortionRow = styled(Row)`
+  flex-direction: column;
+
+  label {
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+`
+
+const PortionSelect = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+
+  .portion-select {
+    flex: 2 1 66%;
+
+    select {
+      width: 100%;
     }
+  }
 
-    componentDidMount () {
-        if (navigator && navigator.geolocation) {
-            this.watchId = navigator.geolocation.watchPosition(pos => {
-                const {accuracy, longitude, latitude, altitude, altitudeAccuracy, speed, heading} = pos.coords;
-                this.setState({
-                    coordinates: {
-                        accuracy, longitude, latitude, altitude, altitudeAccuracy, speed, heading
-                    }
-                });
-            }, err => {
-                console.error(err);
-                this.setState({coordinates: {accuracy: NaN}});
-            }, {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 5000
-            })
-        }
+  .portion-input {
+    flex: 1 0 33%;
+
+    input {
+      max-width: 65px;
     }
+  }
+`
 
-    componentWillUnmount () {
-        if (this.watchId) {
-            navigator.geolocation.clearWatch(this.watchId);
-            this.watchId = null;
-        }
-    }
-
-    handleChange = (event: SyntheticEvent<HTMLInputElement>) => {
-        const target = event.currentTarget;
-        const value = target.type === "checkbox" ? target.checked : target.value;
-        const name = target.name;
-
-        this.setState({
-            [name]: value
-        });
-    };
-
-    handleSelect = (event: SyntheticEvent<HTMLSelectElement>) => {
-        const val = event.currentTarget.value;
-        this.setState({
-            portion: this.portionArr[parseInt(val, 10)]
-        });
-    };
-
-    handleSubmit = (event: SyntheticEvent<HTMLInputElement>) => {
-        this.props.submitBite(this.state);
-        this.setState(this.initState);
-        if (this.portionSelect.current) {
-            this.portionSelect.current.value = "0";
-        }
-        event.preventDefault();
-    };
-
-    render () {
-        const portionLabel = this.state.portion === 1 ? "annos" : "annosta";
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <input type="hidden" name="coordinates" id="coordinates" value={JSON.stringify(this.state.coordinates)}/>
-
-                <div className="row">
-                    <div className="form-group col">
-                        <input className="form-control" placeholder="Mitäs ajattelit puraista?"
-                               type="text" id="content" name="content" value={this.state.content}
-                               onChange={this.handleChange} required={true}
-                        />
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="form-group col-6 col-sm-4">
-                        <label htmlFor="portion-select" className="control-label">Alkoholiannos</label>
-                        <select id="portion-select" name="portion-select" className="form-control"
-                                onChange={this.handleSelect} ref={this.portionSelect}
-                        >
-                            <option value="0">Pieni tuoppi keskaria (330 ml, 4,6 %)</option>
-                            <option value="1">Iso tuoppi keskaria (500 ml, 4,6 %)</option>
-                            <option value="2">Pieni tuoppi nelosta (330 ml, 5,2 %)</option>
-                            <option value="3">Iso tuoppi nelosta (500 ml, 5,2 %)</option>
-                            <option value="4">12 senttiä viiniä (120 ml, 12,5 %)</option>
-                            <option value="5">16 senttiä viiniä (160 ml, 12,5 %)</option>
-                            <option value="6">24 senttiä viiniä (240 ml, 12,5 %)</option>
-                            <option value="7">8 senttiä väkevää viiniä (80 ml, 20 %)</option>
-                            <option value="8">4 cl viinaa (40 ml, 40 %)</option>
-                            <option value="9">4 cl 60-volttista viinaa (40 ml, 60 %)</option>
-                        </select>
-                    </div>
-                    <div className="form-group col-5 col-sm-3 input-group input-group-sm align-self-end">
-                        <input className="form-control" type="number" min="0" step="0.1" id="portion" required={true}
-                               name="portion" value={this.state.portion} onChange={this.handleChange}/>
-                        <div className="input-group-append">
-                            <div className="input-group-text">{portionLabel}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <PostFestum postfestum={this.state.postfestum} pftime={this.state.pftime} handleChange={this.handleChange}/>
-                <Location location={this.state.location} customlocation={this.state.customlocation}
-                          handleChange={this.handleChange} coordinates={this.state.coordinates}/>
-
-                <div className="row">
-                    <div className="form-group col">
-                        <textarea className="form-control" placeholder="Erityisiä huomioita puraisuun liittyen.." id="info"
-                                  name="info" value={this.state.info} onChange={this.handleChange}/>
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className="form-group col">
-                        <button type="submit" className="btn btn-success">Puraise!</button>
-                    </div>
-                </div>
-            </form>
-        );
-    }
+const Submit = styled.button`
+  display: inline-block;
+  color: #fff;
+  background-color: #28a745;
+  border: 1px solid #28a745;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  padding: 6px 12px;
+  font-size: 16px;
+  line-height: 1.5;
+  border-radius: 4px;
+  
+  :hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
 }
-
-export default BiteForm;
+`
