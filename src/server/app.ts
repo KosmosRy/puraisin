@@ -4,7 +4,7 @@ import expressSession from 'express-session'
 import index from './indexPage'
 import passportController, { getConfiguredPassport } from './passport'
 import express from 'express'
-import knexSession from 'connect-session-knex'
+import pgSession from 'connect-pg-simple'
 import { db } from './db'
 
 const { signingSecret, botToken, appToken } = config.get('slack')
@@ -29,12 +29,12 @@ app.message('hello', async ({ event, say }) => {
 const { router } = receiver
 
 ;(async () => {
-  const knexDb = await db()
-  const KnexSessionStore = knexSession(expressSession)
+  const dbClient = await db()
+  const SessionStore = pgSession(expressSession)
   const session = {
-    store: new KnexSessionStore({
-      knex: knexDb,
-      createtable: true
+    store: new SessionStore({
+      pgPromise: dbClient,
+      createTableIfMissing: true
     }),
     secret: 'HMP FTW',
     cookie: {
