@@ -5,6 +5,7 @@ import { ChangeEvent, useRef, useState, VFC } from 'react'
 import styled from 'styled-components'
 import { AdornedInput } from './AdornedInput'
 import { Row } from './CommonStyles'
+import dayjs from 'dayjs'
 
 type BiteFormProps = {
   submitBite: (b: BiteInfo) => void
@@ -75,7 +76,8 @@ export const BiteForm: VFC<BiteFormProps> = ({ submitBite }) => {
       content,
       customLocation,
       info,
-      coordinates
+      coordinates,
+      tzOffset: dayjs().format('Z')
     })
     clearState()
     if (portionSelect.current) {

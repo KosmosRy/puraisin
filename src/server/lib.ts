@@ -1,5 +1,9 @@
-import { getBites } from './db'
-import { calcTimeTillSober, calcCurrentPermillage, getBFactor } from '../common/utils'
+import { getBites, insertPuraisu } from './db'
+import { calcCurrentPermillage, getBFactor } from '../common/utils'
+import { Binge, BiteInfo, SlackConfig } from '../common/types'
+import dayjs from 'dayjs'
+import { WebClient } from '@slack/web-api'
+import config from 'config'
 
 export interface Bite {
   ts: Date
@@ -7,51 +11,102 @@ export interface Bite {
   weight?: number
 }
 
-export interface Binge {
-  currentPct: number
-  timeTillSober: number
-  lastBite?: Date
-  bingeStart?: Date
-}
-
 const baseBinge = (): Binge => ({
-  currentPct: 0,
-  timeTillSober: 0,
+  permillage: 0,
   lastBite: undefined,
   bingeStart: undefined
 })
 
+const { channelId } = config.get<SlackConfig>('slack')
+
 const processBite = (binge: Binge, bite: Bite): Binge => {
-  let { currentPct, lastBite, bingeStart } = binge
+  let { permillage, lastBite, bingeStart } = binge
   const { ts, portion, weight } = bite
   if (lastBite) {
-    currentPct = calcCurrentPermillage(currentPct, lastBite)
+    permillage = calcCurrentPermillage(permillage, lastBite)
   }
   if (portion) {
-    if (currentPct === 0) {
+    if (permillage === 0) {
       bingeStart = ts
     }
-    currentPct += getBFactor(weight) * portion
+    permillage += getBFactor(weight) * portion
     lastBite = ts
   }
-  if (currentPct === 0) {
+  if (permillage === 0) {
     bingeStart = undefined
   }
-  return { currentPct, timeTillSober: calcTimeTillSober(currentPct), lastBite, bingeStart }
+  return { permillage, lastBite, bingeStart }
 }
 
-export const currentStatus = (prevBite = baseBinge()): Binge =>
-  processBite(prevBite, { ts: new Date() })
-
-export const processBinge = (bites: Bite[]): Binge => {
-  return bites.reduce((prev, curr) => processBite(prev, curr), baseBinge())
+const processBinge = (bites: Bite[]): Binge => {
+  return bites.reduce((binge, bite) => processBite(binge, bite), baseBinge())
 }
 
-export const getUserStatus = async (userId: string) => {
-  const pb = await getBites(userId).then((b) => processBinge(b))
-  return {
-    permillage: pb.currentPct,
-    lastBite: pb.lastBite,
-    bingeStart: pb.bingeStart
+export const getUserStatus = (userId: string): Promise<Binge> => getBites(userId).then(processBinge)
+
+export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?: WebClient) => {
+  const { id: userId, token } = user
+  let currentPermillage = await getUserStatus(userId).then((status) => status.permillage)
+
+  /*
+  päästetään läpi ilman sanitointia, slack ja express sanitoivat syötteet automaattisesti
+  ja sql-injektiot vältetään prepared statementeilla. Pitää muistaa sitten itse sanitoida
+  arvot tarpeen mukaan
+  */
+  const {
+    content,
+    info,
+    coordinates: coords,
+    postfestum,
+    pftime = 0,
+    tzOffset,
+    portion,
+    location: loc,
+    customLocation
+  } = biteInfo
+  const type = currentPermillage > 0 ? 'p' : 'ep'
+  const ts = (postfestum ? dayjs().subtract(pftime, 'minutes') : dayjs()).toDate()
+  const location = loc === 'else' ? customLocation : loc
+  const alcoholW = Math.round(portion * 12)
+  const coordinates = !postfestum ? coords || null : null
+
+  await insertPuraisu(
+    userId,
+    type,
+    content,
+    location || 'Terra incognita',
+    info,
+    postfestum,
+    coordinates,
+    portion,
+    ts,
+    tzOffset
+  )
+
+  const binge = await getUserStatus(userId)
+  currentPermillage = binge.permillage
+
+  if (client) {
+    let coordLoc = ''
+    if (coordinates) {
+      const { latitude, longitude, accuracy } = coordinates
+      const gmapUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+      coordLoc = ` (<${gmapUrl}|${latitude.toFixed(4)},${longitude.toFixed(
+        4
+      )}>\u00A0±${accuracy.toFixed(0)}m)`
+    }
+    const typePostfix = postfestum ? `-postfestum (${pftime} min sitten)` : ''
+    const slackMsg = `${type}${typePostfix};${content}\u00A0(${alcoholW}\u00A0g);${location}${coordLoc};${currentPermillage
+      .toFixed(2)
+      .replace('.', ',')}\u00A0‰${info ? ';' + info : ''}`
+    await client.chat.postMessage({
+      channel: channelId,
+      text: `\u{200B}${slackMsg}`,
+      unfurl_links: false,
+      as_user: true,
+      token
+    })
   }
+
+  return binge
 }

@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState, VFC } from 'react'
 import { getStatus, submitBite } from '../api'
 import { Heading } from './Heading'
-import { AppInfo, BiteInfo, UserStatus } from '../../common/types'
+import { AppInfo, BiteInfo, Binge } from '../../common/types'
 import styled from 'styled-components'
 import { calcCurrentPermillage, calcTimeTillSober } from '../../common/utils'
 import { BiteForm } from './BiteForm'
 
 type FpProps = {
   info: AppInfo
-  initialUserStatus: UserStatus
+  initialUserStatus: Binge
 }
 
 export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
@@ -20,7 +20,7 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
   const [lastContent, setLastContent] = useState('')
   const [error, setError] = useState<string>()
 
-  const setUserStatus = useCallback(async (statusPromise: Promise<UserStatus>) => {
+  const setUserStatus = useCallback(async (statusPromise: Promise<Binge>) => {
     try {
       const userStatus = await statusPromise
       setPermillage(userStatus.permillage)
@@ -45,8 +45,7 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
   const timeTillSober = calcTimeTillSober(currentPermillage)
 
   const handleSubmit = async (data: BiteInfo) => {
-    console.log(data)
-    /*try {
+    try {
       await setUserStatus(submitBite(data))
       setBiteDone(true)
       setLastContent(data.content)
@@ -57,7 +56,7 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
       setPermillage(0)
       setLastBite(undefined)
       setError((reason as Error).message || 'No mikähän tässä nyt on')
-    }*/
+    }
   }
 
   return (

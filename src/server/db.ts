@@ -40,7 +40,8 @@ export const getBites = async (userId: string, since?: Date): Promise<Bite[]> =>
         SELECT timestamp as ts, portion, weight 
         FROM puraisu 
         WHERE biter = $(userId) 
-          AND ($(since) IS NULL OR timestamp > $(since))`,
+          AND ($(since) IS NULL OR timestamp > $(since))
+        ORDER BY timestamp`,
     { userId, since }
   )
 
@@ -61,7 +62,7 @@ export const insertPuraisu = async (
   location: string,
   info: string,
   postfestum: boolean,
-  coordinates: GeolocationCoordinates,
+  coordinates: GeolocationCoordinates | null,
   portion: number,
   timestamp = new Date(),
   tzoffset?: string

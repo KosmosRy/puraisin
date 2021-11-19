@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { BiteInfo, UserStatus } from '../common/types'
+import { Binge, BiteInfo } from '../common/types'
 
 const handleResponse = async <T>(res: Response): Promise<T> => {
   if (res.ok) {
@@ -9,14 +9,10 @@ const handleResponse = async <T>(res: Response): Promise<T> => {
   }
 }
 
-const handleUserState = async (res: Response): Promise<UserStatus> => {
-  const { permillage, lastBite, bingeStart } = await handleResponse<{
-    permillage: number
-    lastBite?: string
-    bingeStart?: string
-  }>(res)
+const handleUserState = async (res: Response): Promise<Binge> => {
+  const { permillage, lastBite, bingeStart } = await handleResponse<Binge>(res)
 
-  const userStatus: UserStatus = { permillage }
+  const userStatus: Binge = { permillage }
 
   if (lastBite) {
     userStatus.lastBite = dayjs(lastBite).toDate()
@@ -28,13 +24,13 @@ const handleUserState = async (res: Response): Promise<UserStatus> => {
   return userStatus
 }
 
-export const getStatus = async (): Promise<UserStatus> => {
+export const getStatus = async (): Promise<Binge> => {
   return fetch('/user-status', { cache: 'no-store', credentials: 'same-origin' }).then(
     handleUserState
   )
 }
 
-export const submitBite = async (data: BiteInfo): Promise<UserStatus> => {
+export const submitBite = async (data: BiteInfo): Promise<Binge> => {
   return fetch('/submit-data', {
     headers: new Headers({
       'Content-Type': 'application/json'
@@ -42,6 +38,6 @@ export const submitBite = async (data: BiteInfo): Promise<UserStatus> => {
     cache: 'no-store',
     credentials: 'same-origin',
     method: 'POST',
-    body: JSON.stringify({ ...data, tzOffset: dayjs().format('XXX') })
+    body: JSON.stringify(data)
   }).then(handleUserState)
 }

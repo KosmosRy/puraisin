@@ -1,10 +1,10 @@
 import ReactDOM from 'react-dom'
 import App from './App'
-import { AppInfo, UserStatus } from '../common/types'
+import { AppInfo, Binge } from '../common/types'
 
 declare global {
   interface Window {
-    __USERSTATUS__: UserStatus
+    __USERSTATUS__: Binge
     __APPINFO__: AppInfo
   }
 }

@@ -1,13 +1,13 @@
 import { VFC } from 'react'
 import { FrontPage } from './components/FrontPage'
-import { AppInfo, UserStatus } from '../common/types'
+import { AppInfo, Binge } from '../common/types'
 import styled from 'styled-components'
 import { GlobalStyle } from './GlobalStyle'
 import dayjs from 'dayjs'
 
 export interface AppProps {
   appInfo: AppInfo
-  userStatus: UserStatus
+  userStatus: Binge
 }
 
 const App: VFC<AppProps> = ({ appInfo, userStatus }) => (

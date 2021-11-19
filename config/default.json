@@ -5,6 +5,7 @@
   },
   "slack": {
     "redirect_path": "/auth/slack",
+    "channelId": "CHANNEL_ID",
     "signingSecret": "SIGNING_SECRET",
     "botToken": "BOT_TOKEN",
     "appToken": "APP_TOKEN",

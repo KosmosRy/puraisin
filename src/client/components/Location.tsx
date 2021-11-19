@@ -24,8 +24,17 @@ export const Location: VFC<LocationProps> = ({
     if (navigator && navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
         (pos) => {
-          setCoordinates(pos.coords)
-          setLocalCoords(pos.coords)
+          const coords = {
+            accuracy: pos.coords.accuracy,
+            altitude: pos.coords.altitude,
+            altitudeAccuracy: pos.coords.altitudeAccuracy,
+            heading: pos.coords.heading,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            speed: pos.coords.speed
+          }
+          setCoordinates(coords)
+          setLocalCoords(coords)
         },
         (err) => {
           console.error(err)

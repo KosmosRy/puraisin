@@ -21,7 +21,7 @@ dayjs.locale('fi')
 const formatLastBite = (lastBite: Date) => dayjs(lastBite).format('dd, D.M.YY [klo] H:mm Z')
 const formatTimeTillSober = (timeTillSober: number) => {
   if (timeTillSober > 0) {
-    return dayjs().add(timeTillSober, 'seconds').fromNow()
+    return dayjs().add(timeTillSober, 'seconds').fromNow(true)
   } else {
     return '-'
   }

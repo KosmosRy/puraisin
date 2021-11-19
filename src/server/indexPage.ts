@@ -2,8 +2,8 @@ import express from 'express'
 import { WebClient } from '@slack/web-api'
 import manifest from '../../dist/bundle/manifest.json'
 import { appHtml } from './ssr'
-import { AppInfo, UserStatus } from '../common/types'
-import { getUserStatus } from './lib'
+import { AppInfo, BiteInfo, Binge } from '../common/types'
+import { getUserStatus, submitBite } from './lib'
 
 const index = (client: WebClient) => {
   const router = express.Router()
@@ -21,7 +21,7 @@ const index = (client: WebClient) => {
         avatar: picture || ''
       }
 
-      const userStatus: UserStatus = await getUserStatus(req.user.id)
+      const userStatus: Binge = await getUserStatus(req.user.id)
 
       const { html, styles } = appHtml({ appInfo, userStatus })
 
@@ -41,6 +41,15 @@ const index = (client: WebClient) => {
     if (req.isAuthenticated()) {
       const userStatus = await getUserStatus(req.user.id)
       res.json(userStatus)
+    } else {
+      res.sendStatus(401)
+    }
+  })
+
+  router.post('/submit-data', async (req, res) => {
+    if (req.isAuthenticated()) {
+      const currentBinge = await submitBite(req.user, req.body as BiteInfo, client)
+      res.json(currentBinge)
     } else {
       res.sendStatus(401)
     }

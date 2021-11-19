@@ -19,13 +19,6 @@ const app = new App({
   appToken
 })
 
-app.message('hello', async ({ event, say }) => {
-  // say() sends a message to the channel where the event was triggered
-  if ('user' in event) {
-    await say(`Hey there <@${event.user}>!`)
-  }
-})
-
 const { router } = receiver
 
 ;(async () => {
@@ -51,6 +44,7 @@ const { router } = receiver
   const passport = await getConfiguredPassport()
   router.use(passport.initialize())
   router.use(passport.session())
+  router.use(express.json())
   router.use('/bundle', express.static('./dist/bundle'))
   router.use('/', express.static('./public'))
   router.use('/', index(app.client))
