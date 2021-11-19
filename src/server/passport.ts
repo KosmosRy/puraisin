@@ -2,6 +2,7 @@ import express from 'express'
 import passport from 'passport'
 import { Issuer, Strategy, TokenSet, UserinfoResponse } from 'openid-client'
 import config from 'config'
+import { addBiter } from './db'
 
 const router = express.Router()
 
@@ -61,10 +62,18 @@ export const getConfiguredPassport = async () => {
   })
 
   router.get('/login', passport.authenticate(strategy))
+
   router.get(
     '/slack',
-    passport.authenticate(strategy, { successRedirect: '/', failureRedirect: '/' })
+    passport.authenticate(strategy, { failureRedirect: '/' }),
+    async (req, res) => {
+      if (req.user?.id) {
+        await addBiter(req.user.id)
+      }
+      res.redirect('/')
+    }
   )
+
   router.get('/logout', (req, res) => {
     req.logout()
     res.redirect('/')

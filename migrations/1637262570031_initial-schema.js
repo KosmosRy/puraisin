@@ -4,7 +4,7 @@ exports.up = (pgm) => {
   pgm.sql(`
     CREATE TABLE megafauna (
         biter       CHARACTER VARYING(32)    NOT NULL PRIMARY KEY,
-        weight      NUMERIC                  NOT NULL,
+        weight      NUMERIC                  NOT NULL DEFAULT 85.5,
         displayname CHARACTER VARYING(50)
     );
     

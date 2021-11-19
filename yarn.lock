@@ -1491,73 +1491,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kosmosry/kosmos-app@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@kosmosry/kosmos-app@workspace:."
-  dependencies:
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/preset-env": ^7.16.0
-    "@babel/preset-react": ^7.16.0
-    "@babel/preset-typescript": ^7.16.0
-    "@fortawesome/fontawesome-svg-core": ^1.2.36
-    "@fortawesome/free-solid-svg-icons": ^5.15.4
-    "@fortawesome/react-fontawesome": ^0.1.16
-    "@rollup/plugin-babel": ^5.3.0
-    "@rollup/plugin-commonjs": ^21.0.1
-    "@rollup/plugin-node-resolve": ^13.0.6
-    "@rollup/plugin-replace": ^3.0.0
-    "@slack/bolt": ^3.8.1
-    "@slack/web-api": ^6.4.0
-    "@types/config": ^0.0.40
-    "@types/connect-pg-simple": ^4.2.4
-    "@types/express": ^4.17.13
-    "@types/express-session": ^1.17.4
-    "@types/node": ^16.11.6
-    "@types/passport": ^1.0.7
-    "@types/pg": ^8.6.1
-    "@types/pg-promise": ^5.4.3
-    "@types/react": ^17.0.34
-    "@types/react-dom": ^17.0.11
-    "@types/styled-components": ^5.1.15
-    "@types/uuid": ^8.3.1
-    "@typescript-eslint/eslint-plugin": ^5.3.0
-    "@typescript-eslint/parser": ^5.3.0
-    babel-plugin-styled-components: ^1.13.3
-    babel-watch: ^7.6.0
-    config: ^3.3.6
-    connect-pg-simple: ^7.0.0
-    dayjs: ^1.10.7
-    ejs: ^3.1.6
-    eslint: ^7.0.0
-    eslint-config-prettier: ^8.3.0
-    eslint-import-resolver-node: ^0.3.6
-    eslint-plugin-import: ^2.25.2
-    eslint-plugin-react: ^7.27.0
-    eslint-plugin-react-hooks: ^4.3.0
-    express: ^4.16.4
-    express-session: ^1.17.2
-    node-pg-migrate: ^6.0.0
-    nodemon: ^2.0.15
-    npm-run-all: ^4.1.5
-    openid-client: ^5.0.2
-    passport: ^0.5.0
-    pg: ^8.7.1
-    pg-promise: ^10.11.1
-    prettier: ^2.4.1
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-is: ^17.0.2
-    rollup: ^2.59.0
-    rollup-plugin-output-manifest: ^2.0.0
-    rollup-plugin-terser: ^7.0.2
-    styled-components: ^5.3.3
-    ts-node: ^10.4.0
-    tslib: ^2.3.1
-    typescript: ^4.4.4
-  languageName: unknown
-  linkType: soft
-
 "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3":
   version: 2.1.8-no-fsevents.3
   resolution: "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3"
@@ -2242,6 +2175,73 @@ __metadata:
   checksum: 5c2be2c4540da9f7e1186a4f1fcca7411615f327c4476bf07853727c610d5b66990c7b3037b277310d0ebfc2f1548c2ff01ed1c535176ae6171f10a3de968a34
   languageName: node
   linkType: hard
+
+"Puraisin@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "Puraisin@workspace:."
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@babel/preset-env": ^7.16.0
+    "@babel/preset-react": ^7.16.0
+    "@babel/preset-typescript": ^7.16.0
+    "@fortawesome/fontawesome-svg-core": ^1.2.36
+    "@fortawesome/free-solid-svg-icons": ^5.15.4
+    "@fortawesome/react-fontawesome": ^0.1.16
+    "@rollup/plugin-babel": ^5.3.0
+    "@rollup/plugin-commonjs": ^21.0.1
+    "@rollup/plugin-node-resolve": ^13.0.6
+    "@rollup/plugin-replace": ^3.0.0
+    "@slack/bolt": ^3.8.1
+    "@slack/web-api": ^6.4.0
+    "@types/config": ^0.0.40
+    "@types/connect-pg-simple": ^4.2.4
+    "@types/express": ^4.17.13
+    "@types/express-session": ^1.17.4
+    "@types/node": ^16.11.6
+    "@types/passport": ^1.0.7
+    "@types/pg": ^8.6.1
+    "@types/pg-promise": ^5.4.3
+    "@types/react": ^17.0.34
+    "@types/react-dom": ^17.0.11
+    "@types/styled-components": ^5.1.15
+    "@types/uuid": ^8.3.1
+    "@typescript-eslint/eslint-plugin": ^5.3.0
+    "@typescript-eslint/parser": ^5.3.0
+    babel-plugin-styled-components: ^1.13.3
+    babel-watch: ^7.6.0
+    config: ^3.3.6
+    connect-pg-simple: ^7.0.0
+    dayjs: ^1.10.7
+    ejs: ^3.1.6
+    eslint: ^7.0.0
+    eslint-config-prettier: ^8.3.0
+    eslint-import-resolver-node: ^0.3.6
+    eslint-plugin-import: ^2.25.2
+    eslint-plugin-react: ^7.27.0
+    eslint-plugin-react-hooks: ^4.3.0
+    express: ^4.16.4
+    express-session: ^1.17.2
+    node-pg-migrate: ^6.0.0
+    nodemon: ^2.0.15
+    npm-run-all: ^4.1.5
+    openid-client: ^5.0.2
+    passport: ^0.5.0
+    pg: ^8.7.1
+    pg-promise: ^10.11.1
+    prettier: ^2.4.1
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    react-is: ^17.0.2
+    rollup: ^2.59.0
+    rollup-plugin-output-manifest: ^2.0.0
+    rollup-plugin-terser: ^7.0.2
+    styled-components: ^5.3.3
+    ts-node: ^10.4.0
+    tslib: ^2.3.1
+    typescript: ^4.4.4
+  languageName: unknown
+  linkType: soft
 
 "abbrev@npm:1":
   version: 1.1.1

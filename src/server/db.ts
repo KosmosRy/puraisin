@@ -44,6 +44,16 @@ export const getBites = async (userId: string, since?: Date): Promise<Bite[]> =>
     { userId, since }
   )
 
+export const addBiter = async (biter: string) => {
+  await pgDb.none(
+    `
+        INSERT INTO megafauna (biter) VALUES ($(biter))
+        ON CONFLICT (biter) DO NOTHING 
+    `,
+    { biter }
+  )
+}
+
 export const insertPuraisu = async (
   biter: string,
   type: string,
