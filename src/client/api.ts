@@ -10,9 +10,9 @@ const handleResponse = async <T>(res: Response): Promise<T> => {
 }
 
 const handleUserState = async (res: Response): Promise<Binge> => {
-  const { permillage, lastBite, bingeStart } = await handleResponse<Binge>(res)
+  const { permillage, lastBite, bingeStart, timeTillSober } = await handleResponse<Binge>(res)
 
-  const userStatus: Binge = { permillage }
+  const userStatus: Binge = { permillage, timeTillSober }
 
   if (lastBite) {
     userStatus.lastBite = dayjs(lastBite).toDate()

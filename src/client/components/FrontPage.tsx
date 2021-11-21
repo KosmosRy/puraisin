@@ -3,7 +3,6 @@ import { getStatus, submitBite } from '../api'
 import { Heading } from './Heading'
 import { AppInfo, BiteInfo, Binge } from '../../common/types'
 import styled from 'styled-components'
-import { calcCurrentPermillage, calcTimeTillSober } from '../../common/utils'
 import { BiteForm } from './BiteForm'
 
 type FpProps = {
@@ -16,6 +15,9 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
   const [permillage, setPermillage] = useState(initialUserStatus.permillage)
   const [bingeStart, setBingeStart] = useState<Date | undefined>(initialUserStatus.bingeStart)
   const [lastBite, setLastBite] = useState<Date | undefined>(initialUserStatus.lastBite)
+  const [timeTillSober, setTimeTillSober] = useState<number | undefined>(
+    initialUserStatus.timeTillSober
+  )
   const [biteDone, setBiteDone] = useState(false)
   const [lastContent, setLastContent] = useState('')
   const [error, setError] = useState<string>()
@@ -26,6 +28,7 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
       setPermillage(userStatus.permillage)
       setLastBite(userStatus.lastBite)
       setBingeStart(userStatus.bingeStart)
+      setTimeTillSober(userStatus.timeTillSober)
     } catch (reason) {
       console.error(reason)
       setPermillage(0)
@@ -40,9 +43,6 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
       clearInterval(intervalId)
     }
   }, [setUserStatus])
-
-  const currentPermillage = permillage > 0 ? calcCurrentPermillage(permillage, lastBite) : 0
-  const timeTillSober = calcTimeTillSober(currentPermillage)
 
   const handleSubmit = async (data: BiteInfo) => {
     try {
@@ -63,7 +63,7 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
     <FrontPageContainer>
       <Heading
         realName={realName}
-        permillage={currentPermillage}
+        permillage={permillage}
         timeTillSober={timeTillSober}
         bingeStart={bingeStart}
         lastBite={lastBite}

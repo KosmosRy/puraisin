@@ -7,6 +7,7 @@ export interface Binge {
   permillage: number
   lastBite?: Date
   bingeStart?: Date
+  timeTillSober?: number
 }
 
 export interface BiteInfo {

@@ -1,5 +1,4 @@
 import { ChangeEvent, useEffect, useState, VFC } from 'react'
-import { formatDM } from '../../common/utils'
 import styled from 'styled-components'
 import { GeoLocationIcon } from './GeoLocationIcon'
 
@@ -10,6 +9,27 @@ type LocationProps = {
   setCoordinates: (coords?: GeolocationCoordinates | null) => void
   customLocation?: string
   handleChange: (event: LocationEvent) => void
+}
+
+const toDM = (degrees: number, pos: string, neg: string) => {
+  let positive = true
+  if (degrees < 0) {
+    positive = false
+    degrees = -degrees
+  }
+
+  const degreesFull = degrees.toFixed(0).padStart(3, '0')
+  const minutes = ((60 * degrees) % 60).toFixed(3).padStart(2, '0')
+  return `${degreesFull}°${minutes}'${positive ? pos : neg}`
+}
+
+const formatDM = (coords?: GeolocationCoordinates | null) => {
+  if (coords) {
+    const { accuracy, latitude, longitude } = coords
+    return `${toDM(latitude, 'N', 'S')} ${toDM(longitude, 'E', 'W')} (±${accuracy.toFixed(0)}m)`
+  } else {
+    return 'ei paikkatietoja'
+  }
 }
 
 export const Location: VFC<LocationProps> = ({

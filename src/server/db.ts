@@ -34,16 +34,51 @@ export const db = async () => {
   return pgDb
 }
 
+export const getWeight = async (userId: string): Promise<number> =>
+  pgDb
+    .one<{ weight: number }>(
+      `SELECT weight
+     FROM megafauna
+     WHERE biter = $(userId)`,
+      { userId }
+    )
+    .then(({ weight }) => weight)
+
 export const getBites = async (userId: string, since?: Date): Promise<Bite[]> =>
   pgDb.manyOrNone<Bite>(
     `
-        SELECT timestamp as ts, portion, weight 
+        SELECT id, timestamp as ts, portion, weight, permillage 
         FROM puraisu 
         WHERE biter = $(userId) 
           AND ($(since) IS NULL OR timestamp > $(since))
         ORDER BY timestamp`,
     { userId, since }
   )
+
+export const getPreviousBite = async (
+  userId: string,
+  ts: Date = new Date()
+): Promise<Bite | null> =>
+  pgDb.oneOrNone<Bite>(
+    `
+        SELECT id, timestamp as ts, portion, weight, permillage
+        FROM puraisu
+        WHERE biter = $(userId) AND timestamp < $(ts)
+        ORDER BY timestamp desc
+        LIMIT 1`,
+    { userId, ts }
+  )
+
+export const getLastBingeStart = async (userId: string): Promise<Date | undefined> =>
+  pgDb
+    .oneOrNone<{ bingestart: Date }>(
+      `
+        SELECT max(timestamp) as bingestart 
+        FROM puraisu
+        WHERE biter = $(userId) AND type = 'ep'`,
+      { userId }
+    )
+    .then((res) => res?.bingestart)
 
 export const addBiter = async (biter: string) => {
   await pgDb.none(
@@ -52,6 +87,16 @@ export const addBiter = async (biter: string) => {
         ON CONFLICT (biter) DO NOTHING 
     `,
     { biter }
+  )
+}
+
+export const updatePuraisu = async (id: number, type: string, permillage: number) => {
+  await pgDb.none(
+    `
+        UPDATE puraisu 
+        SET type = $(type), permillage = $(permillage)
+        WHERE id = $(id)`,
+    { id, type, permillage }
   )
 }
 
@@ -64,28 +109,20 @@ export const insertPuraisu = async (
   postfestum: boolean,
   coordinates: GeolocationCoordinates | null,
   portion: number,
+  permillage: number,
   timestamp = new Date(),
+  weight: number,
   tzoffset?: string
-) => {
-  await pgDb.none(
+): Promise<Bite> => {
+  const { id } = await pgDb.one<{ id: number }>(
     `
-      INSERT INTO puraisu (type, content, location, info, source, biter,
-                           postfestum, coordinates, timestamp, portion,
-                           weight, tzoffset)
-      SELECT $(type),
-             $(content),
-             $(location),
-             $(info),
-             'ppapp',
-             $(biter),
-             $(postfestum),
-             $(coordinates),
-             $(timestamp),
-             $(portion),
-             weight,
-             $(tzoffset)
-      FROM megafauna
-      where biter = $(biter)`,
+        INSERT INTO puraisu (type, content, location, info, source, biter,
+                             postfestum, coordinates, timestamp, portion,
+                             permillage, weight, tzoffset)
+        VALUES ($(type), $(content), $(location), $(info), 'ppapp', $(biter),
+                $(postfestum), $(coordinates), $(timestamp), $(portion),
+                $(permillage), $(weight), $(tzoffset))
+        RETURNING id`,
     {
       type,
       content,
@@ -96,7 +133,16 @@ export const insertPuraisu = async (
       coordinates,
       timestamp,
       portion,
+      permillage,
+      weight,
       tzoffset
     }
   )
+  return {
+    id,
+    permillage,
+    ts: timestamp,
+    portion,
+    weight
+  }
 }

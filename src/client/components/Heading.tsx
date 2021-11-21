@@ -10,7 +10,7 @@ type Props = {
   lastBite?: Date
   bingeStart?: Date
   permillage: number
-  timeTillSober: number
+  timeTillSober?: number
   avatar: string
 }
 
@@ -70,7 +70,7 @@ export const Heading: VFC<Props> = ({
               <b>Rännin pituus:</b> {formatTimeToNow(bingeStart)}
             </li>
             <li>
-              <b>Selviämisarvio:</b> {formatTimeTillSober(timeTillSober)}
+              <b>Selviämisarvio:</b> {formatTimeTillSober(timeTillSober || 0)}
             </li>
           </>
         )}
