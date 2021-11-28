@@ -156,8 +156,8 @@ export const Location: VFC<LocationProps> = ({
   )
 }
 
-const LocationRow = styled.div`
-  display: flex;
-  margin: 8px 0;
-  gap: 8px;
-`
+const LocationRow = styled.div({
+  display: 'flex',
+  margin: '8px 0',
+  gap: 8
+})

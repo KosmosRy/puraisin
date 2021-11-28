@@ -46,22 +46,22 @@ export const PostFestum: VFC<PfProps> = ({ postfestum, pftime, handleChange }) =
   )
 }
 
-const PfRow = styled(Row)`
-  gap: 16px;
-`
+const PfRow = styled(Row)({
+  gap: 16
+})
 
-const Label = styled.label`
-  display: flex;
-  align-items: center;
-  height: 33px;
+const Label = styled.label({
+  display: 'flex',
+  alignItems: 'center',
+  height: 33,
 
-  input {
-    margin-right: 8px;
+  input: {
+    marginRight: 8
   }
-`
+})
 
-const PfInput = styled(AdornedInput)`
-  input {
-    max-width: 65px;
+const PfInput = styled(AdornedInput)({
+  input: {
+    maxWidth: 65
   }
-`
+})

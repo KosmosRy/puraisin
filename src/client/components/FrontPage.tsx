@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState, VFC } from 'react'
+import { useCallback, useEffect, useRef, useState, VFC } from 'react'
 import { getStatus, submitBite } from '../api'
 import { Heading } from './Heading'
 import { AppInfo, BiteInfo, Binge } from '../../common/types'
 import styled from 'styled-components'
 import { BiteForm } from './BiteForm'
+import { Alert } from './Alert'
 
 type FpProps = {
   info: AppInfo
@@ -18,27 +19,28 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
   const [timeTillSober, setTimeTillSober] = useState<number | undefined>(
     initialUserStatus.timeTillSober
   )
+  const [loading, setLoading] = useState(false)
   const [biteDone, setBiteDone] = useState(false)
+  const biteDoneRef = useRef<HTMLDivElement>(null)
   const [lastContent, setLastContent] = useState('')
   const [error, setError] = useState<string>()
 
   const setUserStatus = useCallback(async (statusPromise: Promise<Binge>) => {
-    try {
-      const userStatus = await statusPromise
-      setPermillage(userStatus.permillage)
-      setLastBite(userStatus.lastBite)
-      setBingeStart(userStatus.bingeStart)
-      setTimeTillSober(userStatus.timeTillSober)
-    } catch (reason) {
-      console.error(reason)
-      setPermillage(0)
-      setLastBite(undefined)
-      setError((reason as Error).message || 'No mikähän tässä nyt on')
-    }
+    const userStatus = await statusPromise
+    setPermillage(userStatus.permillage)
+    setLastBite(userStatus.lastBite)
+    setBingeStart(userStatus.bingeStart)
+    setTimeTillSober(userStatus.timeTillSober)
   }, [])
 
   useEffect(() => {
-    const intervalId = setInterval(() => setUserStatus(getStatus()), 60000)
+    const intervalId = setInterval(async () => {
+      try {
+        await setUserStatus(getStatus())
+      } catch (reason) {
+        setError((reason as Error).message || 'No mikähän tässä nyt on')
+      }
+    }, 60000)
     return () => {
       clearInterval(intervalId)
     }
@@ -46,18 +48,33 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
 
   const handleSubmit = async (data: BiteInfo) => {
     try {
+      setLoading(true)
+      setBiteDone(false)
       await setUserStatus(submitBite(data))
       setBiteDone(true)
       setLastContent(data.content)
       setError(undefined)
-      setTimeout(() => setBiteDone(false), 5000)
     } catch (reason) {
       console.error(reason)
       setPermillage(0)
       setLastBite(undefined)
       setError((reason as Error).message || 'No mikähän tässä nyt on')
+    } finally {
+      setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const elem = biteDoneRef.current
+    if (biteDone && elem) {
+      const transitionListener = () => setBiteDone(false)
+      setTimeout(() => (elem.style.opacity = '0'))
+      elem.addEventListener('transitionend', transitionListener, true)
+      return () => {
+        elem.removeEventListener('transitionend', transitionListener, true)
+      }
+    }
+  }, [biteDone])
 
   return (
     <FrontPageContainer>
@@ -69,50 +86,49 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
         lastBite={lastBite}
         avatar={avatar}
       />
+
+      {loading && (
+        <Loading>
+          <img src="/loading.gif" alt="Loading" />
+        </Loading>
+      )}
+
+      {biteDone && (
+        <BiteDoneContainer variant="success" ref={biteDoneRef}>
+          <>
+            Toppen! Raportoit puraisun "{lastContent}", jonka juotuasi olet noin{' '}
+            {permillage.toFixed(2)} promillen humalassa.
+            <br />
+            {permillage > 0.5 && <strong>Muista jättää ajaminen muille!</strong>}
+          </>
+        </BiteDoneContainer>
+      )}
+
+      {error && (
+        <Alert variant="danger">
+          Viduiks män, syy: "{error}". <a href="/">Verestä sivu</a> ja kokeile uudestaan, tai jotain
+        </Alert>
+      )}
+
       <BiteForm submitBite={handleSubmit} />
     </FrontPageContainer>
   )
 }
 
-/* return (
-    <section>
-      <Heading
-        realName={realName}
-        permillage={currentPermillage}
-        timeTillSober={timeTillSober}
-        bingeStart={bingeStart}
-        lastBite={lastBite}
-        avatar={avatar}
-        logout={logout}
-      />
+const FrontPageContainer = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+  flex: '1 0 auto'
+})
 
-      <TransitionGroup>
-        {biteDone && (
-          <CSSTransition classNames="bitesuccess" timeout={{ enter: 1, exit: 1000 }}>
-            <Alert variant="success">
-              <div>
-                Toppen! Raportoit puraisun "{lastContent}", jonka juotuasi olet noin{' '}
-                {currentPermillage.toFixed(2)} promillen humalassa.
-                <br />
-                {currentPermillage > 0.5 && <strong>Muista jättää ajaminen muille!</strong>}
-              </div>
-            </Alert>
-          </CSSTransition>
-        )}
-      </TransitionGroup>
+const Loading = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: 16
+})
 
-      {error && (
-        <Alert variant="danger">
-          <div>
-            Viduiks män, syy: "{error}". <a href="/">Verestä sivu</a> ja kokeile uudestaan, tai
-            jotain
-          </div>
-        </Alert>
-      )}
-  */
-
-const FrontPageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 auto;
-`
+const BiteDoneContainer = styled(Alert)({
+  transition: 'opacity 3s 7s',
+  opacity: 1
+})

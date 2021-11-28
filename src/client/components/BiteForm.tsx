@@ -152,65 +152,61 @@ export const BiteForm: VFC<BiteFormProps> = ({ submitBite }) => {
   )
 }
 
-const Form = styled.div`
-  label {
-    font-weight: 100;
+const Form = styled.div({
+  label: {
+    fontWeight: 300
+  },
+  marginTop: -16
+})
+
+const FullWidthRow = styled(Row)({
+  '> *': {
+    width: '100%'
   }
-`
+})
 
-const FullWidthRow = styled(Row)`
-  > * {
-    width: 100%;
+const PortionRow = styled(Row)({
+  flexDirection: 'column',
+  label: {
+    marginBottom: 8,
+    display: 'inline-block'
   }
-`
+})
 
-const PortionRow = styled(Row)`
-  flex-direction: column;
+const PortionSelect = styled.div({
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 16,
 
-  label {
-    margin-bottom: 8px;
-    display: inline-block;
-  }
-`
+  '.portion-select': {
+    flex: '2 1 66%',
+    select: {
+      width: '100%'
+    }
+  },
 
-const PortionSelect = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-
-  .portion-select {
-    flex: 2 1 66%;
-
-    select {
-      width: 100%;
+  '.portion-input': {
+    flex: '1 0 33%',
+    input: {
+      maxWidth: 65
     }
   }
+})
 
-  .portion-input {
-    flex: 1 0 33%;
-
-    input {
-      max-width: 65px;
-    }
+const Submit = styled.button({
+  display: 'inline-block',
+  color: '#fff',
+  backgroundColor: '#28a745',
+  border: '1px solid #28a745',
+  textAlign: 'center',
+  verticalAlign: 'middle',
+  userSelect: 'none',
+  padding: '6px 12px',
+  fontSize: 16,
+  lineHeight: 1.5,
+  borderRadius: 4,
+  ':hover': {
+    backgroundColor: '#218838',
+    borderColor: '#1e7e34'
   }
-`
-
-const Submit = styled.button`
-  display: inline-block;
-  color: #fff;
-  background-color: #28a745;
-  border: 1px solid #28a745;
-  text-align: center;
-  vertical-align: middle;
-  user-select: none;
-  padding: 6px 12px;
-  font-size: 16px;
-  line-height: 1.5;
-  border-radius: 4px;
-  
-  :hover {
-    background-color: #218838;
-    border-color: #1e7e34;
-  }
-}
-`
+})

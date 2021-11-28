@@ -22,20 +22,21 @@ const App: VFC<AppProps> = ({ appInfo, userStatus }) => (
 
 export default App
 
-const AppContainer = styled.div`
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 0 15px;
-`
+const AppContainer = styled.div({
+  width: '100%',
+  maxWidth: 600,
+  margin: '0 auto',
+  padding: '0 15px'
+})
 
-const MainContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-`
+const MainContainer = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100vh'
+})
 
-const Copyright = styled.div`
-  flex-shrink: 0;
-  padding-bottom: 10px;
-`
+const Copyright = styled.div({
+  marginTop: 16,
+  flexShrink: 0,
+  paddingBottom: 10
+})

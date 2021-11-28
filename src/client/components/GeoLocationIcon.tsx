@@ -23,16 +23,30 @@ export const GeoLocationIcon: VFC<GeoIconProps> = ({ coords }) => (
   <Icon icon={locationIcon(coords)} spin={coords === undefined} coords={coords} />
 )
 
-const Icon = styled(FontAwesomeIcon)<GeoIconProps>`
-  color: #777;
-  vertical-align: -2px;
-  ${({ coords }) =>
-    (coords === null || (coords && coords.accuracy > 1000)) && 'color: hsl(9, 100%, 55%);'}
-  ${({ coords }) => coords && coords.accuracy <= 1000 && 'color: hsl(28, 100%, 52%);'}
-  ${({ coords }) => coords && coords.accuracy <= 50 && 'color: hsl(49, 100%, 50%);'}
-  ${({ coords }) => coords && coords.accuracy <= 10 && 'color: hsl(89, 100%, 45%);'}
-  
-  && {
-    width: 16px;
+const getColor = (accuracy = 1001) => {
+  if (accuracy <= 10) {
+    return 'hsl(89, 100%, 45%)'
   }
-`
+
+  if (accuracy <= 50) {
+    return 'hsl(49, 100%, 50%)'
+  }
+
+  if (accuracy <= 1000) {
+    return 'hsl(28, 100%, 52%)'
+  }
+
+  return 'hsl(9, 100%, 55%)'
+}
+
+const Icon = styled(FontAwesomeIcon)<GeoIconProps>(
+  {
+    verticalAlign: -2,
+    '&&': {
+      width: 16
+    }
+  },
+  ({ coords }) => ({
+    color: coords === undefined ? '#777' : getColor(coords?.accuracy)
+  })
+)

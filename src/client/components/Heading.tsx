@@ -79,71 +79,74 @@ export const Heading: VFC<Props> = ({
   </HeadingContainer>
 )
 
-const HeadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 5px;
-  gap: 10px;
-`
+const HeadingContainer = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+  marginTop: 5,
+  marginBottom: 16,
+  gap: 10
+})
 
-const UserRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-`
+const UserRow = styled.div({
+  display: 'flex',
+  justifyContent: 'space-between'
+})
 
-const Title = styled.div`
-  h3 {
-    font-size: 32px;
-    font-weight: 300;
-    margin-bottom: 10px;
+const Title = styled.div({
+  h3: {
+    fontSize: 32,
+    fontWeight: 300,
+    marginBottom: 10
+  },
+  h4: {
+    margin: '5px 0 15px',
+    fontSize: 16,
+    fontWeight: 400
   }
+})
 
-  h4 {
-    margin: 5px 0 15px;
-    font-size: 16px;
-    font-weight: 400;
+const UserInfo = styled.div({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 5,
+  alignItems: 'end',
+  fontSize: 14,
+  textAlign: 'right',
+
+  img: {
+    width: 48
   }
-`
+})
 
-const UserInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  align-items: end;
-  font-size: 14px;
-  text-align: right;
+const StatusRow = styled.div({
+  display: 'flex',
 
-  img {
-    width: 48px;
+  ul: {
+    listStyleType: 'none',
+    li: {
+      lineHeight: 1.5
+    }
   }
-`
+})
 
-const StatusRow = styled.div`
-  display: flex;
+const Logout = styled.a({
+  padding: '4px 8px',
+  borderRadius: 3.2,
+  color: 'inherit',
+  borderStyle: 'solid',
+  borderWidth: 1,
+  backgroundColor: '#ffc107',
+  borderColor: '#ffc107',
+  textDecoration: 'none',
+  textAlign: 'center',
+  fontSize: 14,
+  verticalAlign: 'middle',
+  lineHeight: 1.5,
+  userSelect: 'none',
+  fontWeight: 400,
 
-  ul {
-    list-style-type: none;
+  ':hover': {
+    backgroundColor: '#e0a800',
+    borderColor: '#d39e00'
   }
-`
-
-const Logout = styled.a`
-  padding: 4px 8px;
-  border-radius: 3.2px;
-  color: inherit;
-  border-style: solid;
-  border-width: 1px;
-  background-color: #ffc107;
-  border-color: #ffc107;
-  text-decoration: none;
-  text-align: center;
-  font-size: 14px;
-  vertical-align: middle;
-  line-height: 1.5;
-  user-select: none;
-  font-weight: 400;
-
-  :hover {
-    background-color: #e0a800;
-    border-color: #d39e00;
-  }
-`
+})

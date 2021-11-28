@@ -14,28 +14,27 @@ export const AdornedInput: VFC<AdornedInputProps> = ({ input, adornment, classNa
   </AdornedInputContainer>
 )
 
-const AdornedInputContainer = styled.div`
-  display: flex;
-  justify-content: flex-start;
-
-  && input {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+const AdornedInputContainer = styled.div({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  '&& input': {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0
   }
-`
+})
 
-const Adornment = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #495057;
-  background-color: #e9ecef;
-  padding: 4px 8px;
-  border: 1px solid #ced4da;
-  border-left: none;
-  border-radius: 4px;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  font-size: 14px;
-  line-height: 1.5;
-`
+const Adornment = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: '#495057',
+  backgroundColor: '#e9ecef',
+  padding: '4px 8px',
+  border: '1px solid #ced4da',
+  borderLeft: 'none',
+  borderRadius: 4,
+  borderTopLeftRadius: 0,
+  borderBottomLeftRadius: 0,
+  fontSize: 14,
+  lineHeight: 1.5
+})
