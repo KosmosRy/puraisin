@@ -1,7 +1,6 @@
 import express from 'express'
 import passport from 'passport'
 import { Issuer, Strategy, TokenSet, UserinfoResponse } from 'openid-client'
-import config from 'config'
 import { addBiter } from './db'
 
 const router = express.Router()
@@ -16,14 +15,17 @@ declare global {
   }
 }
 
-export const getConfiguredPassport = async () => {
-  const { client_id, client_secret, redirect_path } = config.get('slack')
-  const { publicHost } = config.get('server')
-  const redirectUri = `${publicHost}${redirect_path}`
+export const getConfiguredPassport = async (
+  publicHost: string,
+  clientId: string,
+  clientSecret: string,
+  redirectPath: string
+) => {
+  const redirectUri = `${publicHost}${redirectPath}`
   const issuer = await Issuer.discover('https://slack.com')
   const client = new issuer.Client({
-    client_id,
-    client_secret,
+    client_id: clientId,
+    client_secret: clientSecret,
     redirect_uris: [redirectUri],
     response_types: ['code']
   })

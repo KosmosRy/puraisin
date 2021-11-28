@@ -12,6 +12,14 @@ interface DbConfig {
   database: string
 }
 
+export interface SlackSecrets {
+  signing_secret: string
+  bot_token: string
+  app_token: string
+  client_id: string
+  client_secret: string
+}
+
 types.setTypeParser(1700, 'text', parseFloat)
 
 const connection = config.get<DbConfig>('db')
@@ -33,6 +41,15 @@ export const db = async () => {
   console.log('DB migration done')
   return pgDb
 }
+
+export const getSlackConf = async (organization: string): Promise<SlackSecrets> =>
+  pgDb.one<SlackSecrets>(
+    `SELECT signing_secret, bot_token, app_token, 
+            client_id, client_secret
+     FROM slack_secrets
+     WHERE organization = $(organization)`,
+    { organization }
+  )
 
 export const getWeight = async (userId: string): Promise<number> =>
   pgDb

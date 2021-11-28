@@ -4,13 +4,7 @@
     "port": 3000
   },
   "slack": {
-    "redirect_path": "/auth/slack",
-    "channelId": "CHANNEL_ID",
-    "signingSecret": "SIGNING_SECRET",
-    "botToken": "BOT_TOKEN",
-    "appToken": "APP_TOKEN",
-    "client_id": "CLIENT_ID",
-    "client_secret": "CLIENT_SECRET"
+    "redirectPath": "/auth/slack"
   },
   "db": {
     "host": "localhost",

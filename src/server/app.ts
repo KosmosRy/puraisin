@@ -5,21 +5,7 @@ import index from './indexPage'
 import passportController, { getConfiguredPassport } from './passport'
 import express from 'express'
 import pgSession from 'connect-pg-simple'
-import { db } from './db'
-
-const { signingSecret, botToken, appToken } = config.get('slack')
-
-const receiver = new ExpressReceiver({
-  signingSecret
-})
-
-const app = new App({
-  token: botToken,
-  receiver,
-  appToken
-})
-
-const { router } = receiver
+import { db, getSlackConf } from './db'
 
 ;(async () => {
   const dbClient = await db()
@@ -38,10 +24,25 @@ const { router } = receiver
     saveUninitialized: false
   }
 
+  const { organization, redirectPath } = config.get('slack')
+  const { publicHost } = config.get('server')
+  const { signing_secret, bot_token, app_token, client_id, client_secret } = await getSlackConf(
+    organization
+  )
+  const receiver = new ExpressReceiver({
+    signingSecret: signing_secret
+  })
+  const app = new App({
+    token: bot_token,
+    receiver,
+    appToken: app_token
+  })
+  const { router } = receiver
+
   receiver.app.set('views', './views')
   receiver.app.set('view engine', 'ejs')
   router.use(expressSession(session))
-  const passport = await getConfiguredPassport()
+  const passport = await getConfiguredPassport(publicHost, client_id, client_secret, redirectPath)
   router.use(passport.initialize())
   router.use(passport.session())
   router.use(express.json())
@@ -50,17 +51,17 @@ const { router } = receiver
   router.use('/', index(app.client))
   router.use('/auth', passportController)
 
+  router.get('/ping', async (req, res) => {
+    const response = await app.client.chat.postMessage({
+      token: bot_token,
+      channel: 'testiryhma',
+      text: 'Ping'
+    })
+    console.log(response)
+    res.sendStatus(204)
+  })
+
   const { port } = config.get('server')
   await app.start(port)
   console.log('⚡️ Bolt app is running!')
 })()
-
-router.get('/ping', async (req, res) => {
-  const response = await app.client.chat.postMessage({
-    token: botToken,
-    channel: 'testiryhma',
-    text: 'Ping'
-  })
-  console.log(response)
-  res.sendStatus(204)
-})
