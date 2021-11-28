@@ -1,3 +1,7 @@
+import { WebClient } from '@slack/web-api'
+import config from 'config'
+import dayjs from 'dayjs'
+import { Binge, BiteInfo, SlackConfig } from '../common/types'
 import {
   getBites,
   getLastBingeStart,
@@ -6,10 +10,6 @@ import {
   insertPuraisu,
   updatePuraisu
 } from './db'
-import { Binge, BiteInfo, SlackConfig } from '../common/types'
-import dayjs from 'dayjs'
-import { WebClient } from '@slack/web-api'
-import config from 'config'
 
 export interface Bite {
   id: number

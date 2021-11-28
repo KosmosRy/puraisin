@@ -35,3 +35,5 @@ const AlertContainer = styled.div<Props>(
     ...(variant === 'success' ? successStyles : warningStyles)
   })
 )
+
+Alert.displayName = 'Alert'

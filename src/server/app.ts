@@ -1,11 +1,11 @@
 import { App, ExpressReceiver } from '@slack/bolt'
 import config from 'config'
+import pgSession from 'connect-pg-simple'
+import express from 'express'
 import expressSession from 'express-session'
+import { db, getSlackConf } from './db'
 import index from './indexPage'
 import passportController, { getConfiguredPassport } from './passport'
-import express from 'express'
-import pgSession from 'connect-pg-simple'
-import { db, getSlackConf } from './db'
 
 ;(async () => {
   const dbClient = await db()

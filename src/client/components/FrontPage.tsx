@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState, VFC } from 'react'
-import { getStatus, submitBite } from '../api'
-import { Heading } from './Heading'
-import { AppInfo, BiteInfo, Binge } from '../../common/types'
+import { VFC, useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { BiteForm } from './BiteForm'
+import { AppInfo, Binge, BiteInfo } from '../../common/types'
+import { getStatus, submitBite } from '../api'
 import { Alert } from './Alert'
+import { BiteForm } from './BiteForm'
+import { Heading } from './Heading'
 
 type FpProps = {
   info: AppInfo
@@ -96,7 +96,7 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
       {biteDone && (
         <BiteDoneContainer variant="success" ref={biteDoneRef}>
           <>
-            Toppen! Raportoit puraisun "{lastContent}", jonka juotuasi olet noin{' '}
+            Toppen! Raportoit puraisun &quot;{lastContent}&quot;, jonka juotuasi olet noin{' '}
             {permillage.toFixed(2)} promillen humalassa.
             <br />
             {permillage > 0.5 && <strong>Muista jättää ajaminen muille!</strong>}
@@ -106,7 +106,8 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
 
       {error && (
         <Alert variant="danger">
-          Viduiks män, syy: "{error}". <a href="/">Verestä sivu</a> ja kokeile uudestaan, tai jotain
+          Viduiks män, syy: &quot;{error}&quot;. <a href="/">Verestä sivu</a> ja kokeile uudestaan,
+          tai jotain
         </Alert>
       )}
 

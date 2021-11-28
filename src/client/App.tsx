@@ -1,9 +1,9 @@
-import { VFC } from 'react'
-import { FrontPage } from './components/FrontPage'
-import { AppInfo, Binge } from '../common/types'
-import styled from 'styled-components'
-import { GlobalStyle } from './GlobalStyle'
 import dayjs from 'dayjs'
+import { VFC } from 'react'
+import styled from 'styled-components'
+import { AppInfo, Binge } from '../common/types'
+import { GlobalStyle } from './GlobalStyle'
+import { FrontPage } from './components/FrontPage'
 
 export interface AppProps {
   appInfo: AppInfo

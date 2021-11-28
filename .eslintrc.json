@@ -8,9 +8,12 @@
   },
   "extends": [
     "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
     "prettier"
   ],
   "plugins": ["@typescript-eslint"],
@@ -22,8 +25,30 @@
       "jsx": true
     }
   },
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    }
+  },
   "rules": {
     "semi": [2, "never"],
-    "comma-dangle": "off"
+    "comma-dangle": "off",
+    "react/prop-types": "off",
+    "import/order": ["error",
+      {
+        "groups": [["builtin", "external"], "internal", "parent", ["sibling", "index"]]
+      }
+    ],
+    "curly": "error"
   }
 }

@@ -1,6 +1,6 @@
-import App, { AppProps } from '../client/App'
 import ReactDOMServer from 'react-dom/server'
 import { ServerStyleSheet } from 'styled-components'
+import App, { AppProps } from '../client/App'
 
 export const appHtml = ({ appInfo, userStatus }: AppProps) => {
   const sheet = new ServerStyleSheet()

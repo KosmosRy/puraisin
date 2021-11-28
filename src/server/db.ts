@@ -1,8 +1,8 @@
 import config from 'config'
-import { Bite } from './lib'
-import { types } from 'pg'
 import pgMigrate from 'node-pg-migrate'
+import { types } from 'pg'
 import pgPromise from 'pg-promise'
+import { Bite } from './lib'
 
 interface DbConfig {
   host: string

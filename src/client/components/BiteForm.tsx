@@ -1,11 +1,11 @@
-import { PfEvent, PostFestum } from './PostFestum'
-import { Location, LocationEvent } from './Location'
-import { BiteInfo } from '../../common/types'
-import { ChangeEvent, useRef, useState, VFC } from 'react'
+import dayjs from 'dayjs'
+import { ChangeEvent, VFC, useRef, useState } from 'react'
 import styled from 'styled-components'
+import { BiteInfo } from '../../common/types'
 import { AdornedInput } from './AdornedInput'
 import { Row } from './CommonStyles'
-import dayjs from 'dayjs'
+import { Location, LocationEvent } from './Location'
+import { PfEvent, PostFestum } from './PostFestum'
 
 type BiteFormProps = {
   submitBite: (b: BiteInfo) => void

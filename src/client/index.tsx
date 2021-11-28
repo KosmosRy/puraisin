@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom'
-import App from './App'
 import { AppInfo, Binge } from '../common/types'
+import App from './App'
 
 declare global {
   interface Window {

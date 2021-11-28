@@ -1,9 +1,9 @@
-import express from 'express'
 import { WebClient } from '@slack/web-api'
+import express from 'express'
 import manifest from '../../dist/bundle/manifest.json'
-import { appHtml } from './ssr'
-import { AppInfo, BiteInfo, Binge } from '../common/types'
+import { AppInfo, Binge, BiteInfo } from '../common/types'
 import { getUserStatus, submitBite } from './lib'
+import { appHtml } from './ssr'
 
 const index = (client: WebClient) => {
   const router = express.Router()
