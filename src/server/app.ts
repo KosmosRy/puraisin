@@ -1,8 +1,9 @@
 import { WebClient } from '@slack/web-api'
-import config from 'config'
 import pgSession from 'connect-pg-simple'
+import 'dotenv/config'
 import express from 'express'
 import expressSession from 'express-session'
+import config from './config'
 import { db } from './db'
 import index from './indexPage'
 import passportController, { getConfiguredPassport } from './passport'
@@ -24,8 +25,8 @@ import passportController, { getConfiguredPassport } from './passport'
     saveUninitialized: false
   }
 
-  const { botToken, redirectPath, clientId, clientSecret } = config.get('slack')
-  const { publicHost } = config.get('server')
+  const { botToken, redirectPath, clientId, clientSecret } = config.slack
+  const { publicHost, port } = config.server
   const slackClient = new WebClient(botToken)
 
   const app = express()
@@ -51,7 +52,6 @@ import passportController, { getConfiguredPassport } from './passport'
     res.sendStatus(204)
   })
 
-  const { port } = config.get('server')
   app.listen(port, () => {
     console.log(`⚡️ Puraisin is running at port ${port}!`)
   })

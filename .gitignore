@@ -3,6 +3,8 @@ dist-server
 config/*.json
 !config/default.json
 
+.env
+
 # yarn
 .yarn/*
 !.yarn/cache
@@ -113,3 +115,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+
+.env*
+!.env.project

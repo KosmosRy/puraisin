@@ -65,9 +65,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:5.3.0"],
             ["babel-plugin-styled-components", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:1.13.3"],
             ["babel-watch", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:7.6.0"],
-            ["config", "npm:3.3.6"],
             ["connect-pg-simple", "npm:7.0.0"],
             ["dayjs", "npm:1.10.7"],
+            ["dotenv", "npm:16.0.0"],
             ["ejs", "npm:3.1.6"],
             ["eslint", "npm:7.32.0"],
             ["eslint-config-prettier", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:8.3.0"],
@@ -4406,16 +4406,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["config", [
-        ["npm:3.3.6", {
-          "packageLocation": "./.yarn/cache/config-npm-3.3.6-a760162d97-53684cae0d.zip/node_modules/config/",
-          "packageDependencies": [
-            ["config", "npm:3.3.6"],
-            ["json5", "npm:2.2.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["configstore", [
         ["npm:5.0.1", {
           "packageLocation": "./.yarn/cache/configstore-npm-5.0.1-739433cdc5-60ef65d493.zip/node_modules/configstore/",
@@ -4836,6 +4826,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["dot-prop", "npm:5.3.0"],
             ["is-obj", "npm:2.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["dotenv", [
+        ["npm:16.0.0", {
+          "packageLocation": "./.yarn/cache/dotenv-npm-16.0.0-ef4a5ccded-664cebb51f.zip/node_modules/dotenv/",
+          "packageDependencies": [
+            ["dotenv", "npm:16.0.0"]
           ],
           "linkType": "HARD",
         }]
@@ -8076,9 +8075,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:5.3.0"],
             ["babel-plugin-styled-components", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:1.13.3"],
             ["babel-watch", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:7.6.0"],
-            ["config", "npm:3.3.6"],
             ["connect-pg-simple", "npm:7.0.0"],
             ["dayjs", "npm:1.10.7"],
+            ["dotenv", "npm:16.0.0"],
             ["ejs", "npm:3.1.6"],
             ["eslint", "npm:7.32.0"],
             ["eslint-config-prettier", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:8.3.0"],

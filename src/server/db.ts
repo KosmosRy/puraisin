@@ -1,20 +1,12 @@
-import config from 'config'
 import pgMigrate from 'node-pg-migrate'
 import { types } from 'pg'
 import pgPromise from 'pg-promise'
+import config from './config'
 import { Bite } from './lib'
-
-interface DbConfig {
-  host: string
-  port: number
-  user: string
-  password: string
-  database: string
-}
 
 types.setTypeParser(1700, 'text', parseFloat)
 
-const connection = config.get<DbConfig>('db')
+const connection = config.db
 
 const migration = async () => {
   await pgMigrate({
