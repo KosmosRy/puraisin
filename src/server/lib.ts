@@ -1,7 +1,7 @@
 import { WebClient } from '@slack/web-api'
 import config from 'config'
 import dayjs from 'dayjs'
-import { Binge, BiteInfo, SlackConfig } from '../common/types'
+import { Binge, BiteInfo } from '../common/types'
 import {
   getBites,
   getLastBingeStart,
@@ -19,7 +19,7 @@ export interface Bite {
   weight: number
 }
 
-const { channelId } = config.get<SlackConfig>('slack')
+const { channelId } = config.get('slack')
 
 const bodyWater = 0.806
 const bodyWaterConstantMale = 0.58

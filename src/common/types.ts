@@ -21,13 +21,3 @@ export interface BiteInfo {
   info: string
   tzOffset: string
 }
-
-export interface SlackConfig {
-  redirect_path: string
-  channelId: string
-  signingSecret: string
-  botToken: string
-  appToken: string
-  client_id: string
-  client_secret: string
-}

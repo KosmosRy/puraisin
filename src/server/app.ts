@@ -3,7 +3,7 @@ import config from 'config'
 import pgSession from 'connect-pg-simple'
 import express from 'express'
 import expressSession from 'express-session'
-import { db, getSlackConf } from './db'
+import { db } from './db'
 import index from './indexPage'
 import passportController, { getConfiguredPassport } from './passport'
 
@@ -24,25 +24,23 @@ import passportController, { getConfiguredPassport } from './passport'
     saveUninitialized: false
   }
 
-  const { organization, redirectPath } = config.get('slack')
+  const { signingSecret, botToken, appToken, redirectPath, clientId, clientSecret } =
+    config.get('slack')
   const { publicHost } = config.get('server')
-  const { signing_secret, bot_token, app_token, client_id, client_secret } = await getSlackConf(
-    organization
-  )
   const receiver = new ExpressReceiver({
-    signingSecret: signing_secret
+    signingSecret
   })
   const app = new App({
-    token: bot_token,
+    token: botToken,
     receiver,
-    appToken: app_token
+    appToken
   })
   const { router } = receiver
 
   receiver.app.set('views', './views')
   receiver.app.set('view engine', 'ejs')
   router.use(expressSession(session))
-  const passport = await getConfiguredPassport(publicHost, client_id, client_secret, redirectPath)
+  const passport = await getConfiguredPassport(publicHost, clientId, clientSecret, redirectPath)
   router.use(passport.initialize())
   router.use(passport.session())
   router.use(express.json())
@@ -53,7 +51,7 @@ import passportController, { getConfiguredPassport } from './passport'
 
   router.get('/ping', async (req, res) => {
     const response = await app.client.chat.postMessage({
-      token: bot_token,
+      token: botToken,
       channel: 'testiryhma',
       text: 'Ping'
     })
