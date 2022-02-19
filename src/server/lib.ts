@@ -5,6 +5,7 @@ import config from './config'
 import {
   getBites,
   getLastBingeStart,
+  getMegafauna,
   getPreviousBite,
   getWeight,
   insertPuraisu,
@@ -17,6 +18,12 @@ export interface Bite {
   permillage: number
   portion: number
   weight: number
+}
+
+export interface Biter {
+  biter: string
+  weight: number
+  displayName: string
 }
 
 const { channelId } = config.slack
@@ -69,6 +76,28 @@ const updateNextBite = async (prevBite: Promise<Bite>, bite: Bite) => {
   const nextType = permillage > 0 ? 'p' : 'ep'
   await updatePuraisu(bite.id, nextType, nextPermillage)
   return { ...bite, permillage: nextPermillage }
+}
+
+export const calculateBites = async () => {
+  const megafauna = await getMegafauna()
+  for (const biter of megafauna) {
+    console.log(`Populating old permillages for user ${biter.displayName}`)
+    const bites = await getBites(biter.biter)
+    await bites.reduce(
+      async (prevBite, nextBite, currentIndex) => {
+        const nb = await updateNextBite(prevBite, nextBite)
+        console.log(`${currentIndex + 1}/${bites.length}: ${nb.permillage}`)
+        return nb
+      },
+      Promise.resolve({
+        id: -999,
+        ts: new Date(0),
+        permillage: 0,
+        portion: 0,
+        weight: 0
+      })
+    )
+  }
 }
 
 export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?: WebClient) => {

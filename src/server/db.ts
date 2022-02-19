@@ -2,7 +2,7 @@ import pgMigrate from 'node-pg-migrate'
 import { types } from 'pg'
 import pgPromise from 'pg-promise'
 import config from './config'
-import { Bite } from './lib'
+import { Bite, Biter } from './lib'
 
 types.setTypeParser(1700, 'text', parseFloat)
 
@@ -79,6 +79,15 @@ export const addBiter = async (biter: string) => {
         ON CONFLICT (biter) DO NOTHING 
     `,
     { biter }
+  )
+}
+
+export const getMegafauna = async () => {
+  return pgDb.map<Biter>(
+    `
+    SELECT biter, weight, displayname FROM megafauna`,
+    [],
+    ({ biter, weight, displayname }) => ({ biter, weight, displayName: displayname })
   )
 }
 
