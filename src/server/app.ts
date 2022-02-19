@@ -1,4 +1,4 @@
-import { App, ExpressReceiver } from '@slack/bolt'
+import { WebClient } from '@slack/web-api'
 import config from 'config'
 import pgSession from 'connect-pg-simple'
 import express from 'express'
@@ -24,34 +24,26 @@ import passportController, { getConfiguredPassport } from './passport'
     saveUninitialized: false
   }
 
-  const { signingSecret, botToken, appToken, redirectPath, clientId, clientSecret } =
-    config.get('slack')
+  const { botToken, redirectPath, clientId, clientSecret } = config.get('slack')
   const { publicHost } = config.get('server')
-  const receiver = new ExpressReceiver({
-    signingSecret
-  })
-  const app = new App({
-    token: botToken,
-    receiver,
-    appToken
-  })
-  const { router } = receiver
+  const slackClient = new WebClient(botToken)
 
-  receiver.app.set('views', './views')
-  receiver.app.set('view engine', 'ejs')
-  router.use(expressSession(session))
+  const app = express()
+
+  app.set('views', './views')
+  app.set('view engine', 'ejs')
+  app.use(expressSession(session))
   const passport = await getConfiguredPassport(publicHost, clientId, clientSecret, redirectPath)
-  router.use(passport.initialize())
-  router.use(passport.session())
-  router.use(express.json())
-  router.use('/bundle', express.static('./dist/bundle'))
-  router.use('/', express.static('./public'))
-  router.use('/', index(app.client))
-  router.use('/auth', passportController)
+  app.use(passport.initialize())
+  app.use(passport.session())
+  app.use(express.json())
+  app.use('/bundle', express.static('./dist/bundle'))
+  app.use('/', express.static('./public'))
+  app.use('/', index(slackClient))
+  app.use('/auth', passportController)
 
-  router.get('/ping', async (req, res) => {
-    const response = await app.client.chat.postMessage({
-      token: botToken,
+  app.get('/ping', async (req, res) => {
+    const response = await slackClient.chat.postMessage({
       channel: 'testiryhma',
       text: 'Ping'
     })
@@ -60,6 +52,7 @@ import passportController, { getConfiguredPassport } from './passport'
   })
 
   const { port } = config.get('server')
-  await app.start(port)
-  console.log(`⚡️ Bolt app is running at port ${port}!`)
+  app.listen(port, () => {
+    console.log(`⚡️ Puraisin is running at port ${port}!`)
+  })
 })()

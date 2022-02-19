@@ -1,8 +1,8 @@
-import { VFC } from 'react'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fi'
-import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { VFC } from 'react'
 import styled from 'styled-components'
 
 type Props = {
@@ -109,7 +109,7 @@ const UserInfo = styled.div({
   display: 'flex',
   flexDirection: 'column',
   gap: 5,
-  alignItems: 'end',
+  alignItems: 'flex-end',
   fontSize: 14,
   textAlign: 'right',
 

@@ -181,7 +181,13 @@ const PortionSelect = styled.div({
   '.portion-select': {
     flex: '2 1 66%',
     select: {
-      width: '100%'
+      width: '100%',
+      appearance: 'none',
+      background: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='currentColor'><polygon points='0,25 100,25 50,75'/></svg>") no-repeat`,
+      backgroundSize: 12,
+      backgroundPosition: 'calc(100% - 20px) center',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor: 'white'
     }
   },
 
