@@ -71,9 +71,9 @@ export const getUserStatus = async (userId: string, at?: Date): Promise<Binge> =
 
 const updateNextBite = async (prevBite: Promise<Bite>, bite: Bite) => {
   const { permillage, ts } = await prevBite
-  const nextPermillage =
-    calcCurrentPermillage(permillage, ts, bite.ts) + getBFactor(bite.weight) * bite.portion
-  const nextType = permillage > 0 ? 'p' : 'ep'
+  const currentPermillage = calcCurrentPermillage(permillage, ts, bite.ts)
+  const nextPermillage = currentPermillage + getBFactor(bite.weight) * bite.portion
+  const nextType = currentPermillage > 0 && permillage > 0 ? 'p' : 'ep'
   await updatePuraisu(bite.id, nextType, nextPermillage)
   return { ...bite, permillage: nextPermillage }
 }
