@@ -61,5 +61,5 @@ import passportController, { getConfiguredPassport } from './passport'
 
   const { port } = config.get('server')
   await app.start(port)
-  console.log('⚡️ Bolt app is running!')
+  console.log(`⚡️ Bolt app is running at port ${port}!`)
 })()

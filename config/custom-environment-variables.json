@@ -1,0 +1,6 @@
+{
+  "server": {
+    "publicHost": "HOST",
+    "port": "PORT"
+  }
+}

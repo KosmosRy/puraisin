@@ -7,16 +7,15 @@
   "private": true,
   "packageManager": "yarn@3.1.0",
   "scripts": {
-    "build:server-old": "yarn tsc",
     "build:server": "BABEL_ENV=server babel src --delete-dir-on-start --extensions \".ts,.tsx\" --out-dir ./dist-server",
-    "dev:start": "yarn build:server && NODE_ENV=dev nodemon dist-server/server/app.js",
-    "lint": "yarn eslint 'src/**/*.{ts,tsx}' --ext .js,.jsx,.ts,.tsx",
+    "build:client": "rm -rf dist/bundle && rollup -c",
+    "build": "yarn build:server && yarn build:client",
     "db:start": "docker-compose -f puraisin-db.yml up -d",
     "db:stop": "docker-compose -f puraisin-db.yml down",
-    "build:client": "rollup -c",
     "watch:client": "NODE_ENV=dev rollup -c -w",
     "watch:server": "BABEL_ENV=server NODE_ENV=dev babel-watch src/server/app.ts --extensions \".ts,.tsx\"",
-    "watch": "run-p -l \"watch:*\""
+    "watch": "run-p -l \"watch:*\"",
+    "lint": "yarn eslint 'src/**/*.{ts,tsx}' --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",

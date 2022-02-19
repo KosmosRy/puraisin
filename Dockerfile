@@ -1,19 +1,24 @@
 FROM node:lts-alpine
 
-WORKDIR /puraisu
-COPY package.json yarn.lock ./
-COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/
-RUN yarn
+ENV PORT=5000
+ENV NODE_ENV=production
 
-COPY frontend ./frontend/
-RUN yarn build-front
-
-COPY backend ./backend/
-
-EXPOSE 5000
+EXPOSE $PORT
 
 RUN addgroup -g 998 kosmos && adduser --uid 998 -D -G kosmos kosmos
-USER kosmos:kosmos
 
-CMD ["node", "backend/index.js"]
+WORKDIR puraisin
+COPY config/production.json config/
+COPY config/default.json config/
+COPY config/custom-environment-variables.json config/
+COPY migrations migrations
+COPY public public
+COPY views views
+
+COPY .yarn .yarn
+COPY .pnp* .yarnrc* babel.config.json package.json rollup.config.js tsconfig.json yarn.lock ./
+COPY src src
+RUN yarn && yarn build
+
+USER kosmos:kosmos
+CMD ["yarn", "node", "dist-server/server/app.js"]
