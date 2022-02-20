@@ -43,13 +43,17 @@ import passportController, { getConfiguredPassport } from './passport'
   app.use('/', index(slackClient))
   app.use('/auth', passportController)
 
-  app.get('/ping', async (req, res) => {
-    const response = await slackClient.chat.postMessage({
-      channel: 'testiryhma',
-      text: 'Ping'
-    })
-    console.log(response)
-    res.sendStatus(204)
+  app.get('/ping', async (req, res, next) => {
+    try {
+      const response = await slackClient.chat.postMessage({
+        channel: 'testiryhma',
+        text: 'Ping'
+      })
+      console.log(response)
+      res.sendStatus(204)
+    } catch (err) {
+      next(err)
+    }
   })
 
   app.listen(port, () => {

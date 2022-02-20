@@ -8,48 +8,68 @@ import { appHtml } from './ssr'
 const index = (client: WebClient) => {
   const router = express.Router()
 
-  router.get('/', async (req, res) => {
+  router.get('/', async (req, res, next) => {
     if (req.isAuthenticated()) {
-      const userInfo = await client.openid.connect.userInfo({
-        token: req.user.token
-      })
-      const name = userInfo.name
-      const picture = userInfo['https://slack.com/user_image_48']
+      try {
+        const { id } = req.user
+        const profile = await client.users.profile
+          .get({
+            user: id
+          })
+          .then((res) => res.profile)
 
-      const appInfo: AppInfo = {
-        realName: name || '',
-        avatar: picture || ''
+        if (!profile) {
+          res.sendStatus(401)
+          return
+        }
+        req.user.profile = profile
+        const { display_name: name, image_24: picture } = profile
+
+        const appInfo: AppInfo = {
+          realName: name || '',
+          avatar: picture || ''
+        }
+
+        const userStatus: Binge = await getUserStatus(req.user.id)
+
+        const { html, styles } = appHtml({ appInfo, userStatus })
+
+        res.render('index', {
+          appInfo: JSON.stringify(appInfo),
+          userStatus: JSON.stringify(userStatus),
+          bundle: manifest['index.js'],
+          html,
+          styles
+        })
+      } catch (err) {
+        next(err)
       }
-
-      const userStatus: Binge = await getUserStatus(req.user.id)
-
-      const { html, styles } = appHtml({ appInfo, userStatus })
-
-      res.render('index', {
-        appInfo: JSON.stringify(appInfo),
-        userStatus: JSON.stringify(userStatus),
-        bundle: manifest['index.js'],
-        html,
-        styles
-      })
     } else {
       res.render('login')
     }
   })
 
-  router.get('/user-status', async (req, res) => {
+  router.get('/user-status', async (req, res, next) => {
     if (req.isAuthenticated()) {
-      const userStatus = await getUserStatus(req.user.id)
-      res.json(userStatus)
+      try {
+        const userStatus = await getUserStatus(req.user.id)
+        res.json(userStatus)
+      } catch (err) {
+        next(err)
+      }
     } else {
       res.sendStatus(401)
     }
   })
 
-  router.post('/submit-data', async (req, res) => {
+  router.post('/submit-data', async (req, res, next) => {
     if (req.isAuthenticated()) {
-      const currentBinge = await submitBite(req.user, req.body as BiteInfo, client)
-      res.json(currentBinge)
+      try {
+        const currentBinge = await submitBite(req.user, req.body as BiteInfo, client)
+        res.json(currentBinge)
+      } catch (err) {
+        next(err)
+      }
     } else {
       res.sendStatus(401)
     }

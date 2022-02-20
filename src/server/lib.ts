@@ -101,7 +101,7 @@ export const calculateBites = async () => {
 }
 
 export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?: WebClient) => {
-  const { id: userId, token } = user
+  const { id: userId, profile } = user
   const {
     content,
     info,
@@ -162,12 +162,13 @@ export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?
     const slackMsg = `${type}${typePostfix};${content}\u00A0(${alcoholW}\u00A0g);${location}${coordLoc};${currentPermillage
       .toFixed(2)
       .replace('.', ',')}\u00A0‰${info ? ';' + info : ''}`
+    const { display_name: name, image_original: picture } = profile ?? {}
     await client.chat.postMessage({
       channel: channelId,
       text: `\u{200B}${slackMsg}`,
       unfurl_links: false,
-      as_user: true,
-      token
+      username: name,
+      icon_url: picture
     })
   }
 

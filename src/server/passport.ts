@@ -1,6 +1,7 @@
+import { Profile } from '@slack/web-api/dist/response/UsersProfileGetResponse'
 import express from 'express'
-import passport from 'passport'
 import { Issuer, Strategy, TokenSet, UserinfoResponse } from 'openid-client'
+import passport from 'passport'
 import { addBiter } from './db'
 
 const router = express.Router()
@@ -11,6 +12,7 @@ declare global {
     interface User {
       token: string
       id: string
+      profile?: Profile
     }
   }
 }
@@ -68,9 +70,13 @@ export const getConfiguredPassport = async (
   router.get(
     '/slack',
     passport.authenticate(strategy, { failureRedirect: '/' }),
-    async (req, res) => {
+    async (req, res, next) => {
       if (req.user?.id) {
-        await addBiter(req.user.id)
+        try {
+          await addBiter(req.user.id, req.user.profile?.display_name)
+        } catch (err) {
+          next(err)
+        }
       }
       res.redirect('/')
     }

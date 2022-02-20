@@ -72,13 +72,13 @@ export const getLastBingeStart = async (userId: string): Promise<Date | undefine
     )
     .then((res) => res?.bingestart)
 
-export const addBiter = async (biter: string) => {
+export const addBiter = async (biter: string, name?: string) => {
   await pgDb.none(
     `
-        INSERT INTO megafauna (biter) VALUES ($(biter))
+        INSERT INTO megafauna (biter, displayname) VALUES ($(biter), $(name))
         ON CONFLICT (biter) DO NOTHING 
     `,
-    { biter }
+    { biter, name: name ?? null }
   )
 }
 
