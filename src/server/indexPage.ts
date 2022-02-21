@@ -23,7 +23,7 @@ const index = (client: WebClient) => {
           return
         }
         req.user.profile = profile
-        const { display_name: name, image_24: picture } = profile
+        const { display_name: name, image_512: picture } = profile
 
         const appInfo: AppInfo = {
           realName: name || '',

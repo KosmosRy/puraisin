@@ -84,6 +84,7 @@ export const getConfiguredPassport = async (
 
   router.get('/logout', (req, res) => {
     req.logout()
+    req.session.destroy(() => { /* oh well */ })
     res.redirect('/')
   })
 

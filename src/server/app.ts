@@ -18,11 +18,12 @@ import passportController, { getConfiguredPassport } from './passport'
     }),
     secret: 'HMP FTW',
     cookie: {
-      maxAge: 365 * 24 * 60 * 60 * 1000
-      // secure,
+      maxAge: 365 * 24 * 60 * 60 * 1000,
+      secure: true,
     },
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    proxy: true
   }
 
   const { botToken, redirectPath, clientId, clientSecret } = config.slack
@@ -33,6 +34,7 @@ import passportController, { getConfiguredPassport } from './passport'
 
   app.set('views', './views')
   app.set('view engine', 'ejs')
+  app.set('trust proxy', true)
   app.use(expressSession(session))
   const passport = await getConfiguredPassport(publicHost, clientId, clientSecret, redirectPath)
   app.use(passport.initialize())
