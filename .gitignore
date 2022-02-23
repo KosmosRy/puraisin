@@ -4,6 +4,8 @@ config/*.json
 !config/default.json
 
 .env
+.env.*
+!.env.project
 
 # yarn
 .yarn/*
