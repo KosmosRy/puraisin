@@ -1,9 +1,12 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/fi'
+import utc from 'dayjs/plugin/utc'
+import Timezone from 'dayjs/plugin/timezone'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { VFC } from 'react'
 import styled from 'styled-components'
+import { canUseDOM } from '../utils'
 
 type Props = {
   realName: string
@@ -17,6 +20,12 @@ type Props = {
 dayjs.extend(localizedFormat)
 dayjs.extend(relativeTime)
 dayjs.locale('fi')
+
+if (!canUseDOM) {
+  dayjs.extend(utc)
+  dayjs.extend(Timezone)
+  dayjs.tz.setDefault('Europe/Helsinki')
+}
 
 const formatLastBite = (lastBite: Date) => dayjs(lastBite).format('dd, D.M.YY [klo] H:mm Z')
 const formatTimeTillSober = (timeTillSober: number) => {
