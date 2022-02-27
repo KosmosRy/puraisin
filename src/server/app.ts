@@ -36,7 +36,7 @@ import passportController, { getConfiguredPassport } from './passport'
   app.set('view engine', 'ejs')
   app.set('trust proxy', true)
   app.use(expressSession(session))
-  const passport = await getConfiguredPassport(publicHost, clientId, clientSecret, redirectPath)
+  const passport = getConfiguredPassport(publicHost, clientId, clientSecret, redirectPath)
   app.use(passport.initialize())
   app.use(passport.session())
   app.use(express.json())
@@ -44,19 +44,6 @@ import passportController, { getConfiguredPassport } from './passport'
   app.use('/', express.static('./public'))
   app.use('/', index(slackClient))
   app.use('/auth', passportController)
-
-  app.get('/ping', async (req, res, next) => {
-    try {
-      const response = await slackClient.chat.postMessage({
-        channel: 'testiryhma',
-        text: 'Ping'
-      })
-      console.log(response)
-      res.sendStatus(204)
-    } catch (err) {
-      next(err)
-    }
-  })
 
   app.listen(port, () => {
     console.log(`⚡️ Puraisin is running at port ${port}!`)

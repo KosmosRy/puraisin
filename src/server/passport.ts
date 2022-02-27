@@ -35,7 +35,7 @@ type AuthResults = {
   team: { id: string; name: string }
 }
 
-export const getConfiguredPassport = async (
+export const getConfiguredPassport = (
   publicHost: string,
   clientId: string,
   clientSecret: string,
