@@ -4,13 +4,17 @@
     <title>Pikapuraisin</title>
     <%- include('meta'); %>
     <%- styles %>
-    <script>
-      window.__APPINFO__ = <%- appInfo %>
-      window.__USERSTATUS__ = <%- userStatus %>
+    <script type="module">
+      import app from "<%- bundle %>";
+
+
+      const appInfo = <%- appInfo %>;
+      const userStatus = <%- userStatus %>;
+
+      app(userStatus, appInfo);
     </script>
   </head>
   <body>
     <div id="app"><%- html %></div>
-    <script src="<%- bundle %>" type="module" defer></script>
   </body>
 </html>

@@ -76,9 +76,9 @@ export const addBiter = async (biter: string, name?: string) => {
   await pgDb.none(
     `
         INSERT INTO megafauna (biter, displayname) VALUES ($(biter), $(name))
-        ON CONFLICT (biter) DO NOTHING 
+        ON CONFLICT (biter) DO ${name === null ? 'NOTHING' : 'UPDATE SET displayname = excluded.displayname'} 
     `,
-    { biter, name: name ?? null }
+    { biter, name: name || null }
   )
 }
 

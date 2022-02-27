@@ -1,8 +1,8 @@
 import { Profile } from '@slack/web-api/dist/response/UsersProfileGetResponse'
 import express from 'express'
-import { Issuer, Strategy, TokenSet, UserinfoResponse } from 'openid-client'
 import passport from 'passport'
-import { addBiter } from './db'
+import { VerifyCallback } from "passport-oauth2"
+import SlackStrategy from './passport-slack'
 
 const router = express.Router()
 
@@ -10,52 +10,55 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface User {
-      token: string
+      botToken: string
+      userToken: string
       id: string
       profile?: Profile
     }
   }
 }
 
-export const getConfiguredPassport = async (
+type AuthedUser = {
+  id: string,
+  scope: string,
+  access_token: string,
+  token_type: 'user'
+}
+
+type AuthResults = {
+  app_id: string
+  authed_user: AuthedUser
+  scope: string
+  token_type: 'bot'
+  access_token: string
+  bot_user_ud: string
+  team: { id: string; name: string }
+}
+
+export const getConfiguredPassport = (
   publicHost: string,
   clientId: string,
   clientSecret: string,
   redirectPath: string
 ) => {
   const redirectUri = `${publicHost}${redirectPath}`
-  const issuer = await Issuer.discover('https://slack.com')
-  const client = new issuer.Client({
-    client_id: clientId,
-    client_secret: clientSecret,
-    redirect_uris: [redirectUri],
-    response_types: ['code']
+
+  const strategy = new SlackStrategy({
+    clientID: clientId,
+    clientSecret,
+    callbackURL: redirectUri,
+    scope: 'users.profile:read',
+    userScope: 'chat:write,channels:read,channels:write',
+    state: true
+  }, (botToken: string, refreshToken: string, authResults: AuthResults, _: unknown, done: VerifyCallback) => {
+    const { authed_user: authedUser } = authResults
+    done(null, {
+      botToken,
+      userToken: authedUser.access_token,
+      id: authedUser.id
+    })
   })
-  const strategy = new Strategy<Express.User>(
-    {
-      client,
-      params: {
-        redirect_uri: redirectUri,
-        response_type: 'code',
-        scope: 'openid profile email'
-      },
-      usePKCE: 'S256'
-    },
-    (
-      tokenSet: TokenSet,
-      userInfo: UserinfoResponse<Record<string, unknown>, Record<string, unknown>>,
-      done: (error: unknown, user?: Express.User) => void
-    ) => {
-      if (!tokenSet.access_token) {
-        done(new Error('No access token'))
-      } else {
-        done(null, {
-          token: tokenSet.access_token,
-          id: userInfo.sub
-        })
-      }
-    }
-  )
+
 
   passport.use(strategy)
   passport.serializeUser((user, done) => {
@@ -69,17 +72,7 @@ export const getConfiguredPassport = async (
 
   router.get(
     '/slack',
-    passport.authenticate(strategy, { failureRedirect: '/' }),
-    async (req, res, next) => {
-      if (req.user?.id) {
-        try {
-          await addBiter(req.user.id, req.user.profile?.display_name)
-        } catch (err) {
-          next(err)
-        }
-      }
-      res.redirect('/')
-    }
+    passport.authenticate(strategy, { successRedirect: '/', failureRedirect: '/' })
   )
 
   router.get('/logout', (req, res) => {

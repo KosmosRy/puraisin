@@ -11,9 +11,10 @@ const index = (client: WebClient) => {
   router.get('/', async (req, res, next) => {
     if (req.isAuthenticated()) {
       try {
-        const { id } = req.user
+        const { id, botToken } = req.user
         const profile = await client.users.profile
           .get({
+            token: botToken,
             user: id
           })
           .then((res) => res.profile)
@@ -23,7 +24,8 @@ const index = (client: WebClient) => {
           return
         }
         req.user.profile = profile
-        const { display_name: name, image_512: picture } = profile
+        const { display_name, real_name, image_512: picture } = profile
+        const name = display_name || real_name
 
         const appInfo: AppInfo = {
           realName: name || '',

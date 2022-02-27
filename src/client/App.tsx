@@ -32,11 +32,10 @@ const AppContainer = styled.div({
 const MainContainer = styled.div({
   display: 'flex',
   flexDirection: 'column',
-  height: '100vh'
+  gap: 32
 })
 
 const Copyright = styled.div({
-  marginTop: 16,
   flexShrink: 0,
   paddingBottom: 10
 })
