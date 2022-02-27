@@ -118,8 +118,7 @@ export const FrontPage: VFC<FpProps> = ({ info, initialUserStatus }) => {
 
 const FrontPageContainer = styled.div({
   display: 'flex',
-  flexDirection: 'column',
-  flex: '1 0 auto'
+  flexDirection: 'column'
 })
 
 const Loading = styled.div({
