@@ -8,6 +8,10 @@ import { db } from './db'
 import index from './indexPage'
 import passportController, { getConfiguredPassport } from './passport'
 
+const { botToken, redirectPath, clientId, clientSecret } = config.slack
+const { publicHost, port, sessionSecret } = config.server
+const slackClient = new WebClient(botToken)
+
 ;(async () => {
   const dbClient = await db()
   const SessionStore = pgSession(expressSession)
@@ -16,7 +20,7 @@ import passportController, { getConfiguredPassport } from './passport'
       pgPromise: dbClient,
       createTableIfMissing: true
     }),
-    secret: 'HMP FTW',
+    secret: sessionSecret,
     cookie: {
       maxAge: 365 * 24 * 60 * 60 * 1000,
       secure: true,
@@ -25,10 +29,6 @@ import passportController, { getConfiguredPassport } from './passport'
     saveUninitialized: false,
     proxy: true
   }
-
-  const { botToken, redirectPath, clientId, clientSecret } = config.slack
-  const { publicHost, port } = config.server
-  const slackClient = new WebClient(botToken)
 
   const app = express()
 

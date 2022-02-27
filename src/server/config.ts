@@ -1,6 +1,7 @@
 export type ServerConfig = {
   publicHost: string
   port: number
+  sessionSecret: string
 }
 
 export type SlackConfig = {
@@ -51,7 +52,8 @@ const parseNumber = (env: string, defaultVal?: number) => {
 const config: Config = {
   server: {
     publicHost: parseEnv('PUBLIC_HOST'),
-    port: parseNumber('PORT', 3000)
+    port: parseNumber('PORT', 3000),
+    sessionSecret: parseEnv('SESSION_SECRET')
   },
   slack: {
     botToken: parseEnv('BOT_TOKEN'),
