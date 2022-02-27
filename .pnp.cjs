@@ -55,6 +55,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express-session", "npm:1.17.4"],
             ["@types/node", "npm:16.11.6"],
             ["@types/passport", "npm:1.0.7"],
+            ["@types/passport-oauth2", "npm:1.4.11"],
             ["@types/pg", "npm:8.6.1"],
             ["@types/pg-promise", "npm:5.4.3"],
             ["@types/react", "npm:17.0.34"],
@@ -80,8 +81,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["node-pg-migrate", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:6.0.0"],
             ["nodemon", "npm:2.0.15"],
             ["npm-run-all", "npm:4.1.5"],
-            ["openid-client", "npm:5.0.2"],
             ["passport", "npm:0.5.0"],
+            ["passport-oauth2", "npm:1.6.1"],
             ["pg", "virtual:daa03143f735bdcd132c00c78d907cd55cd1ca52a999cc5341bd706c4bb2bbd672b041e9e5892384170090f31d13af58eaed7accdc10fde2bfdad1b6b9a04a4e#npm:8.7.1"],
             ["pg-promise", "npm:10.11.1"],
             ["prettier", "npm:2.4.1"],
@@ -3180,12 +3181,34 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@types/oauth", [
+        ["npm:0.9.1", {
+          "packageLocation": "./.yarn/cache/@types-oauth-npm-0.9.1-94ae218a9b-5c079611b4.zip/node_modules/@types/oauth/",
+          "packageDependencies": [
+            ["@types/oauth", "npm:0.9.1"],
+            ["@types/node", "npm:16.11.6"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@types/passport", [
         ["npm:1.0.7", {
           "packageLocation": "./.yarn/cache/@types-passport-npm-1.0.7-a6aaee17b9-1b78fbbb58.zip/node_modules/@types/passport/",
           "packageDependencies": [
             ["@types/passport", "npm:1.0.7"],
             ["@types/express", "npm:4.17.13"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/passport-oauth2", [
+        ["npm:1.4.11", {
+          "packageLocation": "./.yarn/cache/@types-passport-oauth2-npm-1.4.11-299820231e-09d047a6c0.zip/node_modules/@types/passport-oauth2/",
+          "packageDependencies": [
+            ["@types/passport-oauth2", "npm:1.4.11"],
+            ["@types/express", "npm:4.17.13"],
+            ["@types/oauth", "npm:0.9.1"],
+            ["@types/passport", "npm:1.0.7"]
           ],
           "linkType": "HARD",
         }]
@@ -4006,6 +4029,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/balanced-match-npm-1.0.2-a53c126459-9706c088a2.zip/node_modules/balanced-match/",
           "packageDependencies": [
             ["balanced-match", "npm:1.0.2"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["base64url", [
+        ["npm:3.0.1", {
+          "packageLocation": "./.yarn/cache/base64url-npm-3.0.1-4c171c4917-a77b2a3a52.zip/node_modules/base64url/",
+          "packageDependencies": [
+            ["base64url", "npm:3.0.1"]
           ],
           "linkType": "HARD",
         }]
@@ -6529,15 +6561,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["jose", [
-        ["npm:4.1.5", {
-          "packageLocation": "./.yarn/cache/jose-npm-4.1.5-adc9fa250f-ec7045442a.zip/node_modules/jose/",
-          "packageDependencies": [
-            ["jose", "npm:4.1.5"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["js-tokens", [
         ["npm:4.0.0", {
           "packageLocation": "./.yarn/cache/js-tokens-npm-4.0.0-0ac852e9e2-8a95213a5a.zip/node_modules/js-tokens/",
@@ -7276,20 +7299,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["oauth", [
+        ["npm:0.9.15", {
+          "packageLocation": "./.yarn/cache/oauth-npm-0.9.15-a6aae972bc-957c0d8d85.zip/node_modules/oauth/",
+          "packageDependencies": [
+            ["oauth", "npm:0.9.15"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["object-assign", [
         ["npm:4.1.1", {
           "packageLocation": "./.yarn/cache/object-assign-npm-4.1.1-1004ad6dec-fcc6e4ea8c.zip/node_modules/object-assign/",
           "packageDependencies": [
             ["object-assign", "npm:4.1.1"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["object-hash", [
-        ["npm:2.2.0", {
-          "packageLocation": "./.yarn/cache/object-hash-npm-2.2.0-d97a921cc1-55ba841e3a.zip/node_modules/object-hash/",
-          "packageDependencies": [
-            ["object-hash", "npm:2.2.0"]
           ],
           "linkType": "HARD",
         }]
@@ -7372,15 +7395,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["oidc-token-hash", [
-        ["npm:5.0.1", {
-          "packageLocation": "./.yarn/cache/oidc-token-hash-npm-5.0.1-9b98415c82-d62aa8c665.zip/node_modules/oidc-token-hash/",
-          "packageDependencies": [
-            ["oidc-token-hash", "npm:5.0.1"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["on-finished", [
         ["npm:2.3.0", {
           "packageLocation": "./.yarn/cache/on-finished-npm-2.3.0-4ce92f72c6-1db595bd96.zip/node_modules/on-finished/",
@@ -7406,19 +7420,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["once", "npm:1.4.0"],
             ["wrappy", "npm:1.0.2"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["openid-client", [
-        ["npm:5.0.2", {
-          "packageLocation": "./.yarn/cache/openid-client-npm-5.0.2-a781f98453-79acd48157.zip/node_modules/openid-client/",
-          "packageDependencies": [
-            ["openid-client", "npm:5.0.2"],
-            ["jose", "npm:4.1.5"],
-            ["lru-cache", "npm:6.0.0"],
-            ["object-hash", "npm:2.2.0"],
-            ["oidc-token-hash", "npm:5.0.1"]
           ],
           "linkType": "HARD",
         }]
@@ -7586,6 +7587,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["passport", "npm:0.5.0"],
             ["passport-strategy", "npm:1.0.0"],
             ["pause", "npm:0.0.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["passport-oauth2", [
+        ["npm:1.6.1", {
+          "packageLocation": "./.yarn/cache/passport-oauth2-npm-1.6.1-2799fe66c7-2a5b01a884.zip/node_modules/passport-oauth2/",
+          "packageDependencies": [
+            ["passport-oauth2", "npm:1.6.1"],
+            ["base64url", "npm:3.0.1"],
+            ["oauth", "npm:0.9.15"],
+            ["passport-strategy", "npm:1.0.0"],
+            ["uid2", "npm:0.0.4"],
+            ["utils-merge", "npm:1.0.1"]
           ],
           "linkType": "HARD",
         }]
@@ -8065,6 +8080,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express-session", "npm:1.17.4"],
             ["@types/node", "npm:16.11.6"],
             ["@types/passport", "npm:1.0.7"],
+            ["@types/passport-oauth2", "npm:1.4.11"],
             ["@types/pg", "npm:8.6.1"],
             ["@types/pg-promise", "npm:5.4.3"],
             ["@types/react", "npm:17.0.34"],
@@ -8090,8 +8106,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["node-pg-migrate", "virtual:189026726a6f892938e51f9a5e8c9a0da6bd6a4e8fc8459b4ea428ad48a89a34137a87a732eb70c376bed383b69892c7da73bfd23ec160bc8b7c945682c9813f#npm:6.0.0"],
             ["nodemon", "npm:2.0.15"],
             ["npm-run-all", "npm:4.1.5"],
-            ["openid-client", "npm:5.0.2"],
             ["passport", "npm:0.5.0"],
+            ["passport-oauth2", "npm:1.6.1"],
             ["pg", "virtual:daa03143f735bdcd132c00c78d907cd55cd1ca52a999cc5341bd706c4bb2bbd672b041e9e5892384170090f31d13af58eaed7accdc10fde2bfdad1b6b9a04a4e#npm:8.7.1"],
             ["pg-promise", "npm:10.11.1"],
             ["prettier", "npm:2.4.1"],
@@ -9408,6 +9424,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["uid-safe", "npm:2.1.5"],
             ["random-bytes", "npm:1.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["uid2", [
+        ["npm:0.0.4", {
+          "packageLocation": "./.yarn/cache/uid2-npm-0.0.4-cd02831b83-e92325ce2e.zip/node_modules/uid2/",
+          "packageDependencies": [
+            ["uid2", "npm:0.0.4"]
           ],
           "linkType": "HARD",
         }]

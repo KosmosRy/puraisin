@@ -1,8 +1,10 @@
+import { Profile } from '@slack/web-api/dist/response/UsersProfileGetResponse'
 import { WebClient } from '@slack/web-api'
 import dayjs from 'dayjs'
 import { Binge, BiteInfo } from '../common/types'
 import config from './config'
 import {
+  addBiter,
   getBites,
   getLastBingeStart,
   getMegafauna,
@@ -48,6 +50,29 @@ const getBFactor = (weight = 85.5) =>
   (bodyWater * permillageConvertion * swedishMultiplier) / (bodyWaterConstantMale * weight)
 
 const calcTimeTillSober = (currentPct: number) => currentPct / burnFactor
+
+const addUserToChannel = async (userToken: string, client: WebClient) => {
+  const usersChannels = await client.users.conversations({
+    token: userToken
+  })
+  if (!usersChannels.channels?.find(c => c.id === channelId)) {
+    const { ok } = await client.conversations.join({
+      token: userToken,
+      channel: channelId
+    })
+    if (!ok) {
+      throw new Error('Could not join to slack channel')
+    }
+  }
+}
+
+const getName = (profile?: Profile) => {
+  if (profile) {
+    const { display_name: displayName, real_name: realName } = profile
+    return displayName || realName
+  }
+  return undefined
+}
 
 export const getUserStatus = async (userId: string, at?: Date): Promise<Binge> => {
   const prevBite = await getPreviousBite(userId, at)
@@ -101,7 +126,7 @@ export const calculateBites = async () => {
 }
 
 export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?: WebClient) => {
-  const { id: userId, profile } = user
+  const { id: userId, userToken, profile } = user
   const {
     content,
     info,
@@ -113,6 +138,8 @@ export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?
     location: loc,
     customLocation
   } = biteInfo
+
+  await addBiter(userId, getName(profile))
 
   const ts = (postfestum ? dayjs().subtract(pftime, 'minutes') : dayjs()).toDate()
   const origPermillage = (await getUserStatus(userId, ts)).permillage
@@ -149,6 +176,7 @@ export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?
   const binge = await getUserStatus(userId)
 
   if (client) {
+    await addUserToChannel(userToken, client)
     const alcoholW = Math.round(portion * 12)
     let coordLoc = ''
     if (coordinates) {
@@ -162,13 +190,11 @@ export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?
     const slackMsg = `${type}${typePostfix};${content}\u00A0(${alcoholW}\u00A0g);${location}${coordLoc};${currentPermillage
       .toFixed(2)
       .replace('.', ',')}\u00A0‰${info ? ';' + info : ''}`
-    const { display_name: name, image_original: picture } = profile ?? {}
     await client.chat.postMessage({
       channel: channelId,
       text: `\u{200B}${slackMsg}`,
       unfurl_links: false,
-      username: name,
-      icon_url: picture
+      token: userToken
     })
   }
 
