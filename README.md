@@ -1,4 +1,4 @@
-[![Fuck Russia](https://img.shields.io/badge/fuck-russia-black.svg)](https://twitter.com/Tyrrrz/status/1495972130789502980?s=20&t=3dCM7iZbUJi-K0rDa4-JiQ)
+[![Fuck Putin](https://img.shields.io/badge/fuck-russia-black.svg)](https://twitter.com/Tyrrrz/status/1495972130789502980?s=20&t=3dCM7iZbUJi-K0rDa4-JiQ)
 
 # PikaPuraisin
 
