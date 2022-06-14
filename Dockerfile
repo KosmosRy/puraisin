@@ -1,11 +1,11 @@
-FROM node:lts-alpine
+FROM node:buster-slim
 
 ENV PORT=5000
 ENV NODE_ENV=production
 
 EXPOSE $PORT
 
-RUN addgroup -g 998 kosmos && adduser --uid 998 -D -G kosmos kosmos
+RUN addgroup --system -gid 998 kosmos && adduser --system --uid 998 -gid 998 kosmos
 
 WORKDIR puraisin
 COPY migrations migrations

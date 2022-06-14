@@ -10,6 +10,7 @@
     "build:server": "BABEL_ENV=server babel src --delete-dir-on-start --extensions \".ts,.tsx\" --out-dir ./dist-server",
     "build:client": "rm -rf dist/bundle && rollup -c",
     "build": "yarn build:server && yarn build:client",
+    "deploy": "docker build -t kosmosry/puraisin . && docker push kosmosry/puraisin",
     "db:start": "docker-compose -f puraisin-db.yml up -d",
     "db:stop": "docker-compose -f puraisin-db.yml down",
     "watch:client": "NODE_ENV=dev rollup -c -w",

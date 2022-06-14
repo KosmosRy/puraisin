@@ -181,7 +181,7 @@ export const submitBite = async (user: Express.User, biteInfo: BiteInfo, client?
     let coordLoc = ''
     if (coordinates) {
       const { latitude, longitude, accuracy } = coordinates
-      const gmapUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+      const gmapUrl = `https://www.google.com/maps/place/${latitude},${longitude}`
       coordLoc = ` (<${gmapUrl}|${latitude.toFixed(4)},${longitude.toFixed(
         4
       )}>\u00A0±${accuracy.toFixed(0)}m)`
