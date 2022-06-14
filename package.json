@@ -26,7 +26,7 @@
     "connect-pg-simple": "^7.0.0",
     "dayjs": "^1.10.7",
     "dotenv": "^16.0.0",
-    "ejs": "^3.1.6",
+    "ejs": "^3.1.7",
     "express": "^4.16.4",
     "express-session": "^1.17.2",
     "node-pg-migrate": "^6.0.0",
