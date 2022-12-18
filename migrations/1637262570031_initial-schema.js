@@ -1,4 +1,4 @@
-exports.shorthands = undefined
+exports.shorthands = undefined;
 
 exports.up = (pgm) => {
   pgm.sql(`
@@ -23,7 +23,7 @@ exports.up = (pgm) => {
         weight      NUMERIC DEFAULT 85.5                            NOT NULL,
         tzoffset    VARCHAR(6)
     );
-  `)
-}
+  `);
+};
 
-exports.down = false
+exports.down = false;
