@@ -3,13 +3,8 @@ dist-server
 config/*.json
 !config/default.json
 
-.env
-.env.*
-!.env.project
-
 # yarn
 .yarn/*
-!.yarn/cache
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
@@ -120,4 +115,6 @@ Temporary Items
 .vscode/
 
 .env*
+!.env
 !.env.vault
+/node_modules/
