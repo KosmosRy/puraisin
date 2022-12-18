@@ -682,15 +682,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pg-promise@npm:^5.4.3":
-  version: 5.4.3
-  resolution: "@types/pg-promise@npm:5.4.3"
-  dependencies:
-    pg-promise: "*"
-  checksum: d3803e2fb1e8d9ef2cacbc83d3cd0d75a99c1f253dd3a00c03019d57d3816d0306abdd0885cce742b3df963151fe7889839ddbc9344be34cfd09237701a7ba8e
-  languageName: node
-  linkType: hard
-
 "@types/pg@npm:^8.0.0":
   version: 8.6.1
   resolution: "@types/pg@npm:8.6.1"
@@ -1138,13 +1129,6 @@ __metadata:
     es-shim-unscopables: ^1.0.0
     get-intrinsic: ^1.1.3
   checksum: 7923324a67e70a2fc0a6e40237405d92395e45ebd76f5cb89c2a5cf1e66b47aca6baacd0cd628ffd88830b90d47fff268071493d09c9ae123645613dac2c2ca3
-  languageName: node
-  linkType: hard
-
-"assert-options@npm:0.7.0":
-  version: 0.7.0
-  resolution: "assert-options@npm:0.7.0"
-  checksum: 447e3de35a57860b29d7f3907cfdd97cff8a763195bac9cf1f5982011904ec464da239cbc6f5ee2090f1a20be9babc1b7aa1468225bbd15ae5d96ca067dd720f
   languageName: node
   linkType: hard
 
@@ -3713,33 +3697,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-pool@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "pg-pool@npm:3.4.1"
-  peerDependencies:
-    pg: ">=8.0"
-  checksum: 50d68bd99a5c7ca32ad93ba97462528d6a8df87c5cf5a0743a3f0946bc57be82a45025e67eb8a6e522ed25316747864e5ce043339577a71f8f430e1364da2727
-  languageName: node
-  linkType: hard
-
 "pg-pool@npm:^3.5.2":
   version: 3.5.2
   resolution: "pg-pool@npm:3.5.2"
   peerDependencies:
     pg: ">=8.0"
   checksum: a5d029200257671f0c17ca54b9ab6213e2060e64e5cc792b78edd50ab471a26cd364890d05d546d9296949e079e943821cf2ceb4d488f4e6a6789fb781a628bf
-  languageName: node
-  linkType: hard
-
-"pg-promise@npm:*":
-  version: 10.11.1
-  resolution: "pg-promise@npm:10.11.1"
-  dependencies:
-    assert-options: 0.7.0
-    pg: 8.7.1
-    pg-minify: 1.6.2
-    spex: 3.2.0
-  checksum: 17e59742af51646db9581e825689ef4766993182833775bdedbe32bd4b4bcf7b63a1fd67a6d0be2ef231f6111df798a204d7b702d14cd7731e06c54ae6e8546a
   languageName: node
   linkType: hard
 
@@ -3772,26 +3735,6 @@ __metadata:
     postgres-date: ~1.0.4
     postgres-interval: ^1.1.0
   checksum: bf4ec3f594743442857fb3a8dfe5d2478a04c98f96a0a47365014557cbc0b4b0cee01462c79adca863b93befbf88f876299b75b72c665b5fb84a2c94fbd10316
-  languageName: node
-  linkType: hard
-
-"pg@npm:8.7.1":
-  version: 8.7.1
-  resolution: "pg@npm:8.7.1"
-  dependencies:
-    buffer-writer: 2.0.0
-    packet-reader: 1.0.0
-    pg-connection-string: ^2.5.0
-    pg-pool: ^3.4.1
-    pg-protocol: ^1.5.0
-    pg-types: ^2.1.0
-    pgpass: 1.x
-  peerDependencies:
-    pg-native: ">=2.0.0"
-  peerDependenciesMeta:
-    pg-native:
-      optional: true
-  checksum: 3a17d9a73df9c9f5f99400751144f9d5e8dbe1948ca44f5b5eecb2166ad78cab36d070c2a97438cd3a5d1d083e70af1d3e0aad4554a45fe74b77d98ed4487242
   languageName: node
   linkType: hard
 
@@ -3957,7 +3900,6 @@ __metadata:
     "@slack/web-api": ^6.8.0
     "@types/node": 18.11.12
     "@types/pg": ^8.6.5
-    "@types/pg-promise": ^5.4.3
     "@types/react": 18.0.26
     "@types/react-dom": 18.0.9
     "@typescript-eslint/eslint-plugin": ^5.46.0

@@ -118,3 +118,7 @@ Temporary Items
 !.env
 !.env.vault
 /node_modules/
+
+# next.js
+next-env.d.ts
+.next
