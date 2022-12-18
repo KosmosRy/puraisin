@@ -3,8 +3,8 @@ declare global {
     interface ProcessEnv {
       BOT_TOKEN: string;
       CHANNEL_ID: string;
-      SLACK_CLIENT_ID: string;
-      SLACK_CLIENT_SECRET: string;
+      CLIENT_ID: string;
+      CLIENT_SECRET: string;
       DB_HOST: string;
       DB_PORT: string;
       DB_NAME: string;

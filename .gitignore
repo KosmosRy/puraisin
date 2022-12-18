@@ -122,3 +122,6 @@ Temporary Items
 # next.js
 next-env.d.ts
 .next
+
+.flaskenv*
+!.env.project
