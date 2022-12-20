@@ -1,6 +1,6 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { AppInfo, Binge, BiteInfo } from '../types/common';
-import { getStatus, submitBite } from '../utils/api';
+import { submitBite } from '../utils/api';
 import { Alert } from './Alert';
 import { BiteForm } from './BiteForm';
 import { Heading } from './Heading';
@@ -14,53 +14,31 @@ interface FpProps {
   initialUserStatus: Binge;
 }
 
-export const FrontPage: FC<FpProps> = ({ info, initialUserStatus }) => {
+export const FrontPage: FC<FpProps> = ({
+  info,
+  initialUserStatus: { permillage, bingeStart, lastBite, timeTillSober },
+}) => {
   const { realName, avatar } = info;
-  const [permillage, setPermillage] = useState(initialUserStatus.permillage);
-  const [bingeStart, setBingeStart] = useState<Date | undefined>(initialUserStatus.bingeStart);
-  const [lastBite, setLastBite] = useState<Date | undefined>(initialUserStatus.lastBite);
-  const [timeTillSober, setTimeTillSober] = useState<number | undefined>(
-    initialUserStatus.timeTillSober,
-  );
   const [loading, setLoading] = useState(false);
   const [biteDone, setBiteDone] = useState(false);
   const biteDoneRef = useRef<HTMLDivElement>(null);
   const [lastContent, setLastContent] = useState('');
   const [error, setError] = useState<string>();
 
-  const { refresh } = useRouter();
-
-  const setUserStatus = useCallback(async (statusPromise: Promise<Binge>) => {
-    const userStatus = await statusPromise;
-    setPermillage(userStatus.permillage);
-    setLastBite(userStatus.lastBite);
-    setBingeStart(userStatus.bingeStart);
-    setTimeTillSober(userStatus.timeTillSober);
-  }, []);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setUserStatus(getStatus()).catch((reason) => {
-        setError((reason as Error).message || 'No mikähän tässä nyt on');
-      });
-    }, 60000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [setUserStatus]);
+  const { refresh, replace } = useRouter();
 
   const handleSubmit = async (data: BiteInfo) => {
     try {
       setLoading(true);
       setBiteDone(false);
-      await setUserStatus(submitBite(data));
+      await submitBite(data);
       setBiteDone(true);
       setLastContent(data.content);
       setError(undefined);
+      await replace('/');
+      // await setUserStatus(submitBite(data));
     } catch (reason) {
       console.error(reason);
-      setPermillage(0);
-      setLastBite(undefined);
       setError((reason as Error).message || 'No mikähän tässä nyt on');
     } finally {
       setLoading(false);

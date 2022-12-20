@@ -12,6 +12,7 @@ import {
 } from './db';
 import { SlackSession } from '../types/slack';
 import { slackClient } from './slack';
+import { UsersProfileGetResponse } from '@slack/web-api';
 
 export interface Bite {
   id: number;
@@ -65,6 +66,17 @@ const addUserToChannel = async (userToken: string) => {
     }
   }
 };
+
+export const getProfile = async (
+  userId: string,
+  token: string,
+): Promise<UsersProfileGetResponse['profile']> =>
+  slackClient.users.profile
+    .get({
+      token,
+      user: userId,
+    })
+    .then((res) => res.profile);
 
 export const getUserStatus = async (userId: string, at?: Date): Promise<Binge> => {
   const prevBite = await getPreviousBite(userId, at);
