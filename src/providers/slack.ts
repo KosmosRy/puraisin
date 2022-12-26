@@ -1,8 +1,8 @@
 import { OAuthConfig, OAuthUserConfig } from 'next-auth/providers';
-import { AuthResults, SlackProfile } from '../types/slack';
-import { TokenSetParameters } from 'openid-client';
+import { AuthedUser } from '../types/slack';
+import { Profile, TokenSet } from 'next-auth';
 
-export default function Slack<P extends SlackProfile>(options: OAuthUserConfig<P>): OAuthConfig<P> {
+export default function Slack(options: OAuthUserConfig<Profile>): OAuthConfig<Profile> {
   return {
     id: 'slack',
     name: 'Slack',
@@ -16,18 +16,18 @@ export default function Slack<P extends SlackProfile>(options: OAuthUserConfig<P
     },
     token: 'https://slack.com/api/oauth.v2.access',
     userinfo: {
-      request({ tokens }: { tokens: TokenSetParameters }): SlackProfile {
-        const user = (tokens as AuthResults).authed_user;
+      request({ tokens }: { tokens: TokenSet }) {
+        const user = tokens.authed_user as AuthedUser;
         return {
-          botToken: tokens.access_token ?? '',
-          userToken: user.access_token,
-          id: user.id,
+          sub: user.id,
         };
       },
     },
 
     profile(profile) {
-      return profile;
+      return {
+        id: profile.sub ?? '',
+      };
     },
 
     style: {

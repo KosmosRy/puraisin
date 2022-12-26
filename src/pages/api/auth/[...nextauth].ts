@@ -2,6 +2,23 @@ import SlackProvider from '../../../providers/slack';
 import NextAuth, { AuthOptions } from 'next-auth';
 import { AuthedUser, SlackSession, SlackToken } from '../../../types/slack';
 import config from '../../../utils/config';
+import { getProfile } from '../../../utils/lib';
+import { JWT } from 'next-auth/jwt';
+import dayjs from 'dayjs';
+
+const addProfileToToken = async (id: string, accessToken: string, token: JWT) => {
+  const profile = await getProfile(id, accessToken);
+  if (profile) {
+    const { display_name: displayName, real_name: realName, image_512: picture } = profile;
+    token.name = displayName ?? realName;
+    token.picture = picture;
+    token.profileUpdated = new Date().toISOString();
+  }
+  return token;
+};
+
+const profileExpired = (profileUpdated?: string) =>
+  !profileUpdated || dayjs(profileUpdated).diff() > 60 * 60 * 1000;
 
 export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -19,17 +36,23 @@ export const authOptions: AuthOptions = {
       if (account) {
         const { access_token: accessToken, id } = account.authed_user as AuthedUser;
         token.userToken = accessToken;
-        token.id = id;
+        token.sub = id;
         token.botToken = account.access_token;
+        await addProfileToToken(id, account.access_token ?? '', token);
+      } else {
+        const slackToken = token as SlackToken;
+        if (profileExpired(slackToken.profileUpdated)) {
+          await addProfileToToken(slackToken.sub, slackToken.botToken, token);
+        }
       }
       return token;
     },
     async session({ session, token }) {
-      const { userToken, botToken, id } = token as SlackToken;
+      const { userToken, botToken, sub } = token as SlackToken;
       const slackSession = session as SlackSession;
       slackSession.userToken = userToken;
       slackSession.botToken = botToken;
-      slackSession.id = id;
+      slackSession.id = sub;
       return slackSession;
     },
   },

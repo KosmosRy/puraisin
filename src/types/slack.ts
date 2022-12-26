@@ -1,5 +1,4 @@
-import { TokenSetParameters } from 'openid-client';
-import { Profile, Session } from 'next-auth';
+import { Session } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 
 export interface AuthedUser {
@@ -9,27 +8,19 @@ export interface AuthedUser {
   token_type: 'user';
 }
 
-export interface AuthResults extends TokenSetParameters {
-  app_id: string;
-  authed_user: AuthedUser;
-  bot_user_ud: string;
-  team: { id: string; name: string };
-}
-
-export interface SlackProfile extends Profile {
-  botToken: string;
-  userToken: string;
-  id: string;
-}
-
 export interface SlackSession extends Session {
   userToken: string;
   botToken: string;
   id: string;
+  user: {
+    name: string;
+    image: string;
+  };
 }
 
 export interface SlackToken extends JWT {
   userToken: string;
   botToken: string;
-  id: string;
+  sub: string;
+  profileUpdated?: string;
 }
