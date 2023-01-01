@@ -55,7 +55,9 @@ const Index: NextPage<AppProps> = ({ appProps }) => {
   useEffect(() => {
     if (appProps) {
       const intervalId = setInterval(() => {
-        void replace(asPath);
+        void replace(asPath, undefined, {
+          scroll: false,
+        });
       }, 30000);
       return () => {
         clearInterval(intervalId);
