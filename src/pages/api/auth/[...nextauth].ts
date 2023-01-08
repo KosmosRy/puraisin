@@ -4,7 +4,7 @@ import { AuthedUser, SlackSession, SlackToken } from '../../../types/slack';
 import config from '../../../utils/config';
 import { getProfile } from '../../../utils/lib';
 import { JWT } from 'next-auth/jwt';
-import dayjs from 'dayjs';
+import { addHours, isAfter, parseJSON } from 'date-fns';
 
 const addProfileToToken = async (id: string, accessToken: string, token: JWT) => {
   const profile = await getProfile(id, accessToken);
@@ -18,7 +18,7 @@ const addProfileToToken = async (id: string, accessToken: string, token: JWT) =>
 };
 
 const profileExpired = (profileUpdated?: string) =>
-  !profileUpdated || dayjs(profileUpdated).diff() > 60 * 60 * 1000;
+  !profileUpdated || isAfter(new Date(), addHours(parseJSON(profileUpdated), 1));
 
 export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,

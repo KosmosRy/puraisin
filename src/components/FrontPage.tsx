@@ -7,7 +7,7 @@ import { Heading } from './Heading';
 import Image from 'next/image';
 import Link from 'next/link';
 import { biteDoneContainer, frontPageContainer, loadingContainer } from './FrontPage.css';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface FpProps {
   info: AppInfo;
@@ -26,6 +26,7 @@ export const FrontPage: FC<FpProps> = ({
   const [error, setError] = useState<string>();
 
   const { refresh, replace } = useRouter();
+  const path = usePathname();
 
   const handleSubmit = async (data: BiteInfo) => {
     try {
@@ -35,8 +36,7 @@ export const FrontPage: FC<FpProps> = ({
       setBiteDone(true);
       setLastContent(data.content);
       setError(undefined);
-      await replace('/');
-      // await setUserStatus(submitBite(data));
+      await replace(path ?? '/');
     } catch (reason) {
       console.error(reason);
       setError((reason as Error).message || 'No mikähän tässä nyt on');

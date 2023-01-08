@@ -1,4 +1,6 @@
-import dayjs from 'dayjs';
+import { formatDistanceToNow, addSeconds } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
+import { fi } from 'date-fns/locale';
 import { FC } from 'react';
 import Image from 'next/image';
 import {
@@ -24,17 +26,18 @@ interface Props {
   avatar: string;
 }
 
-const formatLastBite = (lastBite: Date) => dayjs(lastBite).format('dd, D.M.YY [klo] H:mm Z');
+const formatLastBite = (lastBite: Date) =>
+  formatInTimeZone(lastBite, 'Europe/Helsinki', "eeeeee, d.M.yy 'klo' H:mm xxx", { locale: fi });
 const formatTimeTillSober = (timeTillSober: number) => {
   if (timeTillSober > 0) {
-    return dayjs().add(timeTillSober, 'seconds').fromNow(true);
+    return formatDistanceToNow(addSeconds(new Date(), timeTillSober), { locale: fi });
   } else {
     return '-';
   }
 };
 const formatTimeToNow = (from?: Date) => {
   if (from) {
-    return dayjs(from).toNow(true);
+    return formatDistanceToNow(from, { locale: fi });
   } else {
     return '-';
   }

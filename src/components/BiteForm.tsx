@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { format } from 'date-fns';
 import { ChangeEvent, useRef, useState, FC } from 'react';
 import { BiteInfo } from '../types/common';
 import { AdornedInput } from './AdornedInput';
@@ -89,7 +89,7 @@ export const BiteForm: FC<BiteFormProps> = ({ submitBite }) => {
       customLocation,
       info,
       coordinates,
-      tzOffset: dayjs().format('Z'),
+      tzOffset: format(new Date(), 'xxx'),
     });
     clearState();
     if (portionSelect.current) {

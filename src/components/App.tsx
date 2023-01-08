@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { appContainer, copyright } from './App.css';
-import dayjs from 'dayjs';
+import { getYear } from 'date-fns';
 import { FrontPage } from './FrontPage';
 import { AppInfo, Binge } from '../types/common';
 
@@ -12,7 +12,7 @@ interface Props {
 const App: FC<Props> = ({ appInfo, userStatus }) => (
   <div className={appContainer}>
     <FrontPage info={appInfo} initialUserStatus={userStatus} />
-    <footer className={copyright}>&copy; Apin Heristäjät {dayjs().get('year')}</footer>
+    <footer className={copyright}>&copy; Apin Heristäjät {getYear(new Date())}</footer>
   </div>
 );
 

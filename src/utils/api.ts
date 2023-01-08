@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { Binge, BiteInfo } from '../types/common';
 
 const handleResponse = async <T>(res: Response): Promise<T> => {
@@ -15,10 +14,10 @@ const handleUserState = async (res: Response): Promise<Binge> => {
   const userStatus: Binge = { permillage, timeTillSober };
 
   if (lastBite) {
-    userStatus.lastBite = dayjs(lastBite).toDate();
+    userStatus.lastBite = lastBite;
   }
   if (bingeStart) {
-    userStatus.bingeStart = dayjs(bingeStart).toDate();
+    userStatus.bingeStart = bingeStart;
   }
 
   return userStatus;

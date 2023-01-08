@@ -1,7 +1,3 @@
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import Timezone from 'dayjs/plugin/timezone';
-
 export interface SlackConfig {
   botToken: string;
   clientId: string;
@@ -29,10 +25,6 @@ const parseNumber = (value: string) => {
   }
   return numVal;
 };
-
-dayjs.extend(utc);
-dayjs.extend(Timezone);
-dayjs.tz.setDefault('Europe/Helsinki');
 
 const config: Config = {
   slack: {

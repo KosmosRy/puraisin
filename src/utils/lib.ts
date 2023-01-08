@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { differenceInSeconds, subMinutes } from 'date-fns';
 import { Binge, BiteInfo } from '../types/common';
 import config from './config';
 import {
@@ -41,7 +41,7 @@ const burnFactor = persW * metabolismConstantMale * permillageConvertion;
 
 const calcCurrentPermillage = (permillage: number, lastBite?: Date, now = new Date()): number => {
   if (lastBite) {
-    return Math.max(0, permillage - burnFactor * dayjs(now).diff(lastBite, 'seconds'));
+    return Math.max(0, permillage - burnFactor * differenceInSeconds(now, lastBite));
   }
   return 0;
 };
@@ -143,7 +143,7 @@ export const submitBite = async (user: SlackSession, biteInfo: BiteInfo): Promis
     customLocation,
   } = biteInfo;
 
-  const ts = (postfestum ? dayjs().subtract(pftime, 'minutes') : dayjs()).toDate();
+  const ts = postfestum ? subMinutes(new Date(), pftime) : new Date();
   const origPermillage = (await getUserStatus(userId, ts)).permillage;
   const type = origPermillage > 0 ? 'p' : 'ep';
   const location = loc === 'else' ? customLocation ?? '' : loc;
