@@ -17,6 +17,7 @@ import {
   submit,
   fullWidthInput,
 } from './BiteForm.css';
+import { NumberInput } from './NumberInput';
 
 interface BiteFormProps {
   submitBite: (b: BiteInfo) => void;
@@ -133,13 +134,10 @@ export const BiteForm: FC<BiteFormProps> = ({ submitBite }) => {
           <AdornedInput
             className={portionInputColumn}
             input={
-              <input
-                type="number"
-                min="0"
-                step="0.1"
+              <NumberInput
                 required={true}
                 value={portion}
-                onChange={textChangeHandler((v: string) => setPortion(parseFloat(v)))}
+                onChange={(v: number) => setPortion(v)}
                 className={portionInput}
               />
             }
