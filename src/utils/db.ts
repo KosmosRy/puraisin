@@ -1,4 +1,4 @@
-import pgMigrate from 'node-pg-migrate';
+// import pgMigrate from 'node-pg-migrate';
 import { types } from 'pg';
 import pgPromise from 'pg-promise';
 import config from './config';
@@ -23,7 +23,7 @@ interface IDatabaseScope {
   pgp: pgPromise.IMain;
 }
 
-const migration = async () => {
+/* const migration = async () => {
   if (process.env.NEXT_PHASE !== 'phase-production-build') {
     await pgMigrate({
       databaseUrl: connection,
@@ -33,11 +33,11 @@ const migration = async () => {
       dir: './migrations',
     });
   }
-};
+}; */
 
 const getDB = async () => {
   return createSingleton<IDatabaseScope>('my-app-db-space', async () => {
-    await migration();
+    // await migration();
     return {
       db: pgp(connection),
       pgp,
@@ -55,8 +55,8 @@ export const getWeight = async (userId: string): Promise<number> =>
     pgDb
       .one<{ weight: number }>(
         `SELECT weight
-       FROM megafauna
-       WHERE biter = $(userId)`,
+         FROM megafauna
+         WHERE biter = $(userId)`,
         { userId },
       )
       .then(({ weight }) => weight),
@@ -66,11 +66,11 @@ export const getBites = async (userId: string, since?: Date): Promise<Bite[]> =>
   withDb(async (pgDb) =>
     pgDb.manyOrNone<Bite>(
       `
-        SELECT id, timestamp as ts, portion, weight, permillage
-        FROM puraisu
-        WHERE biter = $(userId)
-          AND ($(since) IS NULL OR timestamp > $(since))
-        ORDER BY timestamp`,
+          SELECT id, timestamp as ts, portion, weight, permillage
+          FROM puraisu
+          WHERE biter = $(userId)
+            AND ($(since) IS NULL OR timestamp > $(since))
+          ORDER BY timestamp`,
       { userId, since },
     ),
   );
@@ -82,12 +82,12 @@ export const getPreviousBite = async (
   withDb(async (pgDb) =>
     pgDb.oneOrNone<Bite>(
       `
-        SELECT id, timestamp as ts, portion, weight, permillage
-        FROM puraisu
-        WHERE biter = $(userId)
-          AND timestamp < $(ts)
-        ORDER BY timestamp desc
-        LIMIT 1`,
+          SELECT id, timestamp as ts, portion, weight, permillage
+          FROM puraisu
+          WHERE biter = $(userId)
+            AND timestamp < $(ts)
+          ORDER BY timestamp desc
+          LIMIT 1`,
       { userId, ts },
     ),
   );
@@ -97,10 +97,10 @@ export const getLastBingeStart = async (userId: string): Promise<Date | undefine
     pgDb
       .oneOrNone<{ bingestart: Date }>(
         `
-          SELECT max(timestamp) as bingestart
-          FROM puraisu
-          WHERE biter = $(userId)
-            AND type = 'ep'`,
+            SELECT max(timestamp) as bingestart
+            FROM puraisu
+            WHERE biter = $(userId)
+              AND type = 'ep'`,
         { userId },
       )
       .then((res) => res?.bingestart),
@@ -125,8 +125,8 @@ export const getMegafauna = async (): Promise<Biter[]> => {
   return withDb(async (pgDb) =>
     pgDb.map<Biter>(
       `
-        SELECT biter, weight, displayname
-        FROM megafauna`,
+          SELECT biter, weight, displayname
+          FROM megafauna`,
       [],
       ({ biter, weight, displayname }) => ({ biter, weight, displayName: displayname }),
     ),
@@ -141,10 +141,10 @@ export const updatePuraisu = async (
   await withDb(async (pgDb) =>
     pgDb.none(
       `
-        UPDATE puraisu
-        SET type = $(type),
-            permillage = $(permillage)
-        WHERE id = $(id)`,
+          UPDATE puraisu
+          SET type       = $(type),
+              permillage = $(permillage)
+          WHERE id = $(id)`,
       { id, type, permillage },
     ),
   );
@@ -167,13 +167,13 @@ export const insertPuraisu = async (
   const { id } = await withDb(async (pgDb) =>
     pgDb.one<{ id: number }>(
       `
-        INSERT INTO puraisu (type, content, location, info, source, biter,
-                             postfestum, coordinates, timestamp, portion,
-                             permillage, weight, tzoffset)
-        VALUES ($(type), $(content), $(location), $(info), 'ppapp', $(biter),
-                $(postfestum), $(coordinates), $(timestamp), $(portion),
-                $(permillage), $(weight), $(tzoffset))
-        RETURNING id`,
+          INSERT INTO puraisu (type, content, location, info, source, biter,
+                               postfestum, coordinates, timestamp, portion,
+                               permillage, weight, tzoffset)
+          VALUES ($(type), $(content), $(location), $(info), 'ppapp', $(biter),
+                  $(postfestum), $(coordinates), $(timestamp), $(portion),
+                  $(permillage), $(weight), $(tzoffset))
+          RETURNING id`,
       {
         type,
         content,
