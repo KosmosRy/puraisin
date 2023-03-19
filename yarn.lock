@@ -1229,10 +1229,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"assert-options@npm:0.8.0":
-  version: 0.8.0
-  resolution: "assert-options@npm:0.8.0"
-  checksum: ae1114e16e587015396b1d17c0b045801b3c72d442574cf3478f264961b6f72ada9d78326cf8ca1bf35df26f8fa4e36376e9488b8e5e171e3cbe18db40ddc09a
+"assert-options@npm:0.8.1":
+  version: 0.8.1
+  resolution: "assert-options@npm:0.8.1"
+  checksum: aaf86a9c6a330e43172544ce2cc2b59bf8b4338dd0933d852e9b7efbae7b801944671e7dd6cc172d0dcfc88713009d88dca56cc34c8d4ba7fc5aeb1cf3e9bcef
   languageName: node
   linkType: hard
 
@@ -4364,38 +4364,45 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-minify@npm:1.6.2":
-  version: 1.6.2
-  resolution: "pg-minify@npm:1.6.2"
-  checksum: 3d2668b5cd575298ef2bd82b388ed7eeb0b66c51ee722039c1b6c011cfcf7e5fb464488a6422338034d505c0549946cf10a07c722d3c6948d9b7c2cc42f7c26f
+"pg-minify@npm:1.6.3":
+  version: 1.6.3
+  resolution: "pg-minify@npm:1.6.3"
+  checksum: 5b9868f2b90b9629455db6e13c35b1228b65803bbf9fc1a02d49fe147b55bb20eed53d368bf8f9f8127a2e740697b20702702e58f4846d9f5f3749d840a14c99
   languageName: node
   linkType: hard
 
-"pg-pool@npm:^3.5.2":
-  version: 3.5.2
-  resolution: "pg-pool@npm:3.5.2"
+"pg-pool@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "pg-pool@npm:3.6.0"
   peerDependencies:
     pg: ">=8.0"
-  checksum: a5d029200257671f0c17ca54b9ab6213e2060e64e5cc792b78edd50ab471a26cd364890d05d546d9296949e079e943821cf2ceb4d488f4e6a6789fb781a628bf
+  checksum: f3fe050fbfe27406369340c4c26efcbe21a388ace085a876453de0ea496a315c38b2dc739ac97d4767a359e911da2ec4810467f72601eeec8ad540e58b27987c
   languageName: node
   linkType: hard
 
-"pg-promise@npm:^10.15.4":
-  version: 10.15.4
-  resolution: "pg-promise@npm:10.15.4"
+"pg-promise@npm:^11.4.3":
+  version: 11.4.3
+  resolution: "pg-promise@npm:11.4.3"
   dependencies:
-    assert-options: 0.8.0
-    pg: 8.8.0
-    pg-minify: 1.6.2
-    spex: 3.2.0
-  checksum: 4450c21d2fdfcbbccbe885276b85452d7355cbb4c86619c7e2f6b8e9e23743d7fa32ebdd3c41ac2f5f24c094866fe7edab7c096604f81ce88f650747014a41b6
+    assert-options: 0.8.1
+    pg: 8.10.0
+    pg-minify: 1.6.3
+    spex: 3.3.0
+  checksum: a7141c0fb43e6ec7382796690b4ad2fb021de872df5010be22722331c0d4d96cc3eb3914ae3c212fa355dd3c9cbc69a45174ebdc451c362148d91937f0db4a20
   languageName: node
   linkType: hard
 
-"pg-protocol@npm:*, pg-protocol@npm:^1.5.0":
+"pg-protocol@npm:*":
   version: 1.5.0
   resolution: "pg-protocol@npm:1.5.0"
   checksum: b839d12cafe942ef9cbc5b13c174eb2356804fb4fe8ead8279f46a36be90722d19a91409955beb8a3d5301639c44854e49749de4aef02dc361fee3e2a61fb1e4
+  languageName: node
+  linkType: hard
+
+"pg-protocol@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "pg-protocol@npm:1.6.0"
+  checksum: e12662d2de2011e0c3a03f6a09f435beb1025acdc860f181f18a600a5495dc38a69d753bbde1ace279c8c442536af9c1a7c11e1d0fe3fad3aa1348b28d9d2683
   languageName: node
   linkType: hard
 
@@ -4412,15 +4419,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:8.8.0, pg@npm:^8.8.0":
-  version: 8.8.0
-  resolution: "pg@npm:8.8.0"
+"pg@npm:8.10.0, pg@npm:^8.10.0":
+  version: 8.10.0
+  resolution: "pg@npm:8.10.0"
   dependencies:
     buffer-writer: 2.0.0
     packet-reader: 1.0.0
     pg-connection-string: ^2.5.0
-    pg-pool: ^3.5.2
-    pg-protocol: ^1.5.0
+    pg-pool: ^3.6.0
+    pg-protocol: ^1.6.0
     pg-types: ^2.1.0
     pgpass: 1.x
   peerDependencies:
@@ -4428,7 +4435,7 @@ __metadata:
   peerDependenciesMeta:
     pg-native:
       optional: true
-  checksum: fa30a85814dd7238b582c3bc6c0b9e2b0ae38dd0a6bb485ef480e64bb5ce589de6cb873ce4d3cd10c37a3e0a1e1281ba75dc7d80b1a68bae91999cd5b70d398b
+  checksum: c6be78f2e823f2ae3c618c8e54a6622592dd71b556fb665d7eaedcbcc2fa5d210a8bcf519401e72526a65b9d797f19b772f48f29b9d9f31e98dd526fd27d61e0
   languageName: node
   linkType: hard
 
@@ -4646,8 +4653,8 @@ __metadata:
     next-auth: ^4.18.4
     next-superjson-plugin: ^0.5.2
     node-pg-migrate: ^6.2.2
-    pg: ^8.8.0
-    pg-promise: ^10.15.4
+    pg: ^8.10.0
+    pg-promise: ^11.4.3
     prettier: ^2.8.1
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -5102,10 +5109,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"spex@npm:3.2.0":
-  version: 3.2.0
-  resolution: "spex@npm:3.2.0"
-  checksum: 2c562283bf9bfd4f101aa3622f00599bd2e5954ecb88339a2018d54dc2501a24d6c8e6a1f4148161ffce09dff28b81643927c4bb2795bbccdf4cf0592a45422b
+"spex@npm:3.3.0":
+  version: 3.3.0
+  resolution: "spex@npm:3.3.0"
+  checksum: c2797eae658e0f97b92775a9a87cd6d615e87693b4d5abfd3120543391e3eeab2755ab101489752f3ff47c1e0623737a604c5411e8f9bca7714d4e0427c182c0
   languageName: node
   linkType: hard
 
