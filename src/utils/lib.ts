@@ -177,26 +177,28 @@ export const submitBite = async (user: SlackSession, biteInfo: BiteInfo): Promis
 
   const binge = await getUserStatus(userId);
 
-  await addUserToChannel(userToken);
-  const alcoholW = Math.round(portion * 12);
-  let coordLoc = '';
-  if (coordinates) {
-    const { latitude, longitude, accuracy } = coordinates;
-    const gmapUrl = `https://www.google.com/maps/place/${latitude},${longitude}`;
-    coordLoc = ` (<${gmapUrl}|${latitude.toFixed(4)},${longitude.toFixed(
-      4,
-    )}>\u00A0±${accuracy.toFixed(0)}m)`;
+  if (!config.slack.suppressReport) {
+    await addUserToChannel(userToken);
+    const alcoholW = Math.round(portion * 12);
+    let coordLoc = '';
+    if (coordinates) {
+      const { latitude, longitude, accuracy } = coordinates;
+      const gmapUrl = `https://www.google.com/maps/place/${latitude},${longitude}`;
+      coordLoc = ` (<${gmapUrl}|${latitude.toFixed(4)},${longitude.toFixed(
+        4,
+      )}>\u00A0±${accuracy.toFixed(0)}m)`;
+    }
+    const typePostfix = postfestum ? `-postfestum (${pftime} min sitten)` : '';
+    const slackMsg = `${type}${typePostfix};${content}\u00A0(${alcoholW}\u00A0g);${location}${coordLoc};${currentPermillage
+      .toFixed(2)
+      .replace('.', ',')}\u00A0‰${info ? ';' + info : ''}`;
+    await slackClient.chat.postMessage({
+      channel: channelId,
+      text: `\u{200B}${slackMsg}`,
+      unfurl_links: false,
+      token: userToken,
+    });
   }
-  const typePostfix = postfestum ? `-postfestum (${pftime} min sitten)` : '';
-  const slackMsg = `${type}${typePostfix};${content}\u00A0(${alcoholW}\u00A0g);${location}${coordLoc};${currentPermillage
-    .toFixed(2)
-    .replace('.', ',')}\u00A0‰${info ? ';' + info : ''}`;
-  await slackClient.chat.postMessage({
-    channel: channelId,
-    text: `\u{200B}${slackMsg}`,
-    unfurl_links: false,
-    token: userToken,
-  });
 
   return binge;
 };

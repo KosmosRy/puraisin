@@ -10,6 +10,7 @@ declare global {
       DB_NAME: string;
       DB_USER: string;
       DB_PASSWORD: string;
+      SUPPRESS_SLACK_REPORT?: string;
     }
   }
 }
