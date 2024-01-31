@@ -1,9 +1,9 @@
 import SlackProvider from '../../../providers/slack';
-import NextAuth, { AuthOptions } from 'next-auth';
-import { AuthedUser, SlackSession, SlackToken } from '../../../types/slack';
+import NextAuth, { type AuthOptions } from 'next-auth';
+import { type AuthedUser, type SlackSession, type SlackToken } from '../../../types/slack';
 import config from '../../../utils/config';
 import { getProfile } from '../../../utils/lib';
-import { JWT } from 'next-auth/jwt';
+import { type JWT } from 'next-auth/jwt';
 import { addHours, isAfter, parseJSON } from 'date-fns';
 
 const addProfileToToken = async (id: string, accessToken: string, token: JWT) => {

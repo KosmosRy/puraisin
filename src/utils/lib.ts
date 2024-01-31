@@ -1,5 +1,5 @@
 import { differenceInSeconds, subMinutes } from 'date-fns';
-import { Binge, BiteInfo } from '../types/common';
+import { type Binge, type BiteInfo } from '../types/common';
 import config from './config';
 import {
   getBites,
@@ -10,9 +10,9 @@ import {
   insertPuraisu,
   updatePuraisu,
 } from './db';
-import { SlackSession } from '../types/slack';
+import { type SlackSession } from '../types/slack';
 import { slackClient } from './slack';
-import { UsersProfileGetResponse } from '@slack/web-api';
+import { type UsersProfileGetResponse } from '@slack/web-api';
 
 export interface Bite {
   id: number;

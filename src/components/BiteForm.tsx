@@ -1,9 +1,9 @@
 import { format } from 'date-fns';
-import { ChangeEvent, useRef, useState, FC } from 'react';
-import { BiteInfo } from '../types/common';
+import { type ChangeEvent, useRef, useState, type FC } from 'react';
+import { type BiteInfo } from '../types/common';
 import { AdornedInput } from './AdornedInput';
-import { Location, LocationEvent } from './Location';
-import { PfEvent, PostFestum } from './PostFestum';
+import { Location, type LocationEvent } from './Location';
+import { type PfEvent, PostFestum } from './PostFestum';
 import {
   biteForm,
   portionSelectLabel,
@@ -62,8 +62,9 @@ export const BiteForm: FC<BiteFormProps> = ({ submitBite }) => {
 
   const textChangeHandler =
     (fn: (v: string) => void) =>
-    (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) =>
+    (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
       fn(event.target.value);
+    };
 
   const handlePostfestum = (pfEvent: PfEvent) => {
     setPostfestum(pfEvent.postfestum);
@@ -137,7 +138,9 @@ export const BiteForm: FC<BiteFormProps> = ({ submitBite }) => {
               <NumberInput
                 required={true}
                 value={portion}
-                onChange={(v: number) => setPortion(v)}
+                onChange={(v: number) => {
+                  setPortion(v);
+                }}
                 className={portionInput}
               />
             }

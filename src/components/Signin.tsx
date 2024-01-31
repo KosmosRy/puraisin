@@ -1,6 +1,6 @@
 import { signIn } from 'next-auth/react';
 import { heading1, heading2, disclaimer, container, link, svg } from './Signin.css';
-import { FC } from 'react';
+import { type FC } from 'react';
 
 const Signin: FC = () => {
   return (

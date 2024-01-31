@@ -1,8 +1,8 @@
-import { Session, unstable_getServerSession } from 'next-auth';
-import { SlackSession } from '../types/slack';
-import { NextApiHandler } from 'next';
+import { type Session, unstable_getServerSession } from 'next-auth';
+import { type SlackSession } from '../types/slack';
+import { type NextApiHandler } from 'next';
 import { authOptions } from '../pages/api/auth/[...nextauth]';
-import { NextApiRequest, NextApiResponse } from 'next/dist/shared/lib/utils';
+import { type NextApiRequest, type NextApiResponse } from 'next/dist/shared/lib/utils';
 
 export const isSlackSession = (session?: Session | null): session is SlackSession => {
   if (session) {
@@ -33,5 +33,5 @@ export const withSession =
       }
     }
 
-    return res.status(401).json({ message: 'Meeppä pois siitä' });
+    res.status(401).json({ message: 'Meeppä pois siitä' });
   };

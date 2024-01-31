@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { type ChangeEvent, type FC, useEffect, useState } from 'react';
 import { GeolocationIcon } from './GeolocationIcon';
 import { customLocationInput, row } from './Location.css';
 

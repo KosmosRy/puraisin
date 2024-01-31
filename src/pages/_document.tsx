@@ -1,5 +1,5 @@
-import { DocumentProps, Head, Html, Main, NextScript } from 'next/document';
-import { FC } from 'react';
+import { type DocumentProps, Head, Html, Main, NextScript } from 'next/document';
+import { type FC } from 'react';
 
 const Document: FC<DocumentProps> = () => (
   <Html>

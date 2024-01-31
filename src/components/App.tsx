@@ -1,8 +1,8 @@
-import { FC } from 'react';
+import { type FC } from 'react';
 import { appContainer, copyright } from './App.css';
 import { getYear } from 'date-fns';
 import { FrontPage } from './FrontPage';
-import { AppInfo, Binge } from '../types/common';
+import { type AppInfo, type Binge } from '../types/common';
 
 interface Props {
   appInfo: AppInfo;

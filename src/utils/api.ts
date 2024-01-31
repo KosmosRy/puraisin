@@ -1,4 +1,4 @@
-import { Binge, BiteInfo } from '../types/common';
+import { type Binge, type BiteInfo } from '../types/common';
 
 const handleResponse = async <T>(res: Response): Promise<T> => {
   if (res.ok) {

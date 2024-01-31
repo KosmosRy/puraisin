@@ -1,6 +1,6 @@
-import { OAuthConfig, OAuthUserConfig } from 'next-auth/providers';
-import { AuthedUser } from '../types/slack';
-import { Profile, TokenSet } from 'next-auth';
+import { type OAuthConfig, type OAuthUserConfig } from 'next-auth/providers';
+import { type AuthedUser } from '../types/slack';
+import { type Profile, type TokenSet } from 'next-auth';
 
 export default function Slack(options: OAuthUserConfig<Profile>): OAuthConfig<Profile> {
   return {

@@ -1,7 +1,7 @@
 import { formatDistanceToNow, addSeconds } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { fi } from 'date-fns/locale';
-import { FC } from 'react';
+import { type FC } from 'react';
 import Image from 'next/image';
 import {
   headingContainer,
@@ -55,7 +55,7 @@ export const Heading: FC<Props> = ({
 
   const onSignOut = async () => {
     await signOut({ redirect: false, callbackUrl: '/' });
-    await router.refresh();
+    router.refresh();
   };
 
   return (

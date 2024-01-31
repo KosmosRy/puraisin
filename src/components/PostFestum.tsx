@@ -1,4 +1,4 @@
-import { ChangeEvent, FC } from 'react';
+import { type ChangeEvent, type FC } from 'react';
 import { AdornedInput } from './AdornedInput';
 import { pfCheckbox, pfInput, pfLabel, pfRow } from './PostFestum.css';
 

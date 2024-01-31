@@ -3,7 +3,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons/faExcla
 import { faLocationArrow } from '@fortawesome/free-solid-svg-icons/faLocationArrow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { assignInlineVars } from '@vanilla-extract/dynamic';
-import { FC } from 'react';
+import { type FC } from 'react';
 import { icon, iconColor } from './GeolocationIcon.css';
 
 const locationIcon = (coords?: GeolocationCoordinates | null) => {

@@ -1,11 +1,11 @@
 import Head from 'next/head';
 import Signin from '../components/Signin';
-import { GetServerSideProps, NextPage } from 'next';
+import { type GetServerSideProps, type NextPage } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]';
 import { useEffect } from 'react';
 import App from '../components/App';
-import { AppInfo, Binge } from '../types/common';
+import { type AppInfo, type Binge } from '../types/common';
 import { getUserStatus } from '../utils/lib';
 import { isSlackSession } from '../utils/session';
 import { useRouter } from 'next/router';

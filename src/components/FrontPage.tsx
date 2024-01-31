@@ -1,5 +1,5 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { AppInfo, Binge, BiteInfo } from '../types/common';
+import { type FC, useEffect, useRef, useState } from 'react';
+import { type AppInfo, type Binge, type BiteInfo } from '../types/common';
 import { submitBite } from '../utils/api';
 import { Alert } from './Alert';
 import { BiteForm } from './BiteForm';
@@ -25,6 +25,7 @@ export const FrontPage: FC<FpProps> = ({
   const [lastContent, setLastContent] = useState('');
   const [error, setError] = useState<string>();
 
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { refresh, replace } = useRouter();
   const path = usePathname();
 
@@ -36,7 +37,7 @@ export const FrontPage: FC<FpProps> = ({
       setBiteDone(true);
       setLastContent(data.content);
       setError(undefined);
-      await replace(path ?? '/');
+      replace(path ?? '/');
     } catch (reason) {
       console.error(reason);
       setError((reason as Error).message || 'No mikähän tässä nyt on');
@@ -48,7 +49,9 @@ export const FrontPage: FC<FpProps> = ({
   useEffect(() => {
     const elem = biteDoneRef.current;
     if (biteDone && elem) {
-      const transitionListener = () => setBiteDone(false);
+      const transitionListener = () => {
+        setBiteDone(false);
+      };
       setTimeout(() => (elem.style.opacity = '0'));
       elem.addEventListener('transitionend', transitionListener, true);
       return () => {
