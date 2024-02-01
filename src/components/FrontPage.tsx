@@ -1,4 +1,5 @@
-import { type FC, useEffect, useRef, useState } from 'react';
+'use client';
+import { type FC, useState } from 'react';
 import { type AppInfo, type Binge, type BiteInfo } from '../types/common';
 import { submitBite } from '../utils/api';
 import { Alert } from './Alert';
@@ -6,8 +7,9 @@ import { BiteForm } from './BiteForm';
 import { Heading } from './Heading';
 import Image from 'next/image';
 import Link from 'next/link';
-import { biteDoneContainer, frontPageContainer, loadingContainer } from './FrontPage.css';
+import { frontPageContainer, loadingContainer } from './FrontPage.css';
 import { usePathname, useRouter } from 'next/navigation';
+import { BiteDoneMessage } from './BiteDoneMessage';
 
 interface FpProps {
   info: AppInfo;
@@ -21,7 +23,6 @@ export const FrontPage: FC<FpProps> = ({
   const { realName, avatar } = info;
   const [loading, setLoading] = useState(false);
   const [biteDone, setBiteDone] = useState(false);
-  const biteDoneRef = useRef<HTMLDivElement>(null);
   const [lastContent, setLastContent] = useState('');
   const [error, setError] = useState<string>();
 
@@ -46,20 +47,6 @@ export const FrontPage: FC<FpProps> = ({
     }
   };
 
-  useEffect(() => {
-    const elem = biteDoneRef.current;
-    if (biteDone && elem) {
-      const transitionListener = () => {
-        setBiteDone(false);
-      };
-      setTimeout(() => (elem.style.opacity = '0'));
-      elem.addEventListener('transitionend', transitionListener, true);
-      return () => {
-        elem.removeEventListener('transitionend', transitionListener, true);
-      };
-    }
-  }, [biteDone]);
-
   return (
     <div className={frontPageContainer}>
       <Heading
@@ -77,16 +64,12 @@ export const FrontPage: FC<FpProps> = ({
         </div>
       )}
 
-      {biteDone && (
-        <Alert variant="success" ref={biteDoneRef} className={biteDoneContainer}>
-          <>
-            Toppen! Raportoit puraisun &quot;{lastContent}&quot;, jonka juotuasi olet noin{' '}
-            {permillage.toFixed(2)} promillen humalassa.
-            <br />
-            {permillage > 0.5 && <strong>Muista jättää ajaminen muille!</strong>}
-          </>
-        </Alert>
-      )}
+      <BiteDoneMessage
+        biteDone={biteDone}
+        setBiteDone={setBiteDone}
+        permillage={permillage}
+        lastContent={lastContent}
+      />
 
       {error && (
         <Alert variant="danger">
