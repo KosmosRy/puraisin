@@ -1,11 +1,10 @@
-import { formatDistanceToNow, addSeconds } from 'date-fns';
+import { formatDistanceToNow, addSeconds, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { fi } from 'date-fns/locale';
 import { type FC } from 'react';
 import Image from 'next/image';
 import {
   headingContainer,
-  logout,
   statusList,
   statusListItem,
   statusRow,
@@ -13,20 +12,15 @@ import {
   userInfo,
   userRow,
 } from './Heading.css';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
-import Link from 'next/link';
+import { SignOutButton } from './SignOutButton';
+import type { AppInfo, CachedBinge } from '../types/common';
 
 interface Props {
-  realName: string;
-  lastBite?: Date;
-  bingeStart?: Date;
-  permillage: number;
-  timeTillSober?: number;
-  avatar: string;
+  info: AppInfo;
+  binge: CachedBinge;
 }
 
-const formatLastBite = (lastBite: Date) =>
+const formatLastBite = (lastBite: string) =>
   formatInTimeZone(lastBite, 'Europe/Helsinki', "eeeeee, d.M.yy 'klo' H:mm xxx", { locale: fi });
 const formatTimeTillSober = (timeTillSober: number) => {
   if (timeTillSober > 0) {
@@ -35,29 +29,18 @@ const formatTimeTillSober = (timeTillSober: number) => {
     return '-';
   }
 };
-const formatTimeToNow = (from?: Date) => {
+const formatTimeToNow = (from?: string) => {
   if (from) {
-    return formatDistanceToNow(from, { locale: fi });
+    return formatDistanceToNow(parseISO(from), { locale: fi });
   } else {
     return '-';
   }
 };
 
 export const Heading: FC<Props> = ({
-  realName,
-  lastBite,
-  permillage,
-  timeTillSober,
-  avatar,
-  bingeStart,
+  info: { realName, avatar },
+  binge: { lastBite, permillage, timeTillSober, bingeStart },
 }) => {
-  const router = useRouter();
-
-  const onSignOut = async () => {
-    await signOut({ redirect: false, callbackUrl: '/' });
-    router.refresh();
-  };
-
   return (
     <div className={headingContainer}>
       <div className={userRow}>
@@ -67,9 +50,7 @@ export const Heading: FC<Props> = ({
         </div>
         <div className={userInfo}>
           <Image src={avatar} title={realName} alt={realName} width={48} height={48} />
-          <Link className={logout} href="/" onClick={onSignOut}>
-            Kirjaudu ulos
-          </Link>
+          <SignOutButton />
         </div>
       </div>
       <div className={statusRow}>

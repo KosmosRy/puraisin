@@ -1,24 +1,29 @@
-import { FC } from 'react';
-import Head from 'next/head';
-import App from '../components/App';
-import Signin from '../components/Signin';
+import { type FC } from 'react';
+import { auth, isSlackSession } from '../utils/auth';
+import { redirect } from 'next/navigation';
+import { appContainer, copyright } from './page.css';
+import { FrontPage } from '../components/FrontPage';
+import { getYear } from 'date-fns';
+import { cachedLastBite } from '../utils/actions';
 
-const Page: FC = () => {
+const Page: FC = async () => {
+  const session = await auth();
+
+  if (!isSlackSession(session)) {
+    return redirect('/auth/signin');
+  }
+
   const appInfo = {
-    realName: 'realName',
-    avatar: '/favicon.png',
+    realName: session.user?.name ?? 'Anonyymi',
+    avatar: session.user?.image ?? '/favicon.png',
   };
-  const userStatus = {
-    permillage: 0,
-  };
+
+  const lastBite = await cachedLastBite(session.id)();
 
   return (
-    <div>
-      <Head>
-        <title>Pikapuraisin</title>
-      </Head>
-
-      {appInfo ? <App appInfo={appInfo} userStatus={userStatus} /> : <Signin />}
+    <div className={appContainer}>
+      <FrontPage info={appInfo} lastBite={lastBite} />
+      <footer className={copyright}>&copy; Apin Heristäjät {getYear(new Date())}</footer>
     </div>
   );
 };

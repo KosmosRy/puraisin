@@ -10,6 +10,11 @@ export interface Binge {
   timeTillSober?: number;
 }
 
+export interface CachedBinge extends Pick<Binge, 'permillage' | 'timeTillSober'> {
+  lastBite?: string;
+  bingeStart?: string;
+}
+
 export interface BiteInfo {
   coordinates?: GeolocationCoordinates | null;
   content: string;

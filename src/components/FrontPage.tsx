@@ -1,34 +1,41 @@
 'use client';
-import { type FC, useState } from 'react';
-import { type AppInfo, type Binge, type BiteInfo } from '../types/common';
-import { submitBite } from '../utils/api';
+import { type FC, useEffect, useReducer, useState } from 'react';
+import { type AppInfo, type BiteInfo, type CachedBinge } from '../types/common';
 import { Alert } from './Alert';
 import { BiteForm } from './BiteForm';
-import { Heading } from './Heading';
 import Image from 'next/image';
-import Link from 'next/link';
 import { frontPageContainer, loadingContainer } from './FrontPage.css';
-import { usePathname, useRouter } from 'next/navigation';
 import { BiteDoneMessage } from './BiteDoneMessage';
+import { Heading } from './Heading';
+import { getLastBite, submitBite } from '../utils/actions';
+import { type CachedBite, lastBiteToBinge } from '../utils/lib';
 
 interface FpProps {
   info: AppInfo;
-  initialUserStatus: Binge;
+  lastBite: CachedBite | null;
 }
 
-export const FrontPage: FC<FpProps> = ({
-  info,
-  initialUserStatus: { permillage, bingeStart, lastBite, timeTillSober },
-}) => {
-  const { realName, avatar } = info;
+export const FrontPage: FC<FpProps> = ({ info, lastBite }) => {
+  const [binge, dispatchBite] = useReducer(
+    (_: CachedBinge, bite: CachedBite | null) => lastBiteToBinge(bite),
+    lastBite,
+    lastBiteToBinge,
+  );
   const [loading, setLoading] = useState(false);
   const [biteDone, setBiteDone] = useState(false);
   const [lastContent, setLastContent] = useState('');
   const [error, setError] = useState<string>();
 
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { refresh, replace } = useRouter();
-  const path = usePathname();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void getLastBite().then(dispatchBite);
+    }, 60000);
+    return () => {
+      interval && clearInterval(interval);
+    };
+  });
+
+  const { permillage } = binge;
 
   const handleSubmit = async (data: BiteInfo) => {
     try {
@@ -38,7 +45,6 @@ export const FrontPage: FC<FpProps> = ({
       setBiteDone(true);
       setLastContent(data.content);
       setError(undefined);
-      replace(path ?? '/');
     } catch (reason) {
       console.error(reason);
       setError((reason as Error).message || 'No mikähän tässä nyt on');
@@ -49,14 +55,7 @@ export const FrontPage: FC<FpProps> = ({
 
   return (
     <div className={frontPageContainer}>
-      <Heading
-        realName={realName}
-        permillage={permillage}
-        timeTillSober={timeTillSober}
-        bingeStart={bingeStart}
-        lastBite={lastBite}
-        avatar={avatar}
-      />
+      <Heading info={info} binge={binge} />
 
       {loading && (
         <div className={loadingContainer}>
@@ -73,11 +72,7 @@ export const FrontPage: FC<FpProps> = ({
 
       {error && (
         <Alert variant="danger">
-          Viduiks män, syy: &quot;{error}&quot;.{' '}
-          <Link href="/" onClick={refresh}>
-            Verestä sivu
-          </Link>{' '}
-          ja kokeile uudestaan, tai jotain
+          Viduiks män, syy: &quot;{error}&quot;. Verestä sivu ja kokeile uudestaan, tai jotain
         </Alert>
       )}
 

@@ -24,6 +24,9 @@ const nextConfig = {
         },
       ],
     ],
+    serverActions: {
+      allowedOrigins: ['http://localhost:5001', 'test.kosmosry.fi'],
+    },
   },
 };
 

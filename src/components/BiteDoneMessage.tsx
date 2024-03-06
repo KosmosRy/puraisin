@@ -1,5 +1,5 @@
 'use client';
-import { FC, useEffect, useRef } from 'react';
+import { type FC, useEffect, useRef } from 'react';
 import { Alert } from './Alert';
 import { biteDoneContainer } from './FrontPage.css';
 
