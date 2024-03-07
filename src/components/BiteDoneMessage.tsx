@@ -1,4 +1,3 @@
-'use client';
 import { type FC, useEffect, useRef } from 'react';
 import { Alert } from './Alert';
 import { biteDoneContainer } from './FrontPage.css';
@@ -25,7 +24,7 @@ export const BiteDoneMessage: FC<Props> = ({ biteDone, setBiteDone, lastContent,
         elem.removeEventListener('transitionend', transitionListener, true);
       };
     }
-  }, [biteDone]);
+  }, [biteDone, setBiteDone]);
 
   if (biteDone) {
     return (

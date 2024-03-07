@@ -22,7 +22,7 @@ type BingeAction =
     }
   | { type: 'bite'; payload: CachedBite | null };
 
-const bingeReducer = (state: Binge, action: BingeAction): Binge => {
+const bingeReducer = (_: Binge, action: BingeAction): Binge => {
   switch (action.type) {
     case 'binge':
       return action.payload;
