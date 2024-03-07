@@ -1,42 +1,70 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { AppInfo, Binge, BiteInfo } from '../types/common';
-import { submitBite } from '../utils/api';
+'use client';
+import { type FC, useCallback, useEffect, useReducer, useState } from 'react';
+import { type AppInfo, type Binge, type BiteInfo } from '../types/common';
 import { Alert } from './Alert';
 import { BiteForm } from './BiteForm';
-import { Heading } from './Heading';
 import Image from 'next/image';
-import Link from 'next/link';
-import { biteDoneContainer, frontPageContainer, loadingContainer } from './FrontPage.css';
-import { usePathname, useRouter } from 'next/navigation';
+import { frontPageContainer, loadingContainer } from './FrontPage.css';
+import { BiteDoneMessage } from './BiteDoneMessage';
+import { Heading } from './Heading';
+import { getLastBite, submitBite } from '../utils/actions';
+import { type CachedBite, lastBiteToBinge } from '../utils/lib';
 
 interface FpProps {
   info: AppInfo;
-  initialUserStatus: Binge;
+  lastBite: CachedBite | null;
 }
 
-export const FrontPage: FC<FpProps> = ({
-  info,
-  initialUserStatus: { permillage, bingeStart, lastBite, timeTillSober },
-}) => {
-  const { realName, avatar } = info;
+type BingeAction =
+  | {
+      type: 'binge';
+      payload: Binge;
+    }
+  | { type: 'bite'; payload: CachedBite | null };
+
+const bingeReducer = (state: Binge, action: BingeAction): Binge => {
+  switch (action.type) {
+    case 'binge':
+      return action.payload;
+    case 'bite':
+      return lastBiteToBinge(action.payload);
+  }
+};
+
+export const FrontPage: FC<FpProps> = ({ info, lastBite }) => {
+  const [binge, dispatch] = useReducer(bingeReducer, lastBite, lastBiteToBinge);
   const [loading, setLoading] = useState(false);
   const [biteDone, setBiteDone] = useState(false);
-  const biteDoneRef = useRef<HTMLDivElement>(null);
   const [lastContent, setLastContent] = useState('');
   const [error, setError] = useState<string>();
 
-  const { refresh, replace } = useRouter();
-  const path = usePathname();
+  const biteAction = useCallback((payload: CachedBite | null) => {
+    dispatch({ type: 'bite', payload });
+  }, []);
+
+  const bingeAction = useCallback((payload: Binge) => {
+    dispatch({ type: 'binge', payload });
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void getLastBite().then(biteAction);
+    }, 30000);
+    return () => {
+      interval && clearInterval(interval);
+    };
+  });
+
+  const { permillage } = binge;
 
   const handleSubmit = async (data: BiteInfo) => {
     try {
       setLoading(true);
       setBiteDone(false);
-      await submitBite(data);
+      bingeAction(await submitBite(data));
       setBiteDone(true);
       setLastContent(data.content);
       setError(undefined);
-      await replace(path ?? '/');
     } catch (reason) {
       console.error(reason);
       setError((reason as Error).message || 'No mikähän tässä nyt on');
@@ -45,28 +73,9 @@ export const FrontPage: FC<FpProps> = ({
     }
   };
 
-  useEffect(() => {
-    const elem = biteDoneRef.current;
-    if (biteDone && elem) {
-      const transitionListener = () => setBiteDone(false);
-      setTimeout(() => (elem.style.opacity = '0'));
-      elem.addEventListener('transitionend', transitionListener, true);
-      return () => {
-        elem.removeEventListener('transitionend', transitionListener, true);
-      };
-    }
-  }, [biteDone]);
-
   return (
     <div className={frontPageContainer}>
-      <Heading
-        realName={realName}
-        permillage={permillage}
-        timeTillSober={timeTillSober}
-        bingeStart={bingeStart}
-        lastBite={lastBite}
-        avatar={avatar}
-      />
+      <Heading info={info} binge={binge} />
 
       {loading && (
         <div className={loadingContainer}>
@@ -74,24 +83,16 @@ export const FrontPage: FC<FpProps> = ({
         </div>
       )}
 
-      {biteDone && (
-        <Alert variant="success" ref={biteDoneRef} className={biteDoneContainer}>
-          <>
-            Toppen! Raportoit puraisun &quot;{lastContent}&quot;, jonka juotuasi olet noin{' '}
-            {permillage.toFixed(2)} promillen humalassa.
-            <br />
-            {permillage > 0.5 && <strong>Muista jättää ajaminen muille!</strong>}
-          </>
-        </Alert>
-      )}
+      <BiteDoneMessage
+        biteDone={biteDone}
+        setBiteDone={setBiteDone}
+        permillage={permillage}
+        lastContent={lastContent}
+      />
 
       {error && (
         <Alert variant="danger">
-          Viduiks män, syy: &quot;{error}&quot;.{' '}
-          <Link href="/" onClick={refresh}>
-            Verestä sivu
-          </Link>{' '}
-          ja kokeile uudestaan, tai jotain
+          Viduiks män, syy: &quot;{error}&quot;. Verestä sivu ja kokeile uudestaan, tai jotain
         </Alert>
       )}
 

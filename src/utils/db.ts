@@ -2,7 +2,7 @@
 import { types } from 'pg';
 import pgPromise from 'pg-promise';
 import config from './config';
-import { Bite, Biter } from './lib';
+import { type Bite, type Biter } from './lib';
 
 const pgp = pgPromise();
 const connection = config.db;

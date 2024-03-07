@@ -1,4 +1,4 @@
-import { forwardRef, HTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { alertVariant, container } from './Alert.css';
 
 type Props = HTMLAttributes<HTMLDivElement> & {

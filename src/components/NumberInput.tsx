@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, InputHTMLAttributes, useEffect, useState } from 'react';
+import { type ChangeEvent, type FC, type InputHTMLAttributes, useEffect, useState } from 'react';
 
 interface NumberInputProps
   extends Omit<

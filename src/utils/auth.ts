@@ -1,10 +1,12 @@
-import SlackProvider from '../../../providers/slack';
-import NextAuth, { AuthOptions } from 'next-auth';
-import { AuthedUser, SlackSession, SlackToken } from '../../../types/slack';
-import config from '../../../utils/config';
-import { getProfile } from '../../../utils/lib';
-import { JWT } from 'next-auth/jwt';
+import type { JWT } from 'next-auth/jwt';
 import { addHours, isAfter, parseJSON } from 'date-fns';
+import { getServerSession, type NextAuthOptions, type Session } from 'next-auth';
+import SlackProvider from '../providers/slack';
+import config from './config';
+import type { AuthedUser, SlackSession, SlackToken } from '../types/slack';
+import { type GetServerSidePropsContext } from 'next';
+import { type NextApiRequest, type NextApiResponse } from 'next/dist/shared/lib/utils';
+import { getProfile } from './actions';
 
 const addProfileToToken = async (id: string, accessToken: string, token: JWT) => {
   const profile = await getProfile(id, accessToken);
@@ -20,7 +22,7 @@ const addProfileToToken = async (id: string, accessToken: string, token: JWT) =>
 const profileExpired = (profileUpdated?: string) =>
   !profileUpdated || isAfter(new Date(), addHours(parseJSON(profileUpdated), 1));
 
-export const authOptions: AuthOptions = {
+export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     SlackProvider({
@@ -30,6 +32,9 @@ export const authOptions: AuthOptions = {
   ],
   session: {
     maxAge: 24 * 60 * 60 * 365,
+  },
+  pages: {
+    signIn: '/auth/signin',
   },
   callbacks: {
     async jwt({ token, account }) {
@@ -56,6 +61,19 @@ export const authOptions: AuthOptions = {
       return slackSession;
     },
   },
-};
+} satisfies NextAuthOptions;
 
-export default NextAuth(authOptions);
+export const auth = async (
+  ...args:
+    | [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']]
+    | [NextApiRequest, NextApiResponse]
+    | []
+): Promise<Session | null> => getServerSession(...args, authOptions);
+
+export const isSlackSession = (session?: Session | null): session is SlackSession => {
+  if (session) {
+    const { id, botToken } = session as SlackSession;
+    return !!id && !!botToken;
+  }
+  return false;
+};

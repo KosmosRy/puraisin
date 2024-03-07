@@ -30,7 +30,9 @@ export interface SlackConfig {
   botToken: string;
   clientId: string;
   clientSecret: string;
+  team: string;
   channelId: string;
+  suppressReport: boolean;
 }
 
 export interface Config {
@@ -52,6 +54,8 @@ const config: Config = {
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     channelId: process.env.CHANNEL_ID,
+    team: process.env.TEAM_ID,
+    suppressReport: process.env.SUPPRESS_SLACK_REPORT === 'true',
   },
   db: {
     host: process.env.DB_HOST,

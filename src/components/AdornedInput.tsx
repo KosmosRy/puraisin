@@ -1,4 +1,4 @@
-import { FC, ReactElement } from 'react';
+import { type FC, type ReactElement } from 'react';
 import { adornedInputContainer, inputAdornment } from './AdornedInput.css';
 
 interface AdornedInputProps {

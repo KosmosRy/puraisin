@@ -1,11 +1,10 @@
 import { formatDistanceToNow, addSeconds } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { fi } from 'date-fns/locale';
-import { FC } from 'react';
+import { type FC } from 'react';
 import Image from 'next/image';
 import {
   headingContainer,
-  logout,
   statusList,
   statusListItem,
   statusRow,
@@ -13,17 +12,12 @@ import {
   userInfo,
   userRow,
 } from './Heading.css';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
-import Link from 'next/link';
+import { SignOutButton } from './SignOutButton';
+import type { AppInfo, Binge } from '../types/common';
 
 interface Props {
-  realName: string;
-  lastBite?: Date;
-  bingeStart?: Date;
-  permillage: number;
-  timeTillSober?: number;
-  avatar: string;
+  info: AppInfo;
+  binge: Binge;
 }
 
 const formatLastBite = (lastBite: Date) =>
@@ -44,20 +38,9 @@ const formatTimeToNow = (from?: Date) => {
 };
 
 export const Heading: FC<Props> = ({
-  realName,
-  lastBite,
-  permillage,
-  timeTillSober,
-  avatar,
-  bingeStart,
+  info: { realName, avatar },
+  binge: { lastBite, permillage, timeTillSober, bingeStart },
 }) => {
-  const router = useRouter();
-
-  const onSignOut = async () => {
-    await signOut({ redirect: false, callbackUrl: '/' });
-    await router.refresh();
-  };
-
   return (
     <div className={headingContainer}>
       <div className={userRow}>
@@ -67,9 +50,7 @@ export const Heading: FC<Props> = ({
         </div>
         <div className={userInfo}>
           <Image src={avatar} title={realName} alt={realName} width={48} height={48} />
-          <Link className={logout} href="/" onClick={onSignOut}>
-            Kirjaudu ulos
-          </Link>
+          <SignOutButton />
         </div>
       </div>
       <div className={statusRow}>
