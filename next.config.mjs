@@ -17,14 +17,6 @@ const nextConfig = {
     ],
   },
   experimental: {
-    swcPlugins: [
-      [
-        'next-superjson-plugin',
-        {
-          excluded: [],
-        },
-      ],
-    ],
     serverActions: {
       allowedOrigins: ['http://localhost:5001', 'test.kosmosry.fi'],
     },
