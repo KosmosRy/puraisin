@@ -21,3 +21,18 @@ export interface BiteInfo {
   info: string;
   tzOffset: string;
 }
+
+export interface Bite {
+  id: number;
+  ts: Date;
+  permillage: number;
+  portion: number;
+  weight: number;
+  bingeStart?: Date;
+}
+
+export interface Biter {
+  biter: string;
+  weight: number;
+  displayName: string;
+}

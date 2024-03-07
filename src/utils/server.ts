@@ -1,5 +1,3 @@
-'use server';
-
 import {
   addBiter,
   getBites,
@@ -9,23 +7,33 @@ import {
   insertPuraisu,
   updatePuraisu,
 } from './db';
-import { slackClient } from './slack';
-import type { Binge, BiteInfo } from '../types/common';
-import type { UsersProfileGetResponse } from '@slack/web-api';
-import { auth, isSlackSession } from './auth';
+import { type Binge, type Bite, type BiteInfo } from '../types/common';
 import { subMinutes } from 'date-fns';
-import { revalidateTag, unstable_cache } from 'next/cache';
+import { revalidateTag } from 'next/cache';
+import { lastBiteCacheTag } from './cache';
 import config from './config';
+import { slackClient } from './slack';
+import { calcCurrentPermillage, calcTimeTillSober } from './client';
 import {
-  type Bite,
   bodyWater,
   bodyWaterConstantMale,
-  type CachedBite,
-  calcCurrentPermillage,
-  calcTimeTillSober,
   permillageConvertion,
   swedishMultiplier,
-} from './lib';
+} from './constants';
+import { type SlackSession } from '../types/slack';
+
+export const getLastBite = async (userId: string): Promise<Bite | null> => {
+  const prevBite = await getPreviousBite(userId);
+
+  if (!prevBite) {
+    return null;
+  }
+
+  return {
+    ...prevBite,
+    bingeStart: await getLastBingeStart(userId),
+  };
+};
 
 const { channelId } = config.slack;
 
@@ -48,17 +56,6 @@ const addUserToChannel = async (userToken: string) => {
   }
 };
 
-export const getProfile = async (
-  userId: string,
-  token: string,
-): Promise<UsersProfileGetResponse['profile']> =>
-  slackClient.users.profile
-    .get({
-      token,
-      user: userId,
-    })
-    .then((res) => res.profile);
-
 const getBinge = async (userId: string, at?: Date): Promise<Binge> => {
   const prevBite = await getPreviousBite(userId, at);
   if (prevBite) {
@@ -79,33 +76,6 @@ const getBinge = async (userId: string, at?: Date): Promise<Binge> => {
   };
 };
 
-export const cachedLastBite = (id: string): (() => Promise<CachedBite | null>) =>
-  unstable_cache(
-    async () => {
-      const prevBite = await getPreviousBite(id);
-
-      if (!prevBite) {
-        return null;
-      }
-
-      return {
-        ...prevBite,
-        ts: prevBite.ts.toISOString(),
-        bingeStart: (await getLastBingeStart(id))?.toISOString(),
-      };
-    },
-    [id],
-    { tags: [`userStatus-${id}`] },
-  );
-
-export const getLastBite = async (): Promise<CachedBite | null> => {
-  const session = await auth();
-  if (!isSlackSession(session)) {
-    return null;
-  }
-  return cachedLastBite(session.id)();
-};
-
 const updateNextBite = async (prevBite: Promise<Bite>, bite: Bite): Promise<Bite> => {
   const { permillage, ts } = await prevBite;
   const currentPermillage = calcCurrentPermillage(permillage, ts, bite.ts);
@@ -115,11 +85,7 @@ const updateNextBite = async (prevBite: Promise<Bite>, bite: Bite): Promise<Bite
   return { ...bite, permillage: nextPermillage };
 };
 
-export const submitBite = async (biteInfo: BiteInfo): Promise<Binge> => {
-  const session = await auth();
-  if (!isSlackSession(session)) {
-    throw new Error('Not authenticated');
-  }
+export const submitBite = async (biteInfo: BiteInfo, session: SlackSession): Promise<Binge> => {
   const {
     id: userId,
     userToken,
@@ -172,7 +138,7 @@ export const submitBite = async (biteInfo: BiteInfo): Promise<Binge> => {
 
   const binge = await getBinge(userId);
 
-  revalidateTag(`userStatus-${userId}`);
+  revalidateTag(lastBiteCacheTag(userId));
 
   if (!config.slack.suppressReport) {
     await addUserToChannel(userToken);

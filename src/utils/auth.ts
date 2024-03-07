@@ -6,7 +6,19 @@ import config from './config';
 import type { AuthedUser, SlackSession, SlackToken } from '../types/slack';
 import { type GetServerSidePropsContext } from 'next';
 import { type NextApiRequest, type NextApiResponse } from 'next/dist/shared/lib/utils';
-import { getProfile } from './actions';
+import type { UsersProfileGetResponse } from '@slack/web-api';
+import { slackClient } from './slack';
+
+const getProfile = async (
+  userId: string,
+  token: string,
+): Promise<UsersProfileGetResponse['profile']> =>
+  slackClient.users.profile
+    .get({
+      token,
+      user: userId,
+    })
+    .then((res) => res.profile);
 
 const addProfileToToken = async (id: string, accessToken: string, token: JWT) => {
   const profile = await getProfile(id, accessToken);
