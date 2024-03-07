@@ -1,4 +1,5 @@
-const { createVanillaExtractPlugin } = require('@vanilla-extract/next-plugin');
+import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin';
+
 const withVanillaExtract = createVanillaExtractPlugin();
 
 /** @type {import('next').NextConfig} */
@@ -16,18 +17,10 @@ const nextConfig = {
     ],
   },
   experimental: {
-    swcPlugins: [
-      [
-        'next-superjson-plugin',
-        {
-          excluded: [],
-        },
-      ],
-    ],
     serverActions: {
       allowedOrigins: ['http://localhost:5001', 'test.kosmosry.fi'],
     },
   },
 };
 
-module.exports = withVanillaExtract(nextConfig);
+export default withVanillaExtract(nextConfig);
