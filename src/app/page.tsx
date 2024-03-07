@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { appContainer, copyright } from './page.css';
 import { FrontPage } from '../components/FrontPage';
 import { getYear } from 'date-fns';
-import { cachedLastBite } from '../utils/actions';
+import { getCachedLastBite } from '../utils/cache';
 
 const Page: FC = async () => {
   const session = await auth();
@@ -18,7 +18,7 @@ const Page: FC = async () => {
     avatar: session.user?.image ?? '/favicon.png',
   };
 
-  const lastBite = await cachedLastBite(session.id)();
+  const lastBite = await getCachedLastBite(session.id);
 
   return (
     <div className={appContainer}>

@@ -1,8 +1,7 @@
-// import pgMigrate from 'node-pg-migrate';
 import { types } from 'pg';
 import pgPromise from 'pg-promise';
 import config from './config';
-import { type Bite, type Biter } from './lib';
+import { type Bite, type Biter } from '../types/common';
 
 const pgp = pgPromise();
 const connection = config.db;
@@ -22,18 +21,6 @@ interface IDatabaseScope {
   db: pgPromise.IDatabase<any>;
   pgp: pgPromise.IMain;
 }
-
-/* const migration = async () => {
-  if (process.env.NEXT_PHASE !== 'phase-production-build') {
-    await pgMigrate({
-      databaseUrl: connection,
-      migrationsTable: 'pgmigrations',
-      direction: 'up',
-      count: Infinity,
-      dir: './migrations',
-    });
-  }
-}; */
 
 const getDB = async () => {
   return createSingleton<IDatabaseScope>('my-app-db-space', async () => {
