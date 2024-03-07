@@ -5,6 +5,7 @@ declare global {
       CHANNEL_ID: string;
       CLIENT_ID: string;
       CLIENT_SECRET: string;
+      TEAM_ID: string;
       DB_HOST: string;
       DB_PORT: string;
       DB_NAME: string;

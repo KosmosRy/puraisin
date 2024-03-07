@@ -1,6 +1,7 @@
 import { type OAuthConfig, type OAuthUserConfig } from 'next-auth/providers';
 import { type AuthedUser } from '../types/slack';
 import { type Profile, type TokenSet } from 'next-auth';
+import config from '../utils/config';
 
 export default function Slack(options: OAuthUserConfig<Profile>): OAuthConfig<Profile> {
   return {
@@ -12,6 +13,7 @@ export default function Slack(options: OAuthUserConfig<Profile>): OAuthConfig<Pr
       params: {
         scope: 'users.profile:read',
         user_scope: 'chat:write,channels:read,channels:write,groups:read',
+        team: config.slack.team,
       },
     },
     token: 'https://slack.com/api/oauth.v2.access',

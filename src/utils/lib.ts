@@ -1,5 +1,5 @@
 import { differenceInSeconds, parseISO } from 'date-fns';
-import { type CachedBinge } from '../types/common';
+import { type Binge } from '../types/common';
 
 export interface Bite {
   id: number;
@@ -43,12 +43,15 @@ export const calcCurrentPermillage = (
 
 export const calcTimeTillSober = (currentPct: number): number => currentPct / burnFactor;
 
-export const lastBiteToBinge = (lastBite: CachedBite | null): CachedBinge => {
+const toDate = (date: Date | string): Date => (date instanceof Date ? date : parseISO(date));
+
+export const lastBiteToBinge = (lastBite: Bite | CachedBite | null): Binge => {
   if (!lastBite) {
     return { permillage: 0 };
   }
-  const { ts, permillage, bingeStart } = lastBite;
-  const currentPermillage = calcCurrentPermillage(permillage, parseISO(ts));
+  const ts = toDate(lastBite.ts);
+  const bingeStart = lastBite.bingeStart ? toDate(lastBite.bingeStart) : undefined;
+  const currentPermillage = calcCurrentPermillage(lastBite.permillage, ts);
   const timeTillSober = calcTimeTillSober(currentPermillage);
   return {
     permillage: currentPermillage,

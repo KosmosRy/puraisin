@@ -1,6 +1,6 @@
 'use client';
-import { type FC, useEffect, useReducer, useState } from 'react';
-import { type AppInfo, type BiteInfo, type CachedBinge } from '../types/common';
+import { type FC, useCallback, useEffect, useReducer, useState } from 'react';
+import { type AppInfo, type Binge, type BiteInfo } from '../types/common';
 import { Alert } from './Alert';
 import { BiteForm } from './BiteForm';
 import Image from 'next/image';
@@ -15,21 +15,41 @@ interface FpProps {
   lastBite: CachedBite | null;
 }
 
+type BingeAction =
+  | {
+      type: 'binge';
+      payload: Binge;
+    }
+  | { type: 'bite'; payload: CachedBite | null };
+
+const bingeReducer = (state: Binge, action: BingeAction): Binge => {
+  switch (action.type) {
+    case 'binge':
+      return action.payload;
+    case 'bite':
+      return lastBiteToBinge(action.payload);
+  }
+};
+
 export const FrontPage: FC<FpProps> = ({ info, lastBite }) => {
-  const [binge, dispatchBite] = useReducer(
-    (_: CachedBinge, bite: CachedBite | null) => lastBiteToBinge(bite),
-    lastBite,
-    lastBiteToBinge,
-  );
+  const [binge, dispatch] = useReducer(bingeReducer, lastBite, lastBiteToBinge);
   const [loading, setLoading] = useState(false);
   const [biteDone, setBiteDone] = useState(false);
   const [lastContent, setLastContent] = useState('');
   const [error, setError] = useState<string>();
 
+  const biteAction = useCallback((payload: CachedBite | null) => {
+    dispatch({ type: 'bite', payload });
+  }, []);
+
+  const bingeAction = useCallback((payload: Binge) => {
+    dispatch({ type: 'binge', payload });
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
-      void getLastBite().then(dispatchBite);
-    }, 60000);
+      void getLastBite().then(biteAction);
+    }, 30000);
     return () => {
       interval && clearInterval(interval);
     };
@@ -41,7 +61,7 @@ export const FrontPage: FC<FpProps> = ({ info, lastBite }) => {
     try {
       setLoading(true);
       setBiteDone(false);
-      await submitBite(data);
+      bingeAction(await submitBite(data));
       setBiteDone(true);
       setLastContent(data.content);
       setError(undefined);

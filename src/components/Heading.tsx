@@ -1,4 +1,4 @@
-import { formatDistanceToNow, addSeconds, parseISO } from 'date-fns';
+import { formatDistanceToNow, addSeconds } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import { fi } from 'date-fns/locale';
 import { type FC } from 'react';
@@ -13,14 +13,14 @@ import {
   userRow,
 } from './Heading.css';
 import { SignOutButton } from './SignOutButton';
-import type { AppInfo, CachedBinge } from '../types/common';
+import type { AppInfo, Binge } from '../types/common';
 
 interface Props {
   info: AppInfo;
-  binge: CachedBinge;
+  binge: Binge;
 }
 
-const formatLastBite = (lastBite: string) =>
+const formatLastBite = (lastBite: Date) =>
   formatInTimeZone(lastBite, 'Europe/Helsinki', "eeeeee, d.M.yy 'klo' H:mm xxx", { locale: fi });
 const formatTimeTillSober = (timeTillSober: number) => {
   if (timeTillSober > 0) {
@@ -29,9 +29,9 @@ const formatTimeTillSober = (timeTillSober: number) => {
     return '-';
   }
 };
-const formatTimeToNow = (from?: string) => {
+const formatTimeToNow = (from?: Date) => {
   if (from) {
-    return formatDistanceToNow(parseISO(from), { locale: fi });
+    return formatDistanceToNow(from, { locale: fi });
   } else {
     return '-';
   }
