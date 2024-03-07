@@ -50,5 +50,6 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.33.2",
     "prettier": "^3.2.4"
-  }
+  },
+  "packageManager": "pnpm@8.15.4"
 }
